@@ -1,0 +1,21 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+#define VER_FILEVERSION             1,2,0,6
+#define VER_FILEVERSION_STR         "1.2.0.6"
+
+#define VER_PRODUCTVERSION          VER_FILEVERSION
+#define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
+
+#define VER_COMPANYNAME_STR         "WIENER Plein & Baus GmbH"
+#define VER_LEGALCOPYRIGHT_STR      "2006-2015 WIENER Plein & Baus GmbH"
+#define VER_LEGALTRADEMARKS1_STR    "All Rights Reserved"
+#define VER_LEGALTRADEMARKS2_STR    VER_LEGALTRADEMARKS1_STR
+#define VER_COMPANYDOMAIN_STR       "www.wiener-d.com"
+
+#define VER_FILEDESCRIPTION_STR     "Provides access to a WIENER MPOD crate"
+#define VER_INTERNALNAME_STR        "WIENER_SNMP"
+#define VER_ORIGINALFILENAME_STR    "WIENER_SNMP.dll"
+#define VER_PRODUCTNAME_STR         "WIENER_SNMP"
+
+#endif // VERSION_H

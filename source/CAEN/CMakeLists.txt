@@ -1,0 +1,7 @@
+if(CAEN_DRIVER)
+add_subdirectory(drivers)
+endif()
+add_subdirectory(lib)
+find_library(CAENVME libCAENVME.so)
+find_library(CAENComm libCAENComm.so)
+find_library(caenhvwrapper libcaenhvwrapper.so)

@@ -1,0 +1,12 @@
+include_directories(WIENER_SNMP)
+configure_file(WIENER_SNMP/WIENER_SNMP.h ${CMAKE_SOURCE_DIR}/bin/include/WIENER/WIENER_SNMP.h COPYONLY)
+configure_file(ADD/add.h ${CMAKE_SOURCE_DIR}/bin/include/WIENER/add.h COPYONLY)
+configure_file(ADD/WIENERHVWrapper.h ${CMAKE_SOURCE_DIR}/bin/include/WIENER/WIENERHVWrapper.h COPYONLY)
+configure_file(WIENER_SNMP/version.h ${CMAKE_SOURCE_DIR}/bin/include/WIENER/version.h COPYONLY)
+configure_file(MIB/WIENER-CRATE-MIB.txt ${CMAKE_SOURCE_DIR}/conf/MIB/WIENER-CRATE-MIB.txt COPYONLY)
+include_directories(${CMAKE_SOURCE_DIR}/bin/include)
+
+add_library(WIENER_SNMP WIENER_SNMP/WIENER_SNMP.cpp ADD/add.cpp)
+add_dependencies(WIENER_SNMP SNMP)
+target_link_libraries(WIENER_SNMP pthread libnetsnmp.so ${OPENSSL_LIBRARIES})
+install (TARGETS WIENER_SNMP DESTINATION ${CMAKE_SOURCE_DIR}/bin/lib)

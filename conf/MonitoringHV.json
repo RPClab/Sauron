@@ -1,0 +1,18 @@
+{
+    "MonitoringHV":
+    {
+        "User":"root",
+        "Password": "20071990",
+        "Host":"yin",
+        "Database" : "SJTUrpc",
+        "Table" : "hv",
+        "Waiting Time":3,
+        "Modules":
+        [
+            {
+                "Name":"pop",
+                "Channels":[0,1,2]
+            }
+        ]
+    }
+}
