@@ -25,7 +25,7 @@ find_package(Boost 1.67.0 COMPONENTS program_options)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   add_executable(Controler Console.cpp)
-  target_link_libraries(Controler NHRSpp_lib iseg libnetsnmp.so ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
+  target_link_libraries(Controler NHRSpp_lib iseg libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
   install(TARGETS Controler RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
 endif()
 
@@ -33,7 +33,7 @@ endif()
 
   add_executable(Monitoring Monitoring.cpp)
   include_directories(${MariaDBClient_INCLUDE_DIRS})
-  target_link_libraries(Monitoring NHRSpp_lib iseg ${MariaDBClient_LIBRARIES} libnetsnmp.so ${OPENSSL_LIBRARIES} pthread mariadbclientpp)
+  target_link_libraries(Monitoring NHRSpp_lib iseg ${MariaDBClient_LIBRARIES} libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so  ${OPENSSL_LIBRARIES} pthread mariadbclientpp)
   install(TARGETS Monitoring RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
   
    add_executable(Test Test.cpp)
@@ -41,7 +41,7 @@ endif()
    add_dependencies(Test drivers)
    endif()
   include_directories(${MariaDBClient_INCLUDE_DIRS})
-  target_link_libraries(Test iseg ${MariaDBClient_LIBRARIES} pthread mariadbclientpp libnetsnmp.so ${OPENSSL_LIBRARIES} NHRSpp_lib )
+  target_link_libraries(Test iseg ${MariaDBClient_LIBRARIES} pthread mariadbclientpp libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so ${OPENSSL_LIBRARIES} NHRSpp_lib )
   install(TARGETS Test RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
   
 

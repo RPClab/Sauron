@@ -85,6 +85,14 @@ Value& operator=(const T & value)
     unsigned int UInt() const;
     long Long();
     unsigned long ULong();
+    short Short()
+    {
+        return static_cast<short>(this->Int());
+    }
+    unsigned short UShort()
+    {
+        return static_cast<unsigned short>(this->Int());
+    }
     long long LLong();
     unsigned long long ULLong();
     float Float();

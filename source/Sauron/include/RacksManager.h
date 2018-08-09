@@ -31,9 +31,11 @@
 #include "json/json.h"
 #include "SerialConnector.h"
 #include "SNMPConnector.h"
+#include "CAENConnector.h"
 #include "Crate.h"
 #include "isegModule.h"
 #include "WIENERModule.h"
+#include "CAENModule.h"
 #include <set>
 #include <chrono>
 #include <thread>
@@ -98,7 +100,13 @@ public:
         // else off();
         
     }
-    
+    void disconnect()
+    {
+        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        {
+                itt->second->Disconnect();
+        }
+    }
     void connect()
     {
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
@@ -178,8 +186,7 @@ private :
     std::map<std::string,Crate*> m_racks;
     std::string getEnvVar(const std::string & key );
     Json::Value openJSONFile(const std::string& envVar);
-    std::map<std::string,Connector*> m_connectors{{"VCP",new SerialConnector},{"SNMP",new SNMPConnector}};
-    std::map<std::string,Module*> m_modules{{"WIENER",new WIENERModule},{"iseg",new isegModule}};
-   // bool block = false;
+    std::map<std::string,Connector*> m_connectors{{"VCP",new SerialConnector},{"SNMP",new SNMPConnector},{"CAEN",new CAENConnector}};
+    std::map<std::string,Module*> m_modules{{"WIENER",new WIENERModule},{"iseg",new isegModule},{"CAEN",new CAENModule}};
 };
 #endif

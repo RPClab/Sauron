@@ -247,7 +247,7 @@ public:
         }
         else
         {
-            std::cout<<"Rack for crate will be set to "<<m_rack;
+            std::cout<<"Rack for crate will be set to "<<m_rack<<"\n";
         }
     }
     void setDescription()
