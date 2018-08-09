@@ -87,11 +87,11 @@ public:
         return m_slot;
     }
     
-    void setConnectorParameters(const std::map<std::string,std::string>& params)
+    void setConnectorParameters(const Parameters& params)
     {
         m_connector->setParameters(params);
     }
-    void setParameters(const std::map<std::string,std::string>& params)
+    void setParameters(const Parameters& params)
     {
         m_params=params;
     }
@@ -100,7 +100,7 @@ public:
         setName();
         setDescription();
         setSlot();
-        m_connector->Initialize();
+       m_connector->Initialize();
     }
     void Connect()
     {
@@ -118,7 +118,7 @@ public:
     }
     ~Module()
     {
-       if(m_connector!=nullptr&&m_connector->getName()!="DumbConnector")
+       if(m_connector!=nullptr&&m_connector->getName()!="DumbConnector"&&m_connector->isCrateConnector()==false)
        {
            delete m_connector;
            m_connector=nullptr;

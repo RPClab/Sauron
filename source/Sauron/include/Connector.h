@@ -45,7 +45,7 @@ public:
      *
      * @param params 
      */
-    Connector(const std::map<std::string,std::string>& params);
+    Connector(const Parameters& params);
 
     /**
      * Destructor
@@ -57,7 +57,7 @@ public:
      */
     virtual void Initialize()=0;
     
-    virtual void setParameters(const std::map<std::string,std::string>& params=std::map<std::string,std::string>{})
+    virtual void setParameters(const Parameters& params)
     {
         m_params=params;
     }
@@ -72,7 +72,18 @@ public:
         std::cout<<mover<<"Connector type : "<<getName()<<", parameters : \n";
         m_params.printParameters(mover);
     }
-    virtual void Connect()=0; 
+    
+    virtual Value SendCommand(const std::string&)=0;
+    
+    std::size_t getNbrParamaters(){return m_params.size();}
+    
+    void ClearParameters(){m_params.clear();}
+    
+    virtual std::string getName(){return m_type;}
+    
+    bool isCrateConnector() {return m_IsCrateConnector;}
+    void isCrateConnector(const bool bol) {m_IsCrateConnector=bol;}
+        virtual void Connect()=0; 
     
     virtual void Disconnect()=0;
     
@@ -82,14 +93,10 @@ public:
     
     virtual Connector* Clone()=0;
     
-    virtual Value SendCommand(const std::string&)=0;
     
-    std::size_t getNbrParamaters(){return m_params.size();}
     
-    void ClearParameters(){m_params.clear();}
-    
-    virtual std::string getName(){return m_type;}
 protected:
+    bool m_IsCrateConnector{false};
     Parameters m_params;
     std::string m_type{"VirtualConnector"};
 };

@@ -30,7 +30,7 @@ Connector::Connector()
 
 }
 
-Connector::Connector(const std::map<std::string,std::string>& params)
+Connector::Connector(const Parameters& params)
 {
     m_params=params;
 }

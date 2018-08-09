@@ -23,8 +23,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 #include "RacksManager.h"
+#include "Parameters.h"
 #include "json/json.h"
 #include <iostream>
 #include <string>
@@ -58,10 +58,10 @@ Json::Value RacksManager::openJSONFile(const std::string & envVar)
 
 void RacksManager::extractInfos(const Json::Value& root)
 {
-    std::map<std::string,std::string> crate_infos;
-    std::map<std::string,std::string> connector_infos_crate;
-    std::map<std::string,std::map<std::string,std::string>> module_infos;
-    std::map<std::string,std::map<std::string,std::string>> connector_infos_modules;
+    Parameters crate_infos;
+    Parameters connector_infos_crate;
+    std::map<std::string,Parameters> module_infos;
+    std::map<std::string,Parameters> connector_infos_modules;
     const Json::Value& crates = root["Crates"]; 
     for (unsigned int i = 0; i < crates.size(); i++)
     {
@@ -96,7 +96,7 @@ void RacksManager::extractInfos(const Json::Value& root)
                     {
                         for (std::vector<std::string>::iterator itt=id_connector.begin();itt!=id_connector.end();++itt) 
                         {
-                            connector_infos_crate.insert({*itt,crates[i]["Connector"][*itt].asString()});
+                            connector_infos_crate.addParameter(*itt,crates[i]["Connector"][*itt].asString());
                         }
                     }
                 }
@@ -124,21 +124,21 @@ void RacksManager::extractInfos(const Json::Value& root)
                                 {
                                     for (std::vector<std::string>::iterator itt=id_connector.begin();itt!=id_connector.end();++itt) 
                                     {
-                                        connector_infos_modules[crates[i]["Modules"][module]["Name"].asString()].insert({*itt,crates[i]["Modules"][module]["Connector"][*itt].asString()});
+                                        connector_infos_modules[crates[i]["Modules"][module]["Name"].asString()].addParameter(*itt,crates[i]["Modules"][module]["Connector"][*itt].asString());
 
                                     }
                                 }
                             }
                             else
                             {
-                               module_infos[crates[i]["Modules"][module]["Name"].asString()].insert({*ot,crates[i]["Modules"][module][*ot].asString()});
+                               module_infos[crates[i]["Modules"][module]["Name"].asString()].addParameter(*ot,crates[i]["Modules"][module][*ot].asString());
                             }
                         }
                     }
                 }
                 else
                 {
-                    crate_infos.insert({*it,crates[i][*it].asString()});
+                    crate_infos.addParameter(*it,crates[i][*it].asString());
                     
                 }
             }
@@ -183,28 +183,27 @@ bool RacksManager::keyExistsAndValueIsUnique(const Json::Value& id,const std::st
     }
 }
 
-void RacksManager::constructCrate(std::map<std::string,std::string>& crate_infos,
-                   std::map<std::string,std::string>& connector_infos_crate,
-                   std::map<std::string,std::map<std::string,std::string>>& module_infos,
-                   std::map<std::string,std::map<std::string,std::string>>& connector_infos_modules)
+void RacksManager::constructCrate(Parameters& crate_infos,Parameters& connector_infos_crate,std::map<std::string,Parameters>& module_infos,
+                   std::map<std::string,Parameters>& connector_infos_modules)
 {
-  m_racks[crate_infos["Name"]]=new Crate(crate_infos);
+  m_racks[crate_infos["Name"].String()]=new Crate(crate_infos);
   Connector* connector_crate=nullptr;
-  if(m_connectors.find(connector_infos_crate["Type"])!=m_connectors.end())
+  if(m_connectors.find(connector_infos_crate["Type"].String())!=m_connectors.end())
   {
-      connector_crate=m_connectors[connector_infos_crate["Type"]]->Clone();
+      connector_crate=m_connectors[connector_infos_crate["Type"].String()]->Clone();
+      connector_crate->isCrateConnector(true);
       connector_crate->setParameters(connector_infos_crate);
   }
-  else if(m_connectors.find(connector_infos_crate["Type"])!=m_connectors.end()&&connector_infos_crate.size()!=0)
+  else if(m_connectors.find(connector_infos_crate["Type"].String())!=m_connectors.end()&&connector_infos_crate.size()!=0)
   {
     std::cout<<"Connector type : "<<connector_infos_crate["Type"]<<" unknown"<<std::endl;
   }
-  for(std::map<std::string,std::map<std::string,std::string>>::iterator itt=module_infos.begin();itt!=module_infos.end();++itt)
+  for(std::map<std::string,Parameters>::iterator itt=module_infos.begin();itt!=module_infos.end();++itt)
   {
-    if(m_modules.find(itt->second["Type"])!=m_modules.end())
+    if(m_modules.find(itt->second["Type"].String())!=m_modules.end())
     {
-        m_racks[crate_infos["Name"]]->addModule(itt->first,m_modules[module_infos[itt->first]["Type"]]);
-        m_racks[crate_infos["Name"]]->setModuleParameters(itt->first,module_infos[itt->first]);
+        m_racks[crate_infos["Name"].String()]->addModule(itt->first,m_modules[module_infos[itt->first]["Type"].String()]);
+        m_racks[crate_infos["Name"].String()]->setModuleParameters(itt->first,module_infos[itt->first]);
         if(connector_infos_modules.find(itt->first)==connector_infos_modules.end())
         {
             if(connector_crate==nullptr)
@@ -214,19 +213,19 @@ void RacksManager::constructCrate(std::map<std::string,std::string>& crate_infos
             }
             else
             {
-                m_racks[crate_infos["Name"]]->setModuleConnector(itt->first,connector_crate);
+                m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,connector_crate);
             }
         }
         else
         {
-            m_racks[crate_infos["Name"]]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"]]->Clone());
-            m_racks[crate_infos["Name"]]->setModuleConnectorParameters(itt->first,connector_infos_modules[itt->first]);
+            m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"].String()]->Clone());
+            m_racks[crate_infos["Name"].String()]->setModuleConnectorParameters(itt->first,connector_infos_modules[itt->first]);
         }
     }
     else
     {
-        m_racks[crate_infos["Name"]]->addModule(itt->first,m_modules[crate_infos["Type"]]);
-        m_racks[crate_infos["Name"]]->setModuleParameters(itt->first,module_infos[itt->first]);
+        m_racks[crate_infos["Name"].String()]->addModule(itt->first,m_modules[crate_infos["Type"].String()]);
+        m_racks[crate_infos["Name"].String()]->setModuleParameters(itt->first,module_infos[itt->first]);
         if(connector_infos_modules.find(itt->first)==connector_infos_modules.end())
         {
             if(connector_crate==nullptr)
@@ -236,13 +235,13 @@ void RacksManager::constructCrate(std::map<std::string,std::string>& crate_infos
             }
             else
             {
-                m_racks[crate_infos["Name"]]->setModuleConnector(itt->first,connector_crate);
+                m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,connector_crate);
             }
         }
         else
         {
-            m_racks[crate_infos["Name"]]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"]]->Clone());
-            m_racks[crate_infos["Name"]]->setModuleConnectorParameters(itt->first,connector_infos_modules[itt->first]);
+            m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"].String()]->Clone());
+            m_racks[crate_infos["Name"].String()]->setModuleConnectorParameters(itt->first,connector_infos_modules[itt->first]);
         }
     }
   }

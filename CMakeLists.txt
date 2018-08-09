@@ -96,7 +96,8 @@ ExternalProject_Add_Step(netsnmp copyCMakeLists
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
 
-
+SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wl,-rpath=${CMAKE_SOURCE_DIR}/bin/lib/" )
+SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_SOURCE_DIR}/bin/lib/" )
 
 #find_library(libnetsnmp libnetsnmp.so PATHS ${CMAKE_SOURCE_DIR}/bin/lib/ )
 #find_library(libnetsnmpagent libnetsnmpagent.so PATHS ${CMAKE_SOURCE_DIR}/bin/lib/)
@@ -108,7 +109,7 @@ find_package(MariaDBClient REQUIRED)
 find_package(OpenSSL REQUIRED) 
 set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/bin/lib)
 
-add_definitions(-DUNIX)
+add_definitions(-DUNIX -DLINUX)
 add_subdirectory(source/CAEN)
 add_subdirectory(source/WIENER)
 add_subdirectory(source/iseg)

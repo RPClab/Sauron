@@ -28,7 +28,7 @@
 #define CRATE_H
 #include "Module.h"
 #include <thread>
-
+#include "Parameters.h"
 #include <iostream>
 #include <map>
 
@@ -36,25 +36,25 @@ class Crate
 {
 public:
     Crate():m_connector(&m_dumb){};
-    Crate(std::map<std::string,std::string>& param,Connector& connector):m_connector(connector.Clone())
+    Crate(Parameters & param,Connector& connector):m_connector(connector.Clone())
     {
         m_params=param;
     };
-    Crate(std::map<std::string,std::string>& param,Connector* connector):m_connector(connector->Clone())
+    Crate(Parameters& param,Connector* connector):m_connector(connector->Clone())
     {
         m_params=param;
     };
-    Crate(std::map<std::string,std::string>& param)
+    Crate(Parameters& param)
     {
         m_params=param;
     };
-    void setParam(std::map<std::string,std::string>& param)
+    void setParam(Parameters& param)
     {
         m_params=param;
     }
     Crate(Connector& connector):m_connector(connector.Clone()){};
     Crate(Connector* connector):m_connector(connector->Clone()){};
-    void Initialize(const std::map<std::string,std::string>& params=std::map<std::string,std::string>())
+    void Initialize()
     {
         setName();
         setDescription();
@@ -148,6 +148,10 @@ public:
     
     void Connect()
     {
+        if(m_connector!=nullptr)
+        {
+            m_connector->Connect();
+        }
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
            it->second->Connect();
@@ -156,6 +160,10 @@ public:
     
     void Disconnect()
     {
+        if(m_connector!=nullptr)
+        {
+            m_connector->Disconnect();
+        }
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
            it->second->Disconnect();
@@ -176,11 +184,11 @@ public:
            it->second->printVoltageCurrent(stream);
         }
     }
-    void setModuleParameters(const std::string& name,const std::map<std::string,std::string>& params)
+    void setModuleParameters(const std::string& name,const Parameters& params)
     {
         m_modules[name]->setParameters(params);
     }
-    void setModuleConnectorParameters(const std::string& name,const std::map<std::string,std::string>& params)
+    void setModuleConnectorParameters(const std::string& name,const Parameters& params)
     {
         m_modules[name]->setConnectorParameters(params);
     }

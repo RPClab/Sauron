@@ -178,10 +178,7 @@ private :
     bool keyExists(const Json::Value&,const std::string& string);
     bool keyExists(const std::vector<std::string>,const std::string& string);
     bool keyExistsAndValueIsUnique(const Json::Value& id,const std::string & key);
-    void constructCrate(std::map<std::string,std::string>&,
-                   std::map<std::string,std::string>&,
-                   std::map<std::string,std::map<std::string,std::string>>&,
-                   std::map<std::string,std::map<std::string,std::string>>&);
+    void constructCrate(Parameters&,Parameters&,std::map<std::string,Parameters>&,std::map<std::string,Parameters>&);
     void extractInfos(const Json::Value& root);
     std::map<std::string,Crate*> m_racks;
     std::string getEnvVar(const std::string & key );

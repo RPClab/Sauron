@@ -56,7 +56,11 @@ public:
     
     void Disconnect() override;
     
-    CAENConnector* Clone() override { return new CAENConnector(*this);}
+    CAENConnector* Clone() override 
+    { 
+        if(isCrateConnector()==true) this;
+        return new CAENConnector(*this);
+    }
     
     void Release() override;
     

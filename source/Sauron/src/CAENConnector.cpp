@@ -391,6 +391,7 @@ void CAENConnector::setPassword()
 Value CAENConnector::SendCommand(const std::string& command)
 {
     Value com(command);
+    std::cout<<m_handle<<std::endl;
     std::cout<<com<<std::endl;
     std::vector<Value> params=com.Tokenize("*");
     if(params[0].String()=="CAENHV_GetCrateMap") return GetCrateMap(params);
