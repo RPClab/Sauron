@@ -116,7 +116,7 @@ public:
     {
         return m_connector->IsConnected();
     }
-    ~Module()
+    virtual ~Module()
     {
        if(m_connector!=nullptr&&m_connector->getName()!="DumbConnector"&&m_connector->isCrateConnector()==false)
        {
