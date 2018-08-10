@@ -58,8 +58,12 @@ public:
     
     void Disconnect() override;
     
-    SerialConnector* Clone() override { return new SerialConnector(*this);}
-    
+    SerialConnector* Clone() override 
+    { 
+        if(isCrateConnector()==true) return this;
+        else return new SerialConnector(*this);
+    }
+
     void Release() override;
     
     bool IsConnected() override;

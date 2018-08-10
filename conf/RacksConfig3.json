@@ -2,6 +2,21 @@
     "Crates":
     [
         {
+            "Name" : "Crate2",
+            "Type" : "CAEN",
+            "Connector":
+            {"Type":"CAEN","CAENHVSystemType":"N14XX","LinkType":"VCP","Port":"ttyUSB3","Baudrate":"9600","CommData":"8","CommStop":"0","Parity":"0","IBusAddress":"0"},
+            "Modules" :
+            [
+                { 
+                    "Name":"LV", 
+                    "Description":"LV module",
+                    "Slot":"0"
+                }
+            ]
+        }
+        ,
+                {
             "Name" : "Crate1",
             "Type" : "WIENER",
             "Connector":
@@ -9,13 +24,13 @@
             "Modules" :
             [
                 { 
-                    "Name":"LV", 
+                    "Name":"HV", 
                     "Type":"WIENER",
                     "Description":"LV module",
                     "Slot":"1"
                 },
                 { 
-                    "Name":"HV", 
+                    "Name":"H1V", 
                     "Type":"WIENER",
                     "Description":"HV module",
                     "Slot":"2"

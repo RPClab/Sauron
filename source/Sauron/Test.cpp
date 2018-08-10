@@ -7,7 +7,9 @@ int main()
     manager.Initialize();
     manager.printParameters();
     manager.connect();
-    /*std::thread toto=manager.printVoltageCurrentthread();
+    manager.on();
+    std::cout<<manager.getNbrChannels()<<std::endl;
+    std::thread toto=manager.printVoltageCurrentthread();
     while(1)
     {
         manager.on();
@@ -15,7 +17,7 @@ int main()
         manager.off();
         std::this_thread::sleep_for(std::chrono::seconds(60));
     }
-   manager.printVoltageCurrentthread().join();*/
-   // manager.disconnect();
+   manager.printVoltageCurrentthread().join();
+   manager.disconnect();
  return 0;       
 }

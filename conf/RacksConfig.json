@@ -5,7 +5,7 @@
             "Name" : "Crate2",
             "Type" : "CAEN",
             "Connector":
-            {"Type":"CAEN","CAENHVSystemType":"N14XX","LinkType":"VCP","Port":"ttyUSB3","Baudrate":"9600","CommData":"8","CommStop":"0","Parity":"0","IBusAddress":"0"},
+            {"Type":"CAEN","CAENHVSystemType":"N14XX","LinkType":"VCP","Port":"ttyUSB1","Baudrate":"9600","CommData":"8","CommStop":"0","Parity":"0","IBusAddress":"0"},
             "Modules" :
             [
                 { 
@@ -54,7 +54,7 @@
                     "Name":"iseg2", 
                     "Type":"iseg",
                     "Description":"HV module2",
-                    "Connector" : {"Type":"VCP","SN":"titi","Port":"/dev/ttyUSB1","Baudrate":"9600","Timeout":"100","Bytesize":"8","Parity":"none","Stopbits":"1","Flowcontrol":"none"}
+                    "Connector" : {"Type":"VCP","SN":"titi","Port":"/dev/ttyUSB3","Baudrate":"9600","Timeout":"100","Bytesize":"8","Parity":"none","Stopbits":"1","Flowcontrol":"none"}
                 }
             ]
         }

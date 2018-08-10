@@ -391,14 +391,25 @@ void CAENConnector::setPassword()
 Value CAENConnector::SendCommand(const std::string& command)
 {
     Value com(command);
-    std::cout<<m_handle<<std::endl;
-    std::cout<<com<<std::endl;
     std::vector<Value> params=com.Tokenize("*");
     if(params[0].String()=="CAENHV_GetCrateMap") return GetCrateMap(params);
     else if(params[0].String()=="CAENHV_ExecComm") return ExecComm(params);
     else if(params[0].String()=="CAENHV_GetBdParamProp") return GetBdParamProp(params);
     else if(params[0].String()=="CAENHV_GetBdParam") return GetBdParam(params);
     else if(params[0].String()=="CAENHV_GetBdParamInfo") return GetBdParamInfo(params);
+    else if(params[0].String()=="CAENHV_GetChName") return GetChName(params);
+    else if(params[0].String()=="CAENHV_GetChParamProp") return GetChParamProp(params);
+    else if(params[0].String()=="CAENHV_GetChParam") return GetChParam(params);
+    else if(params[0].String()=="CAENHV_GetChParamInfo") return GetChParamInfo(params);
+    else if(params[0].String()=="CAENHV_GetExecCommList") return GetExecCommList(params);
+    else if(params[0].String()=="CAENHV_GetSysPropList") return GetSysPropList(params);
+    else if(params[0].String()=="CAENHV_GetSysProp") return GetSysProp(params);
+    else if(params[0].String()=="CAENHV_GetSysPropInfo") return GetSysPropInfo(params);
+    else if(params[0].String()=="CAENHV_SetBdParam") return SetBdParam(params);
+    else if(params[0].String()=="CAENHV_SetChName") return SetChName(params);
+    else if(params[0].String()=="CAENHV_SetChParam") return SetChParam(params);
+    else if(params[0].String()=="CAENHV_SetSysProp") return SetSysProp(params);
+    else if(params[0].String()=="CAENHV_TestBdPresence") return TestBdPresence(params);
     else
     {
         std::cout<<"Command unknown"<<std::endl;

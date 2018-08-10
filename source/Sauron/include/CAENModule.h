@@ -37,39 +37,40 @@ public:
     CAENModule(Connector& connector):Module(connector){};
     void on(const Value& channel)
     {
-       // SendCommand();
+        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*1");
     }
     void off(const Value& channel)
     {
-       // SendCommand();
+        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*0");
     }
     void setVoltage(const Value& channel,const Value& HV)
     {
-       // SendCommand();
+       SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*VSet*"+channel.String()+"*"+HV.String());
     }
     Value getVoltage(const Value& channel)
     {
-       // return SendCommand();
+       return SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VSet*"+channel.String());
     }
     
     Value mesureVoltage(const Value& channel)
     {
-       //return SendCommand();
+       return SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VMon*"+channel.String());
     }
     
     void setCurrent(const Value& channel,const Value& current)
     {
-       // SendCommand();
+       SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*ISet*"+channel.String()+"*"+current.String());
     }
     
     virtual Value getCurrent(const Value& channel)
     {
-        //return SendCommand();
+        Value a=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ISet*"+channel.String());
+        return Value((a.Float()*0.00001));
     }
     
     virtual Value mesureCurrent(const Value& channel)
     {
-       // return SendCommand();
+       return SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonL*"+channel.String());
     }
     
     
@@ -77,12 +78,12 @@ public:
     CAENModule* Clone() { return new CAENModule(*this);}
     CAENModule* Clone() const { return new CAENModule(*this);} 
 private:
-    std::vector<Value> m_BDParamsList;
+    /*std::vector<Value> m_BDParamsList;
     void setBDParamsLists()
     {
-        Value params=SendCommand("CAENHV_GetBdParamInfo*"+m_slot.String());
+        Value params=SendCommand("CAENHV_GetChParamInfo*"+m_slot.String());
         m_BDParamsList=params.Tokenize(", ");
-    }
+    }*/
     void FillInfos()
     {
         std::vector<Value> infos=ID().Tokenize("*");
@@ -93,7 +94,6 @@ private:
     }
     Value ID()
     { 
-        std::cout<<SendCommand("CAENHV_GetBdParamInfo*"+m_slot.String())<<std::endl;
         return SendCommand("CAENHV_GetCrateMap*"+m_slot.String());
     }
 };

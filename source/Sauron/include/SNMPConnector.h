@@ -60,7 +60,11 @@ public:
     void Disconnect() override;
     
     void Release() override;
-    SNMPConnector* Clone() override { return new SNMPConnector(*this);}
+    SNMPConnector* Clone() override 
+    { 
+        if(isCrateConnector()==true) return this;
+        else return new SNMPConnector(*this);
+    }
     
     bool IsConnected() override;
 
