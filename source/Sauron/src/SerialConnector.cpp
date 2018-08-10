@@ -90,7 +90,6 @@ void SerialConnector::Disconnect()
 
 void SerialConnector::Connect()
 {
-    std::cout<<"YYY"<<std::endl;
     if(!IsConnected()) 
     {
         m_serial.open();
