@@ -146,6 +146,14 @@ public:
         }
     }
     
+    void setVoltage(const Value& voltage)
+    {
+        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+        {
+           it->second->setVoltage(voltage);
+        } 
+    }
+    
     void Connect()
     {
         if(m_connector!=nullptr)

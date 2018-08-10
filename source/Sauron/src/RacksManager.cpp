@@ -56,6 +56,66 @@ Json::Value RacksManager::openJSONFile(const std::string & envVar)
     return obj;
 }
 
+void RacksManager::FillConnectorCrateInfos(const Json::Value& json,Parameters& params)
+{
+    
+    std::vector<std::string> id_connector = json.getMemberNames();
+    if(keyExists(id_connector,"Type")!=true)
+    {
+        std::cout<<"Connector type is mandatory !"<<std::endl;
+        throw -2;
+    }
+    else
+    {
+        for (std::vector<std::string>::iterator itt=id_connector.begin();itt!=id_connector.end();++itt) 
+        {
+            params.addParameter(*itt,json[*itt].asString());
+        }
+    }
+}
+
+
+void RacksManager::FillModuleConnectorInfos(const Json::Value& json,std::map<std::string,Parameters>& c_params)
+{
+    std::vector<std::string> id_connector = json["Connector"].getMemberNames();
+    if(keyExists(id_connector,"Type")!=true)
+    {
+        std::cout<<"Connector type is mandatory !"<<std::endl;
+        throw -2;
+    }
+    else
+    {
+        for (std::vector<std::string>::iterator itt=id_connector.begin();itt!=id_connector.end();++itt) 
+        {
+            c_params[json["Name"].asString()].addParameter(*itt,json["Connector"][*itt].asString());
+        }
+    }  
+}
+
+void RacksManager::FillModuleInfos(const Json::Value& json,std::map<std::string,Parameters>& m_params,std::map<std::string,Parameters>& c_params)
+{
+    for(unsigned int module=0;module!=json.size();++module)
+    {
+        if(keyExistsAndValueIsUnique(json[module],"Name")!=true)
+        {
+            std::cout<<"Module's name is mandatory and must be unique !"<<std::endl;
+            throw -1;
+        }
+        std::vector<std::string> id_module = json[module].getMemberNames();
+        for (std::vector<std::string>::iterator ot=id_module.begin();ot!=id_module.end();++ot) 
+        {
+            if(*ot=="Connector")
+            {
+                FillModuleConnectorInfos(json[module],c_params);
+            }
+            else
+            {
+                m_params[json[module]["Name"].asString()].addParameter(*ot,json[module][*ot].asString());
+            }
+        }
+    }
+}
+
 void RacksManager::extractInfos(const Json::Value& root)
 {
     Parameters crate_infos;
@@ -74,73 +134,25 @@ void RacksManager::extractInfos(const Json::Value& root)
             std::cout<<"Crate type is mandatory !"<<std::endl;
             throw -2;
         }
-        std::vector<std::string> id = crates[i].getMemberNames();
+        std::vector<std::string> crate_params = crates[i].getMemberNames();
         if(keyExistsAndValueIsUnique(crates[i],"Name")!=true)
         {
             std::cout<<"Crate's name is mandatory and must be unique !"<<std::endl;
             throw -1;
         }
-        else
+        for (std::vector<std::string>::iterator it=crate_params.begin();it!=crate_params.end();++it) 
         {
-            for (std::vector<std::string>::iterator it=id.begin();it!=id.end();++it) 
+            if(*it=="Connector")
             {
-                if(*it=="Connector")
-                {
-                    std::vector<std::string> id_connector = crates[i]["Connector"].getMemberNames();
-                    if(keyExists(id_connector,"Type")!=true)
-                    {
-                        std::cout<<"Connector type is mandatory !"<<std::endl;
-                        throw -2;
-                    }
-                    else
-                    {
-                        for (std::vector<std::string>::iterator itt=id_connector.begin();itt!=id_connector.end();++itt) 
-                        {
-                            connector_infos_crate.addParameter(*itt,crates[i]["Connector"][*itt].asString());
-                        }
-                    }
-                }
-                else if(*it=="Modules")
-                {
-                    for(unsigned int module=0;module!=crates[i]["Modules"].size();++module)
-                    {
-                        if(keyExistsAndValueIsUnique(crates[i]["Modules"][module],"Name")!=true)
-                        {
-                            std::cout<<"Module's name is mandatory and must be unique !"<<std::endl;
-                            throw -1;
-                        }
-                        std::vector<std::string> id_module = crates[i]["Modules"][module].getMemberNames();
-                        for (std::vector<std::string>::iterator ot=id_module.begin();ot!=id_module.end();++ot) 
-                        {
-                            if(*ot=="Connector")
-                            {
-                                std::vector<std::string> id_connector = crates[i]["Modules"][module]["Connector"].getMemberNames();
-                                if(keyExists(id_connector,"Type")!=true)
-                                {
-                                    std::cout<<"Connector type is mandatory !"<<std::endl;
-                                    throw -2;
-                                }
-                                else
-                                {
-                                    for (std::vector<std::string>::iterator itt=id_connector.begin();itt!=id_connector.end();++itt) 
-                                    {
-                                        connector_infos_modules[crates[i]["Modules"][module]["Name"].asString()].addParameter(*itt,crates[i]["Modules"][module]["Connector"][*itt].asString());
-
-                                    }
-                                }
-                            }
-                            else
-                            {
-                               module_infos[crates[i]["Modules"][module]["Name"].asString()].addParameter(*ot,crates[i]["Modules"][module][*ot].asString());
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    crate_infos.addParameter(*it,crates[i][*it].asString());
-                    
-                }
+                FillConnectorCrateInfos(crates[i]["Connector"],connector_infos_crate);
+            }
+            else if(*it=="Modules")
+            {
+                FillModuleInfos(crates[i]["Modules"],module_infos,connector_infos_modules);
+            }
+            else
+            {
+                crate_infos.addParameter(*it,crates[i][*it].asString());
             }
         }
         constructCrate(crate_infos,connector_infos_crate,module_infos,connector_infos_modules);
@@ -178,7 +190,13 @@ bool RacksManager::keyExistsAndValueIsUnique(const Json::Value& id,const std::st
         }
         else
         {
-            return !keyExists(values[key],id[key].asString());
+            bool exists=keyExists(values[key],id[key].asString());
+            if(exists==true) return false;
+            else
+            {
+                 values[key].push_back(id[key].asString());
+                 return true;
+            }
         }
     }
 }

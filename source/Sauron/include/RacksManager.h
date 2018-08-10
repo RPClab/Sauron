@@ -100,8 +100,20 @@ public:
         // else off();
         
     }
+    void setVoltage(const Value& voltage)
+    {
+        std::lock_guard<std::mutex> lock(mutexx);
+       // if(block==false)
+       // {
+       //     block=true;
+        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        {
+                itt->second->setVoltage(voltage);
+        }
+    }
     void disconnect()
     {
+        std::lock_guard<std::mutex> lock(mutexx);
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
                 itt->second->Disconnect();
@@ -109,6 +121,7 @@ public:
     }
     void connect()
     {
+        std::lock_guard<std::mutex> lock(mutexx);
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
                 itt->second->Connect();
@@ -156,6 +169,9 @@ public:
     
     
 private :
+    void FillConnectorCrateInfos(const Json::Value& json,Parameters& params);
+    void FillModuleInfos(const Json::Value& json,std::map<std::string,Parameters>& m_params,std::map<std::string,Parameters>& c_params);
+    void FillModuleConnectorInfos(const Json::Value& json,std::map<std::string,Parameters>& c_params);
     void loop()
     {
         while(1)
