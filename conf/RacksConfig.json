@@ -5,7 +5,15 @@
             "Name":"Crate1",
             "Type":"WIENER",
             "Connector":
-                    {"Type":"SNMP","MIB_path":"/home/sjturpc/Desktop/Sauron/conf/MIB","MIB_filename":"WIENER-CRATE-MIB","Timeout":"3000","Retries":"3","Version":"v2c","ReadCommunity":"guru"},
+            {
+                "Type":"SNMP",
+                "MIB_path":"/home/sjturpc/Desktop/Sauron/conf/MIB",
+                "MIB_filename":"WIENER-CRATE-MIB",
+                "Timeout":"3000",
+                "Retries":"3",
+                "Version":"v2c",
+                "ReadCommunity":"guru"
+            },
             "Modules" :
             [
                 { 
@@ -33,7 +41,18 @@
                     "Description":"LV module",
                     "Type":"CAEN",
                     "Slot":"0",
-                    "Connector": {"Type":"CAEN","CAENHVSystemType":"N14XX","LinkType":"VCP","Port":"ttyUSB2","Baudrate":"9600","CommData":"8","CommStop":"0","Parity":"0","IBusAddress":"0"}
+                    "Connector": 
+                    {
+                        "Type":"CAEN",
+                        "CAENHVSystemType":"N14XX",
+                        "LinkType":"VCP",
+                        "Port":"ttyUSB2",
+                        "Baudrate":"9600",
+                        "CommData":"8",
+                        "CommStop":"0",
+                        "Parity":"0",
+                        "IBusAddress":"0"
+                    }
                 }
                 ,
                 { 
@@ -41,14 +60,36 @@
                     "Type":"iseg",
                     "Slot":"1",
                     "Description":"HV module1",
-                    "Connector" : {"Type":"VCP","SN":"titi","Port":"/dev/ttyUSB0","Baudrate":"9600","Timeout":"100","Bytesize":"8","Parity":"none","Stopbits":"1","Flowcontrol":"none"}
+                    "Connector" : 
+                    {
+                        "Type":"VCP",
+                        "SN":"titi",
+                        "Port":"/dev/ttyUSB0",
+                        "Baudrate":"9600",
+                        "Timeout":"100",
+                        "Bytesize":"8",
+                        "Parity":"none",
+                        "Stopbits":"1",
+                        "Flowcontrol":"none"
+                    }
                 },
                 { 
                     "Name":"iseg2", 
                     "Type":"iseg",
                     "Slot":"2",
                     "Description":"HV module2",
-                    "Connector" : {"Type":"VCP","SN":"titi","Port":"/dev/ttyUSB1","Baudrate":"9600","Timeout":"100","Bytesize":"8","Parity":"none","Stopbits":"1","Flowcontrol":"none"}
+                    "Connector" : 
+                    {
+                        "Type":"VCP",
+                        "SN":"titi",
+                        "Port":"/dev/ttyUSB1",
+                        "Baudrate":"9600",
+                        "Timeout":"100",
+                        "Bytesize":"8",
+                        "Parity":"none",
+                        "Stopbits":"1",
+                        "Flowcontrol":"none"
+                    }
                 }
             ]
         }
