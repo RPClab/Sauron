@@ -195,6 +195,7 @@ SNMPConnector& SNMPConnector::operator=(const SNMPConnector& other)
 {
     m_type=other.m_type;
     m_params=other.m_params;
+    m_session=new snmp_session(*other.m_session);
     return *this;
 }
 
@@ -202,6 +203,7 @@ SNMPConnector& SNMPConnector::operator()(const SNMPConnector& other)
 {
     m_type=other.m_type;
     m_params=other.m_params;
+    m_session=new snmp_session(*other.m_session);
     return *this;
 }
 
