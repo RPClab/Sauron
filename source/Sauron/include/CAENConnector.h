@@ -27,6 +27,7 @@
 #define CAENCONNECTOR_H
 #include "Connector.h"
 #include <cstring>
+#include <thread>
 // CAEN
 extern "C" 
 {
@@ -312,6 +313,17 @@ Value GetExecCommList(std::vector<Value>& params)
 	return d;
 }
  
+void keepAliveFunction()
+{
+    std::vector<Value> dumb;
+    while(1)
+    {
+        GetSysPropList(dumb);
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+    }
+}
+ 
+ 
 Value GetSysPropList(std::vector<Value>& params)
 {
     std::string retour{""};
@@ -527,5 +539,6 @@ Value TestBdPresence(std::vector<Value>& params)
     std::string m_arg{""};
     int m_handle{-1};
     int m_connected{-1};
+    std::thread m_keepAlive;
 };
 #endif
