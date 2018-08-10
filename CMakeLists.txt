@@ -111,8 +111,6 @@ set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/bin/lib)
 
 add_definitions(-DUNIX -DLINUX)
 add_subdirectory(source/CAEN)
-add_subdirectory(source/WIENER)
-add_subdirectory(source/iseg)
 add_subdirectory(source/Sauron)
 add_subdirectory(source/net-snmp)
 
