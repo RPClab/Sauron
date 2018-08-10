@@ -2,36 +2,6 @@
     "Crates":
     [
         {
-            "Name":"Crate1",
-            "Type":"WIENER",
-            "Connector":
-            {
-                "Type":"SNMP",
-                "MIB_path":"/home/sjturpc/Desktop/Sauron/conf/MIB",
-                "MIB_filename":"WIENER-CRATE-MIB",
-                "Timeout":"3000",
-                "Retries":"3",
-                "Version":"v2c",
-                "ReadCommunity":"guru"
-            },
-            "Modules" :
-            [
-                { 
-                    "Name":"LV", 
-                    "Type":"WIENER",
-                    "Description":"LV module",
-                    "Slot":"1"
-                    
-                },
-                { 
-                    "Name":"HV", 
-                    "Type":"WIENER",
-                    "Description":"HV module",
-                    "Slot":"2"
-                }
-            ]
-        },
-        {
             "Name" : "Crate2",
             "Type" : "WIENER",
             "Modules" :
@@ -90,6 +60,35 @@
                         "Stopbits":"1",
                         "Flowcontrol":"none"
                     }
+                }
+            ]
+        },
+        {
+            "Name":"Crate1",
+            "Type":"WIENER",
+            "Connector":
+            {
+                "Type":"SNMP",
+                "MIB_path":"/home/sjturpc/Desktop/Sauron/conf/MIB",
+                "MIB_filename":"WIENER-CRATE-MIB",
+                "Timeout":"3000",
+                "Retries":"3",
+                "Version":"v2c",
+                "ReadCommunity":"guru"
+            },
+            "Modules" :
+            [
+                { 
+                    "Name":"LV", 
+                    "Type":"WIENER",
+                    "Description":"LV module",
+                    "Slot":"1"
+                },
+                { 
+                    "Name":"HV", 
+                    "Type":"WIENER",
+                    "Description":"HV module",
+                    "Slot":"2"
                 }
             ]
         }
