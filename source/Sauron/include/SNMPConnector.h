@@ -62,8 +62,9 @@ public:
     void Release() override;
     SNMPConnector* Clone() override 
     { 
-        if(isCrateConnector()==true) return this;
-        else return new SNMPConnector(*this);
+       /* if(isCrateConnector()==true) return this;
+        else return new SNMPConnector(*this);*/
+       return new SNMPConnector(*this);
     }
     
     bool IsConnected() override;
