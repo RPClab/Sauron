@@ -178,7 +178,15 @@ public:
     {
         if(m_connector!=nullptr)
         {
-            m_connector->Connect();
+            try
+            {
+                m_connector->Connect();
+            }
+            catch (...)
+            {
+                if(m_connector!=nullptr) delete m_connector;
+                m_connector=nullptr;
+            }
         }
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
