@@ -337,6 +337,19 @@ public:
         return mes;
     }
     
+    virtual std::vector<Measure> getMeasures(const Value& channel)
+    {
+        std::vector<Measure> mes(1);
+        mes[0].setCurrent(mesureCurrent(channel));
+        mes[0].setVoltage(mesureVoltage(channel));
+        mes[0].setModule(getName());
+        mes[0].setChannel(channel);
+        return mes;
+    }
+    
+    
+    
+    
     virtual void printVoltageCurrent(std::ostream& stream =std::cout)
     {
         stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<" :\n";
@@ -438,12 +451,6 @@ protected:
         {
             std::cout<<"Slot puuted to default value "<<m_slot<<"\n";
         }
-    }
-    
-    bool hasParam(std::map<std::string,std::string>& m_params, const std::string& param)
-    {
-        if(m_params.find(param)!=m_params.end()) return true;
-        else return false;
     }
     virtual Value GoodChannelNumber(const Value& channel) const
     {

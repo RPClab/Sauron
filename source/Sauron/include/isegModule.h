@@ -85,7 +85,12 @@ private:
     }
     Value ID()
     {
-        return SendCommand("*IDN?");
+        Value ret =SendCommand("*IDN?");
+        if(ret.Size()==0)
+        {
+            throw -3;
+        }
+        else return ret;
     }
     Value NbrOfChannels()
     {

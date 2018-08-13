@@ -100,6 +100,10 @@ void CAENConnector::Connect()
     {
         m_connected=CAENHV_InitSystem(m_CAENHVSystemType,m_linkType,(void*)m_arg.c_str(),m_username.c_str(),m_password.c_str(),&m_handle);
         std::cout<<"CAENHV_InitSystem: "<<CAENHV_GetError(m_handle)<<"(num. "<<m_connected<<")\n";
+        if(m_connected!=0)
+        {
+            throw -1;
+        }
         if(m_CAENHVSystemType==SY1527||m_CAENHVSystemType==SY2527||m_CAENHVSystemType==SY4527||m_CAENHVSystemType==SY5527)
         {
             m_keepAlive=std::thread(&CAENConnector::keepAliveFunction,this);

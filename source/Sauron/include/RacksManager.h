@@ -52,7 +52,7 @@ public:
     {
         for(std::map<std::string,Connector*>::iterator it=m_connectors.begin();it!=m_connectors.end();++it) delete it->second;
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it) delete it->second;
-         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) delete it->second;
+        for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) delete it->second;
     }
     void Initialize()
     {
@@ -60,7 +60,6 @@ public:
     }
     void printParameters(std::ostream& stream=std::cout,const std::string mover="")
     {
-        
         stream<<"Parameters : \n";
         for(std::set<std::string>::iterator it=getListRacks().begin();it!=getListRacks().end();++it)
         {
@@ -74,41 +73,25 @@ public:
     void on()
     {
         std::lock_guard<std::mutex> lock(mutexx);
-       // if(block==false)
-       // {
-          //  block=true;
-            for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
-            {
-                itt->second->on();
-            }
-         //   block=false;
-       // }
-       // else on();
+        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        {
+            itt->second->on(m_who,m_channel);
+        }
     }
     void off()
     {
         std::lock_guard<std::mutex> lock(mutexx);
-       // if(block==false)
-       // {
-       //     block=true;
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
-                itt->second->off();
+            itt->second->off(m_who,m_channel);
         }
-      //  block=false;
-       //  }
-        // else off();
-        
     }
     void setVoltage(const Value& voltage)
     {
         std::lock_guard<std::mutex> lock(mutexx);
-       // if(block==false)
-       // {
-       //     block=true;
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
-                itt->second->setVoltage(voltage);
+                itt->second->setVoltage(m_who,m_channel,voltage);
         }
     }
     void disconnect()
@@ -130,16 +113,10 @@ public:
     void printVoltageCurrent()
     {
         std::lock_guard<std::mutex> lock(mutexx);
-       // if(block==false)
-       // {
-       //     block=true;
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
                 itt->second->printVoltageCurrent();
         }
-       //         block=false;
-       //  }
-
     }
     unsigned int getNbrChannels()
     {
@@ -161,12 +138,23 @@ public:
         mes.reserve(getNbrChannels());
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
         {
-            std::vector<Measure> mes2=it->second->getMeasures();
+            std::vector<Measure> mes2=it->second->getMeasures(m_who,m_channel);
             std::move(mes2.begin(),mes2.end(), std::inserter(mes,mes.end()));
         }
         return std::move(mes);
     }
-    
+    RacksManager& operator()(const std::string& who="",const std::string& channel="")
+    {
+        m_who=who;
+        m_channel=channel;
+        return *this;
+    }
+    RacksManager& operator()(const std::string& who,const int& channel)
+    {
+        m_who=who;
+        m_channel=channel;
+        return *this;
+    }
     
 private :
     void FillConnectorCrateInfos(const Json::Value& json,Parameters& params);
@@ -201,5 +189,7 @@ private :
     Json::Value openJSONFile(const std::string& envVar);
     std::map<std::string,Connector*> m_connectors{{"VCP",new SerialConnector},{"SNMP",new SNMPConnector},{"CAEN",new CAENConnector}};
     std::map<std::string,Module*> m_modules{{"WIENER",new WIENERModule},{"iseg",new isegModule},{"CAEN",new CAENModule}};
+    std::string m_who={""};
+    Value m_channel={""};
 };
 #endif

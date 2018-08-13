@@ -84,7 +84,12 @@ private:
     }
     Value ID()
     {
-       return SendCommand("***RECEIVE***moduleDescription."+m_slot.String());
+       Value ret=SendCommand("***RECEIVE***moduleDescription."+m_slot.String());
+       if(ret.Size()==0)
+       {
+           throw -3;
+       }
+       else return ret;
     }
 };
 #endif

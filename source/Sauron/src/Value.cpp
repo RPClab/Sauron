@@ -57,7 +57,6 @@ Value::Value()
 Value::Value(const std::string& value):m_value(CleanString(value))
 {
     Init();
-    //m_original_type=setOriginalType(value);
 };
     
 std::string Value::String()
@@ -262,6 +261,12 @@ Value& Value::operator=(const std::string & value)
     return *this;
 };
     
+Value& Value::operator=(const char*  value)
+{ 
+    m_value=CleanString(std::string(value)); 
+    return *this;
+};
+
 bool Value::IsEmpty()
 { 
     return m_value.empty();
@@ -278,6 +283,13 @@ bool Value::operator==(const std::string& str)
     if (str==m_value) return true;
     else return false;
 }
+
+bool Value::operator==(const std::string& str)const
+{
+    if (str==m_value) return true;
+    else return false;
+}
+
 
 bool Value::operator!=(const std::string& str)
 {

@@ -154,19 +154,19 @@ void SNMPConnector::Release()
 
 void SNMPConnector::Disconnect()
 {
-    while(IsConnected())
+    if(IsConnected())
     {    
         snmp_close(m_session);
         m_session=nullptr;
         SOCK_CLEANUP;
+        std::cout<<"SNMP session for host "<<m_IP<<" closed \n";
     }
-     std::cout<<"SNMP session for host "<<m_IP<<" closed \n";
 }
 
 
 void SNMPConnector::Connect()
 {
-    while(!IsConnected())
+    if(!IsConnected())
     {
         SOCK_STARTUP;
         struct snmp_session session;
@@ -185,10 +185,10 @@ void SNMPConnector::Connect()
             snmp_error(&session, &liberr, &syserr, &errstr);
             std::cout<<"Open SNMP session for host "<<m_IP<<" : "<<errstr<<"\n";
             free(errstr);
-            return throw 0;
+            throw 0;
         }
+        std::cout<<"SNMP session for host "<<m_IP<<" opened \n";
     }
-    std::cout<<"SNMP session for host "<<m_IP<<" opened \n";
 }
 
 SNMPConnector& SNMPConnector::operator=(const SNMPConnector& other)
@@ -232,7 +232,6 @@ Value SNMPConnector::ReceiveInfos(const std::string& command)
                 {
                 for(vars = response->variables; vars; vars = vars->next_variable) 
                 {
-                    //std::cout<<"totot"<<std::endl;
                     if (vars->type == ASN_BIT_STR || vars->type == ASN_OCTET_STR) 
                     {
                         std::string ret{reinterpret_cast<char*>(vars->val.string)};
@@ -278,10 +277,11 @@ Value SNMPConnector::ReceiveInfos(const std::string& command)
         {                  
             snmp_sess_perror("snmpget",m_session);
             stop=true;
+            throw -3;
         }    
     }
     while(stop==false);
-    if (response) snmp_free_pdu(response);
+    if (response!=nullptr) snmp_free_pdu(response);
     return Value(retour);
 }
 

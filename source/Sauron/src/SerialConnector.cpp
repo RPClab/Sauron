@@ -92,7 +92,7 @@ void SerialConnector::Connect()
 {
     if(!IsConnected()) 
     {
-        m_serial.open();
+            m_serial.open();
     }
 }
 

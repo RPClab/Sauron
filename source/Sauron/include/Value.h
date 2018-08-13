@@ -101,6 +101,7 @@ Value& operator=(const T & value)
     std::size_t Size();
     Value& operator=(Value const & aValue);
     bool operator==(const std::string& str);
+    bool operator==(const std::string& str) const;
     bool operator!=(const std::string& str);
     Value& operator=(const std::string & value);
     bool IsEmpty();
@@ -113,6 +114,7 @@ Value& operator=(const T & value)
     {
         return  m_personal_type;
     }
+    Value& operator=(const char*  value);
     std::vector<Value> Tokenize(const std::string& delimiters);
 private:
     void Init();

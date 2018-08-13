@@ -94,7 +94,12 @@ private:
     }
     Value ID()
     { 
-        return SendCommand("CAENHV_GetCrateMap*"+m_slot.String());
+        Value ret=SendCommand("CAENHV_GetCrateMap*"+m_slot.String());
+        if(ret.Size()==0)
+        {
+            throw -3;
+        }
+        else return ret;
     }
 };
 #endif

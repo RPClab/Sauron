@@ -130,28 +130,48 @@ public:
        }
        m_modules.clear();
     }
-    
-    void off()
+    void off(const std::string& who,const Value& channel)
     {
-        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+        
+        if(isInRack(who)||isCrate(who)||who=="")
         {
-           it->second->off();
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                if(channel=="")it->second->off();
+                else it->second->off(channel);
+            }
         }
+        else if (hasModule(who)) m_modules[who]->off(channel);
     }
-        void on()
+    void on(const std::string& who,const Value& channel)
     {
-        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+        if(isInRack(who)||isCrate(who)||who=="")
         {
-           it->second->on();
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                if(channel=="")it->second->on();
+                else it->second->on(channel);
+            }
         }
+        else if (hasModule(who)) m_modules[who]->on(channel);
     }
     
-    void setVoltage(const Value& voltage)
+    
+    void setVoltage(const std::string& who,const Value& channel,const Value& voltage)
     {
-        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+        if(isInRack(who)||isCrate(who)||who=="")
         {
-           it->second->setVoltage(voltage);
-        } 
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                if(channel=="")it->second->setVoltage(voltage);
+                else it->second->setVoltage(channel,voltage);
+            }
+        }
+        else if (hasModule(who))
+        {
+            if(channel=="")m_modules[who]->setVoltage(voltage);
+            else m_modules[who]->setVoltage(channel,voltage);
+        }
     }
     
     void Connect()
@@ -162,7 +182,16 @@ public:
         }
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
-           it->second->Connect();
+           try
+           {
+                it->second->Connect();
+           }
+           catch(...)
+           {
+               std::cout<<"Problem connecting to module "<<it->first<<" erasing it !"<<std::endl;
+               delete it->second;
+               m_modules.erase(it);
+           }
         }
     }
     
@@ -218,18 +247,35 @@ public:
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         it->second->printParameters(mover+"\t");
     }
-    std::vector<Measure> getMeasures()
+    std::vector<Measure> getMeasures(const std::string& who,const Value& channel)
     {
         std::vector<std::thread>threads;
         std::vector<Measure>mes;
         mes.reserve(getNbrChannels());
-        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+        if(isInRack(who)||isCrate(who)||who=="")
         {
-            std::vector<Measure> mes2=it->second->getMeasures();
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                std::vector<Measure>mes2;
+                if(channel=="")mes2=it->second->getMeasures();
+                else mes2=it->second->getMeasures(channel);
+                for(unsigned int i=0;i!=mes2.size();++i)
+                {
+                    mes2[i].setCrate(getName());
+                    mes2[i].setRack(getRack());
+                }
+                std::move(mes2.begin(),mes2.end(), std::inserter(mes,mes.end()));
+            }
+        }
+        else if (hasModule(who))
+        {
+            std::vector<Measure>mes2;
+            if(channel=="")mes2=m_modules[who]->getMeasures();
+            else mes2= m_modules[who]->getMeasures(channel);
             for(unsigned int i=0;i!=mes2.size();++i)
             {
-                mes2[i].setCrate(getName());
-                mes2[i].setRack(getRack());
+                    mes2[i].setCrate(getName());
+                    mes2[i].setRack(getRack());
             }
             std::move(mes2.begin(),mes2.end(), std::inserter(mes,mes.end()));
         }
@@ -287,6 +333,21 @@ public:
         return nbr;
     }
 private:
+    bool isInRack(const Value& rack)
+    { 
+        if(m_rack==rack.String()) return true;
+        else return false;
+    }
+    bool isCrate(const Value& crate)
+    {
+        if(m_name==crate.String()) return true;
+        else return false;
+    }
+    bool hasModule(const Value& Module)
+    {
+        if(m_modules.find(Module.String())!=m_modules.end()) return true;
+        else return false;
+    }
     std::map<std::string,Module*> m_modules;
     Value m_name{""};
     Value m_description{""};
