@@ -27,7 +27,7 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <vector>
-
+#include <bitset>
 SNMPConnector::SNMPConnector(const SNMPConnector& other):SNMPConnector()
 {
     m_params=other.m_params;
@@ -232,15 +232,43 @@ Value SNMPConnector::ReceiveInfos(const std::string& command)
                 {
                 for(vars = response->variables; vars; vars = vars->next_variable) 
                 {
-                    if (vars->type == ASN_BIT_STR || vars->type == ASN_OCTET_STR) 
+                    if (vars->type == ASN_OCTET_STR) 
+                    {
+                        std::string str;
+                        uint64_t toto={0};
+                        retour.setPersonalType("ASN_OCTET_STR");
+                        for(unsigned int i=0;i!=vars->val_len;++i)
+                        {
+                            str+=(vars->val.bitstring)[i];
+                        }
+                        std::string ret{reinterpret_cast<char*>(vars->val.string)};
+                        if(ret!=str)
+                        {
+                            for(unsigned int i=0;i!=vars->val_len;++i)
+                            {
+                                std::bitset<8> p=(vars->val.bitstring)[i];
+                                for(std::size_t o=0;o!=4;++o)
+                                {
+                                    std::bitset<1> dumb;
+                                    dumb[0]=p[0];
+                                    p[o]=p[7-o];
+                                    p[7-o]=dumb[0];
+                                }
+                                toto|=p.to_ulong()<<8*i;
+                            }
+                            retour=toto;
+                        }
+                        else retour=str;
+                    } 
+                    else if(vars->type == ASN_BIT_STR)
                     {
                         std::string ret{reinterpret_cast<char*>(vars->val.string)};
-                        ret.erase( vars->val_len);
-                        if(vars->type == ASN_BIT_STR) retour.setPersonalType("ASN_BIT_STR");
-                        else retour.setPersonalType("ASN_OCTET_STR");
+                        ret.erase(vars->val_len);
+                        retour.setPersonalType("ASN_BIT_STR");
+                        std::cout<<"Toto"<<std::endl;
                         retour=ret;
-                    } 
-                    if (vars->type == ASN_OPAQUE_FLOAT)
+                    }
+                    else if (vars->type == ASN_OPAQUE_FLOAT)
                     {
                         retour.setPersonalType("ASN_OPAQUE_FLOAT");
                         retour=((float)*vars->val.floatVal);
@@ -254,6 +282,7 @@ Value SNMPConnector::ReceiveInfos(const std::string& command)
                     {
                         retour.setPersonalType("ASN_INTEGER");
                         retour=((int)*vars->val.integer);
+                        
                     }
                     else if (vars->type == ASN_IPADDRESS)
                     {

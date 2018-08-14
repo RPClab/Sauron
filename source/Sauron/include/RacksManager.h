@@ -132,6 +132,15 @@ public:
         return std::thread(&RacksManager::loop,this);
     }
     
+    
+    void printModuleStatus()
+    {
+        for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
+        {
+           it->second->printModuleStatus();
+        }
+    }
+    
     std::vector<Measure> getMeasures()
     {
         std::vector<Measure>mes;

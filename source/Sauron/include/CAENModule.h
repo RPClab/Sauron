@@ -80,7 +80,7 @@ public:
         Value vol=a.String()+"e"+exp.String();
         return vol;
     }
-    
+    //MEASURE CURRENT
     virtual Value mesureCurrent(const Value& channel)
     {
        Value a;
@@ -107,12 +107,54 @@ public:
         Value vol=a.String()+"e"+exp.String();
         return vol;
     }
+    //GET CHANNEL STATUS
+    virtual Status getStatus(const Value& channel)
+    {
+        Value status=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ChStatus*"+channel.String());
+        return m_channelStatus(status.LLong());
+    };
+    //GET MODULE STATUS 
+    virtual Status getModuleStatus()
+    {
+        Value status=SendCommand("CAENHV_GetBdParam*"+m_slot.String()+"*Alarm");
+        return m_moduleStatus(status.LLong());
+    };
     
     
     
     CAENModule* Clone() { return new CAENModule(*this);}
     CAENModule* Clone() const { return new CAENModule(*this);} 
 private:
+    void setChannelStatusBits()
+    {
+         m_channelStatus
+         ("ON","On",0,1)
+         ("RUP","Channel Ramp UP",1,1)
+         ("RDW","Channel Ramp DOWN",2,1)
+         ("OVC","IMON >= ISET",3,1)
+         ("OVV","VMOV > VSET + 250V",4,1)
+         ("UNV","VMON < VSET - 250V",5,1)
+         ("MAXV","VOUT in MAXV protection",6,1)
+         ("TRIP","Ch OFF via TRIP (Imon >= Iset during TRIP)",7,1)
+         ("OVP","Power Max, Power Out > 1.7W",8,1)
+         ("OVT","TEMP > 105C",9,1)
+         ("DIS","Ch disabled (REMOTE Mode and Switch on OFF position)",10,1)
+         ("KILL","Ch in KILL via front panel",11,1)
+         ("ILK","Ch in INTERLOCK via front panel",12,1)
+         ("NOCAL","Calibration Error",13,1);
+    }
+    void setModuleStatusBits()
+    {
+         m_moduleStatus
+         ("CH0","Ch0 in Alarm status",0,1)
+         ("CH1","Ch1 in Alarm status",1,1)
+         ("CH2","Ch1 in Alarm status",2,1)
+         ("CH3","Ch1 in Alarm status",3,1)
+         ("PWFAIL","Board in POWER FAIL",4,1)
+         ("OVP","Board in OVER POWER",5,1)
+         ("HVCKFAIL","Internal HV Clock Fail (!=200+-10kHz)",6,1);
+    }
+    
     bool ChannelHasParameter(const Value& channel,const std::string& param)
     {
         Value list= SendCommand("CAENHV_GetChParamInfo*"+m_slot.String()+"*"+channel.String());

@@ -71,14 +71,61 @@ public:
     {
         return SendCommand(":READ:CURR?(@"+channel.String()+")");
     }
-    
+    //MEASURE CURRENT
     virtual Value mesureCurrent(const Value& channel)
     {
+        getStatus(channel);
         return SendCommand(":MEAS:CURR?(@"+channel.String()+")");
+    }
+    //GET STATUS
+    Status getStatus(const Value& channel)
+    {
+        Value status =SendCommand(":READ:CHAN:STAT?(@"+channel.String()+")");
+        return m_channelStatus(status.LLong());
+    }
+    //GET MODULE STATUS
+    Status getModuleStatus()
+    {
+        Value status =SendCommand(":READ:MOD:STAT?");
+        return m_moduleStatus(status.LLong());
     }
     isegModule* Clone() { return new isegModule(*this);}
     isegModule* Clone() const { return new isegModule(*this);} 
 private:
+    void setChannelStatusBits()//NHR and NHS devices with USB and CAN Interface version 1.18 page 12
+    {
+         m_channelStatus
+         ("POS","Polarity of the HV (for devices with EPU only)",0,1)
+         ("IERR","Input error",2,1)
+         ("ON","On",3,1)
+         ("RAMP","Ramping",4,1)
+         ("EMCY","Emergency off without ramp",5,1)
+         ("CC","Current control active (evaluation is guaranteed when no ramp is running)",6,1)
+         ("CV","Voltage control active (evaluation is guaranteed when no ramp is running)",7,1)
+         ("LCR","Device measures in Low Current Range (for devices with 2 current ranges only)",8,1)
+         ("CBND","Current out of bounds",10,1)
+         ("VBND","Voltage out of bounds",11,1)
+         ("EINH","External Inhibit",12,1)
+         ("TRP","Trip is set when Voltage or Current limit or Iset has been exceeded (when KillEnable=1)",13,1)
+         ("CLIM","Current limit set by Imax is exceeded",14,1)
+         ("VLIM","Voltage limit set by Vmax is exceeded",15,1);
+    }
+    void setModuleStatusBits()//NHR and NHS devices with USB and CAN Interface version 1.18 page 14
+    {
+         m_moduleStatus
+         ("ADJ","Mode of the fine adjustement",0,1)
+         ("S","Hardware failure detected (consult iseg Spezialelektronik GmbH",4,1)
+         ("HVL","isHwVLgd",5,1)
+         ("IERR","Input error in connection with a module access",6,1)
+         ("SERR","Module without failure",8,1)
+         ("RAMP","All channel stable, no ramp active",9,1)
+         ("SFLP","Safety loop closed",10,1)
+         ("EVNT","Any event is active and mask is set",11,1)
+         ("MOD","Module in state good",12,1)
+         ("SPLY","Power supply good",13,1)
+         ("TMP","Module temperature good",14,1)
+         ("KIL","Module state of kill enable",15,1);
+    }
     void FillInfos()
     {
         m_nbrOfChannels=NbrOfChannels();

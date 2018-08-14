@@ -30,6 +30,7 @@
 #include "DumbConnector.h"
 #include <iostream>
 #include "Measure.h"
+#include "Status.h"
 		
 class Module
 {
@@ -100,12 +101,14 @@ public:
         setName();
         setDescription();
         setSlot();
-       m_connector->Initialize();
+        m_connector->Initialize();
     }
     void Connect()
     {
         m_connector->Connect();
         FillInfos();
+        setChannelStatusBits();
+        setModuleStatusBits();
     }
     void Disconnect()
     {
@@ -233,12 +236,27 @@ public:
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=getCurrent(i);
         return std::move(ret); 
     }
-    
-    
-    
-    
-    
-    
+    //MEASURE CURRENT
+    virtual Value mesureCurrent(const Value&)=0;
+    virtual std::vector<Value> mesureCurrent()
+    {
+        std::vector<Value> ret;
+        ret.reserve(m_nbrOfChannels.UInt());
+        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i)ret[i]=mesureCurrent(i);
+        return std::move(ret); 
+    }
+    //GET CHANNEL STATUS
+    virtual Status getStatus(const Value&)=0;
+    virtual std::vector<Status> getStatus()
+    {
+        std::vector<Status> ret;
+        ret.reserve(m_nbrOfChannels.UInt());
+        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i)ret[i]=getStatus(i);
+        return std::move(ret); 
+    }
+    //GET MODULE STATUS
+    virtual Status getModuleStatus()=0;
+
     
     
     virtual void printSetVoltage(const Value& channel,std::ostream& stream =std::cout)
@@ -310,15 +328,7 @@ public:
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) stream<<"\t-> channel "<<i<<" measured : "<<mesureCurrent(i).Float()<<"A ["<<getCurrent(i).Float()<<"A]\n";
     }
     
-    virtual Value mesureCurrent(const Value&)=0;
     
-    virtual std::vector<Value> mesureCurrent()
-    {
-        std::vector<Value> ret;
-        ret.reserve(m_nbrOfChannels.UInt());
-        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i)ret[i]=mesureCurrent(i);
-        return std::move(ret); 
-    }
     
     virtual std::vector<Measure> getMeasures()
     {
@@ -398,7 +408,21 @@ public:
     {
         return m_nbrOfChannels;
     }
+    
+    virtual void setChannelStatusBits()
+    {
+        std::cout<<"setChannelStatusBits not implemented in Module for "<<m_compagny<<"  "<<m_model<<" !\n";
+        std::cout<<"It will be more difficult to acces the status !"<<std::endl;
+    }
+    
+        virtual void setModuleStatusBits()
+    {
+        std::cout<<"setModuleStatusBits not implemented in Module for "<<m_compagny<<"  "<<m_model<<" !\n";
+        std::cout<<"It will be more difficult to acces the status !"<<std::endl;
+    }
 protected:
+    Status m_channelStatus;
+    Status m_moduleStatus;
     /* Main parameters */
     Connector* m_connector{nullptr};
     Parameters m_params;

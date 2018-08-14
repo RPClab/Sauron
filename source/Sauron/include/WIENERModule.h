@@ -70,15 +70,71 @@ public:
     {
         return SendCommand("***RECEIVE***outputCurrent.u"+GoodChannelNumber(channel).String());
     }
-    
+    //MEASURE CURRENT 
     virtual Value mesureCurrent(const Value& channel)
     {
         return SendCommand("***RECEIVE***outputMeasurementCurrent.u"+GoodChannelNumber(channel).String());
     }
-    
+    //GET CHANNEL STATUS
+    virtual Status getStatus(const Value& channel)
+    {
+        Value status=SendCommand("***RECEIVE***outputStatus.u"+GoodChannelNumber(channel).String());
+        return m_channelStatus(status.LLong());
+        return 0;
+    };
+    //GET MODULE STATUS 
+    virtual Status getModuleStatus()
+    {
+        Value status=SendCommand("***RECEIVE***moduleStatus."+m_slot.String());
+        return m_moduleStatus(status.LLong());
+    };
     WIENERModule* Clone() { return new WIENERModule(*this);}
     WIENERModule* Clone() const { return new WIENERModule(*this);} 
 private:
+    void setModuleStatusBits()
+    {
+         if(m_compagny=="iseg")//SHOULD BE HIGH VOLTAGE MPOD manual version 2.8 page 36
+         {
+            m_moduleStatus
+            ("FA","Module has reached state fine adjustment",0,1)
+            ("LI","Module is in state live insertion",2,1)
+            ("NS","Hardware failure detected (consult iseg support)",4,1)
+            ("HLVG","Hardware limit voltage in proper range, using for HV distributor modules with current mirror only",5,1)
+            ("IE","Input error in connection with module access",6,1)
+            ("NSE","All channels without any failure",8,1)
+            ("NR","All channels stable, no ramp active",9,1)
+            ("SLG","Safety loop is closed",10,1)
+            ("EA","Any event is active and mask is set",11,1)
+            ("G","Module state is good",12,1)
+            ("SG","Power supply is good",13,1)
+            ("TG","Module temperature is good",14,1)
+            ("KE","Module state is kill enable",15,1);
+         }
+    }
+    void setChannelStatusBits()
+    {
+            //MPOD manual version 2.8 page 30
+            m_channelStatus
+            ("ON","output channel is on",0,1)
+            ("I","external (hardware-)inhibit of the output channel",1,1)
+            ("FMinSV","Sense voltage is too low",2,1)
+            ("FMaxSV","Sense voltage is too high",3,1)
+            ("FMTV","Terminal voltage is too high",4,1)
+            ("FMC","Current is too high",5,1)
+            ("FMT","Head sink temperature is too high",6,1)
+            ("FMP","Output power is too high",7,1)
+            ("FT","Communication timeout",9,1)
+            ("CL","Current limiting is active (constant current mode)",10,1)
+            ("RU","Output voltage is increasing",11,1)
+            ("RD","Output voltage is decreasing",12,1)
+            ("EK","EnableKill is active",13,1)
+            ("EO","EmergencyOff event is active",14,1)
+            ("Adj","Fine adjustment is working",15,1)
+            ("CV","Voltage control (constant voltage mode)",16,1)
+            ("LCR","Channel is in low current measurement range",17,1)
+            ("CBE","Output current is out of bounds",18,1)
+            ("FCL","Hardware current limit (EHS)/ trip (EDS,EBS) was exceeded",19,1);
+    }
     void FillInfos()
     {
         std::vector<Value> infos=ID().Tokenize(", ");

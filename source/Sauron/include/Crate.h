@@ -331,6 +331,16 @@ public:
             std::cout<<"Description for crate will be blank !\n";
         }
     }
+    void printModuleStatus()
+    {
+        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+        {
+           Status a= it->second->getModuleStatus();
+           a.print(1);
+        }
+    }
+    
+    
     unsigned int getNbrChannels()
     {
         unsigned int nbr=0;
