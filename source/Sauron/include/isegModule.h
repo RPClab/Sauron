@@ -35,33 +35,38 @@ public:
     isegModule():Module(){};
     isegModule(Connector* connector):Module(connector){};
     isegModule(Connector& connector):Module(connector){};
+    
+    //ON
     void on(const Value& channel)
     {
         SendCommand(":VOLT ON,(@"+channel.String()+")");
     }
+    //OFF
     void off(const Value& channel)
     {
         SendCommand(":VOLT OFF,(@"+channel.String()+")");
     }
+    //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
         SendCommand(":VOLT "+HV.String()+",(@"+channel.String()+")");
     }
+    //GET VOLTAGE
     Value getVoltage(const Value& channel)
     {
         return SendCommand(":READ:VOLT?(@"+channel.String()+")");
     }
-    
+    //MEASURE VOLTAGE
     Value mesureVoltage(const Value& channel)
     {
        return SendCommand(":MEAS:VOLT?(@"+channel.String()+")"); 
     }
-    
+    //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
         SendCommand(":CURR "+current.String()+",(@"+channel.String()+")");
     }
-    
+    //GET CURRENT
     virtual Value getCurrent(const Value& channel)
     {
         return SendCommand(":READ:CURR?(@"+channel.String()+")");

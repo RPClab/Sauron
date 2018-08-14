@@ -35,33 +35,37 @@ public:
     WIENERModule():Module(){};
     WIENERModule(Connector* connector):Module(connector){};
     WIENERModule(Connector& connector):Module(connector){};
+    //ON
     void on(const Value& channel)
     {
         SendCommand("***SEND***outputSwitch.u"+GoodChannelNumber(channel).String()+"***VALUE***1");
     }
+    //OFF
     void off(const Value& channel)
     {
         SendCommand("***SEND***outputSwitch.u"+GoodChannelNumber(channel).String()+"***VALUE***0");
     }
+    //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
         SendCommand("***SEND***outputVoltage.u"+GoodChannelNumber(channel).String()+"***VALUE***"+HV.String());
     }
+    //GET VOLTAGE
     Value getVoltage(const Value& channel)
     {
         return SendCommand("***RECEIVE***outputVoltage.u"+GoodChannelNumber(channel).String());
     }
-    
+    //MEASURE VOLTAGE
     Value mesureVoltage(const Value& channel)
     {
        return SendCommand("***RECEIVE***outputMeasurementTerminalVoltage.u"+GoodChannelNumber(channel).String());
     }
-    
+    //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
         SendCommand("***SEND***outputCurrent.u"+GoodChannelNumber(channel).String()+"***VALUE***"+GoodChannelNumber(current).String());
     }
-    
+    //GET CURRENT
     virtual Value getCurrent(const Value& channel)
     {
         return SendCommand("***RECEIVE***outputCurrent.u"+GoodChannelNumber(channel).String());

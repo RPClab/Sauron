@@ -85,13 +85,13 @@ Value& operator=(const T & value)
     unsigned int UInt() const;
     long Long();
     unsigned long ULong();
-    short Short()
-    {
-        return static_cast<short>(this->Int());
-    }
     unsigned short UShort()
     {
         return static_cast<unsigned short>(this->Int());
+    }
+    short Short()
+    {
+        return static_cast<short>(this->Int());
     }
     long long LLong();
     unsigned long long ULLong();
@@ -101,6 +101,16 @@ Value& operator=(const T & value)
     std::size_t Size();
     Value& operator=(Value const & aValue);
     bool operator==(const std::string& str);
+    bool operator==(const Value& str)
+    {
+        if(this->m_value==str.m_value) return true;
+        else return false;
+    }
+    bool operator==(const Value& str)const
+    {
+        if(this->m_value==str.m_value) return true;
+        else return false;
+    }
     bool operator==(const std::string& str) const;
     bool operator!=(const std::string& str);
     Value& operator=(const std::string & value);
@@ -116,6 +126,10 @@ Value& operator=(const T & value)
     }
     Value& operator=(const char*  value);
     std::vector<Value> Tokenize(const std::string& delimiters);
+    std::vector<Value> Tokenize(const std::string& delimiters) const
+    {
+        return Tokenize(delimiters);
+    }
 private:
     void Init();
     std::string m_value{""};

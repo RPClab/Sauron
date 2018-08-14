@@ -28,49 +28,84 @@
 #define CAENMODULE_H
 #include "Module.h"
 #include <string>
-
+#include "CAENUtils.h"
 class CAENModule : public Module
 {
 public:
     CAENModule():Module(){};
     CAENModule(Connector* connector):Module(connector){};
     CAENModule(Connector& connector):Module(connector){};
+    
+    //ON
     void on(const Value& channel)
     {
         SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*1");
     }
+    //OFF
     void off(const Value& channel)
     {
         SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*0");
     }
+    //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*VSet*"+channel.String()+"*"+HV.String());
     }
+    //GET VOLTAGE
     Value getVoltage(const Value& channel)
     {
-       return SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VSet*"+channel.String());
+        Value a=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VSet*"+channel.String());
+        Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VSet*Exp");
+        Value vol=a.String()+"e"+exp.String();
+        return vol;
     }
-    
+    //MEASURE VOLTAGE
     Value mesureVoltage(const Value& channel)
     {
-       return SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VMon*"+channel.String());
+        Value a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VMon*"+channel.String());
+        Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VMon*Exp");
+        Value vol=a.String()+"e"+exp.String();
+        return vol;
     }
-    
+    //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*ISet*"+channel.String()+"*"+current.String());
     }
-    
+    //GET CURRENT
     virtual Value getCurrent(const Value& channel)
     {
         Value a=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ISet*"+channel.String());
-        return Value((a.Float()*0.00001));
+        Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*ISet*Exp");
+        Value vol=a.String()+"e"+exp.String();
+        return vol;
     }
     
     virtual Value mesureCurrent(const Value& channel)
     {
-       return SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonL*"+channel.String());
+       Value a;
+       Value exp;
+       if(ChannelHasParameter(channel,"IMon")==true)
+       {
+            a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMon*"+channel.String());
+            exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMon*Exp");
+       }
+       else
+       {
+            Value HL=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ImonRange*"+channel.String());
+            if(HL.String()==""||HL.String()=="1")
+            {
+                a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonL*"+channel.String());
+                exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonL*Exp");
+            }
+            else
+            {
+                 a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonH*"+channel.String());
+                exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonH*Exp");
+            }
+       }
+        Value vol=a.String()+"e"+exp.String();
+        return vol;
     }
     
     
@@ -78,12 +113,15 @@ public:
     CAENModule* Clone() { return new CAENModule(*this);}
     CAENModule* Clone() const { return new CAENModule(*this);} 
 private:
-    /*std::vector<Value> m_BDParamsList;
-    void setBDParamsLists()
+    bool ChannelHasParameter(const Value& channel,const std::string& param)
     {
-        Value params=SendCommand("CAENHV_GetChParamInfo*"+m_slot.String());
-        m_BDParamsList=params.Tokenize(", ");
-    }*/
+        Value list= SendCommand("CAENHV_GetChParamInfo*"+m_slot.String()+"*"+channel.String());
+        std::vector<Value>vec= list.Tokenize(", ");
+        std::vector<Value>::iterator it=find(vec.begin(),vec.end(),param);
+        if(it==vec.end()) return false;
+        else return true;
+        
+    }
     void FillInfos()
     {
         std::vector<Value> infos=ID().Tokenize("*");

@@ -182,36 +182,26 @@ public:
     virtual Value getTripTimeMaxCurrent();
     virtual Value setTripTimeMaxCurrent();*/
 
-    /**
-    * Turn on the channel ch
-    */
+    //ON
     virtual void on(const Value& ch)=0;
-    /**
-    * Turn of the channel ch
-    */
-    virtual void off(const Value&)=0;
-    /**
-    * Turn on all the channels
-    */
     virtual void on()
     {
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) on(i);
     }
-    /**
-    * Turn off all the channels
-    */
+    //OFF
+    virtual void off(const Value&)=0;
     virtual void off()
     {
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) off(i);
     }
+    //SET VOLTAGE
     virtual void setVoltage(const Value&,const Value&)=0;
-    
     virtual void setVoltage(const Value& HV )
     {
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) setVoltage(i,HV);
     }
+    //GET VOLTAGE
     virtual Value getVoltage(const Value&)=0;
-    
     virtual std::vector<Value> getVoltage()
     {
         std::vector<Value> ret;
@@ -219,9 +209,8 @@ public:
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=getVoltage(i);
         return std::move(ret);
     }
-    
+    //MEASURE VOLTAGE 
     virtual Value mesureVoltage(const Value&)=0;
-    
     virtual std::vector<Value> mesureVoltage()
     {
         std::vector<Value> ret;
@@ -229,6 +218,28 @@ public:
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=mesureVoltage(i);
         return std::move(ret); 
     }
+    //SET CURRENT
+    virtual void setCurrent(const Value&,const Value&)=0;
+    virtual void setCurrent(const Value& current)
+    {
+       for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) setCurrent(i,current); 
+    }
+    //GET CURRENT
+    virtual Value getCurrent(const Value& = Value())=0;
+    virtual std::vector<Value> getCurrent()
+    {
+        std::vector<Value> ret;
+        ret.reserve(m_nbrOfChannels.UInt());
+        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=getCurrent(i);
+        return std::move(ret); 
+    }
+    
+    
+    
+    
+    
+    
+    
     
     virtual void printSetVoltage(const Value& channel,std::ostream& stream =std::cout)
     {
@@ -263,22 +274,7 @@ public:
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) stream<<"\t-> channel "<<i<<" measured : "<<mesureVoltage(i).Float()<<"V ["<<getVoltage(i).Float()<<"V]\n";
     }
     
-    virtual void setCurrent(const Value&,const Value&)=0;
     
-    virtual void setCurrent(const Value& current)
-    {
-       for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) setCurrent(i,current); 
-    }
-    
-    virtual Value getCurrent(const Value& = Value())=0;
-    
-    virtual std::vector<Value> getCurrent()
-    {
-        std::vector<Value> ret;
-        ret.reserve(m_nbrOfChannels.UInt());
-        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=getCurrent(i);
-        return std::move(ret); 
-    }
     
         
     virtual void printSetCurrent(const Value& channel,std::ostream& stream =std::cout)

@@ -37,9 +37,11 @@ extern "C"
     #include "CAEN/CAENVMEoslib.h"
     #include "CAEN/CAENVMEtypes.h"
 }
+#include "CAENUtils.h"
 
 class CAENConnector : public Connector
 {
+
 public:
 
     CAENConnector();
@@ -107,9 +109,126 @@ private:
          return CAENHV_ExecComm(m_handle,params[1].CString());
     }
     
+    
     Value GetBdParamProp(std::vector<Value>& params)
     {
-        return GetBdParamProp(params[1].UShort(),params[2].CString(),params[3].CString());
+        ParProp respond = InternalGetBdParamProp(params);
+        {
+            if(params[2].CString()=="Type") return respond.Type;
+            else if (params[2].CString()=="Mode") return respond.Mode;
+            else if(respond.Type == PARAM_TYPE_NUMERIC)
+            {
+                if(params[3].String()=="MinVal") return respond.MinVal;
+                if(params[3].String()=="MaxVal") return respond.MaxVal;
+                if(params[3].String()=="Unit") return respond.Unit;
+                if(params[3].String()=="Exp") return respond.Exp;
+                else
+                {
+                    throw -1;
+                }
+            }
+            else
+            {
+                if(params[3].String()=="OnState") return respond.OnState;
+                if(params[3].String()=="OnState") return respond.OffState;
+                else
+                {
+                    throw -1;
+                }
+            }
+        }
+    }
+    
+    
+    
+    Value GetChParamProp(std::vector<Value>& params)
+    {
+        ParProp respond = InternalGetChParamProp(params);
+            if(params[3].String()=="Type") return respond.Type;
+            else if (params[3].String()=="Mode") return respond.Mode;
+            else if(respond.Type == PARAM_TYPE_NUMERIC)
+            {
+                if(params[4].String()=="MinVal") return respond.MinVal;
+                else if(params[4].String()=="MaxVal") return respond.MaxVal;
+                else if(params[4].String()=="Unit") return respond.Unit;
+                else if(params[4].String()=="Exp") return respond.Exp;
+                else
+                {
+                    throw -1;
+                }
+            }
+            else
+            {
+                if(params[4].String()=="OnState") return respond.OnState;
+                else if(params[4].String()=="OnState") return respond.OffState;
+                else
+                {
+                    throw -1;
+                }
+            }
+    }
+        
+    
+    ParProp InternalGetBdParamProp(std::vector<Value>& params)
+    {
+        ParProp parprop;
+        /* First we read the "Type" and "Mode" properties, which are always present */
+        CAENHVRESULT ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Type",&parprop.Type);
+        if( ret != CAENHV_OK )
+        {
+            printf("CAENHV_GetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+            throw ret;
+        }
+        ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Mode", &parprop.Mode);
+        if( ret != CAENHV_OK )
+        {
+            printf("CAENHV_GetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+			 throw ret;
+		}
+		if( parprop.Type == PARAM_TYPE_NUMERIC )
+		{
+            ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Minval", &parprop.MinVal);
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				 throw ret;
+			}
+			ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Maxval", &parprop.MaxVal);
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHVGetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				 throw ret;
+			}
+			ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Unit", &parprop.Unit);
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				 throw ret;
+			}
+			ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Exp", &parprop.Exp);
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				 throw ret;
+			}
+		}
+		else if( parprop.Type == PARAM_TYPE_ONOFF )
+		{
+			ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Onstate", &parprop.OnState);
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				 throw ret;
+			}
+			ret = CAENHV_GetBdParamProp(m_handle,params[1].UShort(),params[2].CString(), "Offstate", &parprop.OffState);
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetBdParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				 throw ret;
+			}
+        }
+		return parprop;
+        
     }
     
     
@@ -202,19 +321,6 @@ Value GetChName(std::vector<Value>& params)
     delete [] listNameCh;
     return chnames;
 }
- 
-    Value GetChParamProp(std::vector<Value>& params)
-    {
-        return GetChParamProp(params[1].UShort(),params[2].UShort(),params[3].CString(),params[4].CString());
-    }
-    
-    
-    Value GetChParamProp(const unsigned short& slot,const unsigned short& channel,const std::string& params, const std::string& property)
-    {
-         unsigned long type{0};
-         CAENHV_GetChParamProp(m_handle,slot,channel,params.c_str(),property.c_str(),&type);
-         return Value(type);
-    }
     
     
 Value GetChParam(std::vector<Value>& params)
@@ -505,8 +611,66 @@ Value TestBdPresence(std::vector<Value>& params)
     std::string results=std::string(Model)+", "+std::string(Descr)+", "+std::to_string(NrOfCh)+", "+std::to_string(fmwMax)+"."+std::to_string(fmwMin)+", "+std::to_string(serNumb);
     return Value(0);
 }
-
- 
+   
+    ParProp InternalGetChParamProp(std::vector<Value>& params/*int handle, unsigned short Slot, unsigned short Ch, char *ParName, ParProp *pp*/)
+    {
+        ParProp parprop;
+		CAENHVRESULT ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Type", &(parprop.Type));
+		if( ret != CAENHV_OK )
+		{
+			printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+			throw ret;
+		}
+		ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Mode", &(parprop.Mode));
+		if( ret != CAENHV_OK )
+		{
+			printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+			throw ret;
+		}
+		if( parprop.Type == PARAM_TYPE_NUMERIC )
+		{
+			ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Minval", &(parprop.MinVal));
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				throw ret;
+			}
+			ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Maxval", &(parprop.MaxVal));
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				throw ret;
+			}
+			ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Unit", &(parprop.Unit));
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				throw ret;
+			}
+			ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Exp", &(parprop.Exp));
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				throw ret;
+			}
+		}
+		else if( parprop.Type == PARAM_TYPE_ONOFF )
+		{
+			ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Onstate", &(parprop.OnState));
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				throw ret;
+			}
+			ret = CAENHV_GetChParamProp(m_handle,params[1].UShort(),params[2].UShort(),params[3].CString(), "Offstate", &(parprop.OffState));
+			if( ret != CAENHV_OK )
+			{
+				printf("CAENHV_GetChParamProp: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+				throw ret;
+			}
+		}
+	return parprop;
+}
     void setCAENHVSystemType();
     void setLinkType();
     void setArg();
