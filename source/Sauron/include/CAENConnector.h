@@ -682,8 +682,8 @@ Value TestBdPresence(std::vector<Value>& params)
     void setPort();
     void setBaudRate();
     void setParity();
-    void setCommData();
-    void setCommStop();
+    void setBytesize();
+    void setStopbits();
     void setUsername();
     void setPassword();
     CAENHV_SYSTEM_TYPE_t m_CAENHVSystemType{SY1527};
@@ -695,8 +695,8 @@ Value TestBdPresence(std::vector<Value>& params)
     std::string m_VMEBaseAddress{""};
     std::string m_port{""};
     std::string m_baudrate{""};
-    std::string m_commData{""};
-    std::string m_commStop{""};
+    std::string m_bytesize{""};
+    std::string m_stopbits{""};
     std::string m_parity{""};
     std::string m_username{""};
     std::string m_password{""};

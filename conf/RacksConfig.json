@@ -18,9 +18,9 @@
                         "LinkType":"VCP",
                         "Port":"ttyUSB2",
                         "Baudrate":"9600",
-                        "CommData":"8",
-                        "CommStop":"0",
-                        "Parity":"0",
+                        "Bytesize":"8",
+                        "Stopbits":"1",
+                        "Parity":"none",
                         "IBusAddress":"0"
                     }
                 }

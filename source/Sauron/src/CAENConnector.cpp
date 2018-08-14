@@ -210,10 +210,10 @@ void CAENConnector::setArg()
         m_arg=m_port+"_";
         setBaudRate();
         m_arg=m_arg+m_baudrate+"_";
-        setCommData();
-        m_arg=m_arg+m_commData+"_";
-        setCommStop();
-        m_arg=m_arg+m_commStop+"_";
+        setBytesize();
+        m_arg=m_arg+m_bytesize+"_";
+        setStopbits();
+        m_arg=m_arg+m_stopbits+"_";
         setParity();
         m_arg=m_arg+m_parity+"_";
         setIBusAddress();
@@ -317,51 +317,68 @@ void CAENConnector::setBaudRate()
     }
     else
     {
-        std::string error="Baudrate is mandatory ! \n";
-        std::cout<<error;
-        throw error;
-    } 
+        std::cout<<"Baudrate setted to default value "<<m_baudrate<<" !\n";
+    }
 }
 void CAENConnector::setParity()
 {
     if(m_params.hasParam("Parity"))
     {
-        m_parity=m_params["Parity"].String();
+        if(m_params["Parity"]=="none") m_parity="0";
+        else if (m_params["Parity"]=="odd")m_parity="2";
+        else if (m_params["Parity"]=="even")m_parity="1";
+        else if (m_params["Parity"]=="mark")m_parity="3";
+        else if (m_params["Parity"]=="space")m_parity="4";
+        else 
+        {
+            std::cout<<"Parity can be only none, odd, even, mark or space"<<std::endl;
+            std::cout<<"Parity setted to default value "<<m_parity<<" !\n";
+        }
     }
     else
     {
-        std::string error="Parity is mandatory ! \n";
-        std::cout<<error;
-        throw error;
-    } 
+        std::cout<<"Parity setted to default value "<<m_parity<<" !\n";
+    }
 }
 
-void CAENConnector::setCommData()
+void CAENConnector::setBytesize()
 {
-    if(m_params.hasParam("CommData"))
+    if(m_params.hasParam("Bytesize"))
     {
-        m_commData=m_params["CommData"].String();
+        if(m_params["Bytesize"]=="8") m_bytesize="8";
+        else if (m_params["Bytesize"]=="7") m_bytesize="7";
+        else if (m_params["Bytesize"]=="6") m_bytesize="6";
+        else if (m_params["Bytesize"]=="5") m_bytesize="5";
+        else 
+        {
+            std::cout<<"Bytesize can be only 8, 7, 6 or 5 !"<<std::endl;
+            std::cout<<"Bytesize setted to default value "<<m_bytesize<<" !\n";
+        }
     }
     else
     {
-        std::string error="CommData is mandatory ! \n";
-        std::cout<<error;
-        throw error;
-    } 
+        std::cout<<"Bytesize setted to default value "<<m_bytesize<<" !\n";
+    }
 }
 
-void CAENConnector::setCommStop()
+
+void CAENConnector::setStopbits()
 {
-    if(m_params.hasParam("CommStop"))
+    if(m_params.hasParam("Stopbits"))
     {
-        m_commStop=m_params["CommStop"].String();
+        if(m_params["Stopbits"]=="1") m_stopbits="0";
+        else if (m_params["Stopbits"]=="2") m_stopbits="2";
+        else if (m_params["Stopbits"]=="1.5") m_stopbits="1";
+        else 
+        {
+            std::cout<<"Stopbits can be only 1, 1.5 or 2"<<std::endl;
+            std::cout<<"Stopbits setted to default value "<<m_stopbits<<" !\n";
+        }
     }
     else
     {
-        std::string error="CommStop is mandatory ! \n";
-        std::cout<<error;
-        throw error;
-    }     
+        std::cout<<"Stopbits setted to default value "<<m_stopbits<<" !\n";
+    }
 }
 
 void CAENConnector::setUsername()
