@@ -94,6 +94,10 @@ void SerialConnector::Connect()
     {
             m_serial.open();
     }
+    else
+    {
+        std::cout<<"Yet connected"<<std::endl;
+    }
 }
 
 void SerialConnector::setPort()

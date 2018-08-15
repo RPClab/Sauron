@@ -110,6 +110,10 @@ void CAENConnector::Connect()
             m_keepAlive.detach();
         }
     }
+    else
+    {
+        std::cout<<"Yet connected"<<std::endl;
+    }
 }
 
 

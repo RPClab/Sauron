@@ -19,8 +19,8 @@ install(TARGETS  NHRSpp_lib ARCHIVE DESTINATION ${PROJECT_SOURCE_DIR}/bin/lib LI
 
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost 1.67.0 COMPONENTS program_options)
+set(Boost_USE_STATIC_RUNTIME    ON)
+find_package(Boost 1.67.0 COMPONENTS program_options system thread container)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
@@ -43,15 +43,4 @@ endif()
   include_directories(${MariaDBClient_INCLUDE_DIRS})
   target_link_libraries(Test iseg ${MariaDBClient_LIBRARIES} pthread mariadbclientpp libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so ${OPENSSL_LIBRARIES} NHRSpp_lib )
   install(TARGETS Test RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-  
 
-  #add_executable(Test src/source/test.cpp)
-  #target_link_libraries(Test NHRSpp_lib  pthread)
-  #include_directories(${MariaDBClient_INCLUDE_DIRS})
-  #install(TARGETS Test RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-
-## Uncomment for example
-#add_executable(toto src/source/main.cpp)
-#add_dependencies(toto NHRSpp_lib)
-#target_link_libraries(toto NHRSpp_lib) 
-#install(TARGETS toto RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)

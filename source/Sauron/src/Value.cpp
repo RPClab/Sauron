@@ -267,6 +267,13 @@ Value& Value::operator=(const char*  value)
     return *this;
 };
 
+Value& Value::operator=(char*  value)
+{ 
+    m_value=CleanString(std::string(value)); 
+    return *this;
+};
+
+
 bool Value::IsEmpty()
 { 
     return m_value.empty();

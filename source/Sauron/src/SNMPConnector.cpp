@@ -189,6 +189,10 @@ void SNMPConnector::Connect()
         }
         std::cout<<"SNMP session for host "<<m_IP<<" opened \n";
     }
+    else
+    {
+        std::cout<<"Yet connected"<<std::endl;
+    }
 }
 
 SNMPConnector& SNMPConnector::operator=(const SNMPConnector& other)

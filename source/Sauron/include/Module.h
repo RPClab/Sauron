@@ -98,17 +98,20 @@ public:
     }
     void Initialize()
     {
-        setName();
-        setDescription();
-        setSlot();
-        m_connector->Initialize();
+            setName();
+            setDescription();
+            setSlot();
+            m_connector->Initialize();
     }
     void Connect()
     {
-        m_connector->Connect();
-        FillInfos();
-        setChannelStatusBits();
-        setModuleStatusBits();
+        if(!m_connector->IsConnected())
+        {
+            m_connector->Connect();
+            FillInfos();
+            setChannelStatusBits();
+            setModuleStatusBits();
+        }
     }
     void Disconnect()
     {

@@ -125,6 +125,7 @@ Value& operator=(const T & value)
         return  m_personal_type;
     }
     Value& operator=(const char*  value);
+    Value& operator=(char*  value);
     std::vector<Value> Tokenize(const std::string& delimiters);
     std::vector<Value> Tokenize(const std::string& delimiters) const
     {

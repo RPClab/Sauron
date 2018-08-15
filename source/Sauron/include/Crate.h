@@ -56,13 +56,13 @@ public:
     Crate(Connector* connector):m_connector(connector->Clone()){};
     void Initialize()
     {
-        setName();
-        setDescription();
-        setRack();
-        if(m_connector!=nullptr)
-        {
-            m_connector->Initialize();
-        }
+            setName();
+            setDescription();
+            setRack();
+            if(m_connector!=nullptr)
+            {
+                m_connector->Initialize();
+            }
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
            it->second->Initialize();
@@ -178,15 +178,15 @@ public:
     {
         if(m_connector!=nullptr)
         {
-            try
-            {
+           /* try
+            {*/
                 m_connector->Connect();
-            }
+           /* }
             catch (...)
             {
                 if(m_connector!=nullptr) delete m_connector;
                 m_connector=nullptr;
-            }
+            }*/
         }
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
@@ -336,7 +336,7 @@ public:
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
            Status a= it->second->getModuleStatus();
-           a.print(1);
+           a.print(0);
         }
     }
     

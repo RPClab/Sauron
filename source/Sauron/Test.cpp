@@ -14,8 +14,9 @@ int main()
     manager("LV","2").setVoltage(3);
     manager("Crate2").setVoltage(4000);
     manager("Crate2",0).setVoltage(3000);
-    std::vector<Measure> po=manager("Crate1",3).getMeasures();
-    for(unsigned int i=0;i!=po.size();++i) po[i].print();
+    manager.printModuleStatus();
+    //std::vector<Measure> po=manager().getMeasures();
+    //for(unsigned int i=0;i!=po.size();++i) po[i].print();
     /*manager.setVoltage("Crate2",1000);
     manager.setVoltage("Crate1",7);
     manager.setVoltage("Crate1",0,5);
