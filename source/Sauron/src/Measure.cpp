@@ -24,9 +24,21 @@
  */
 
 #include "Measure.h"
-    std::map<std::string,unsigned int> Measure::m_moduleNbrMap=std::map<std::string,unsigned int>();
-    std::map<std::string,unsigned int> Measure::m_crateNbrMap=std::map<std::string,unsigned int>();
-    std::map<std::string,unsigned int> Measure::m_rackNbrMap=std::map<std::string,unsigned int>();
-    unsigned int Measure::m_moduleNbr{0};
-    unsigned int Measure::m_crateNbr{0};
-    unsigned int Measure::m_rackNbr{0};
+    std::map<std::string,unsigned int> Position::m_moduleToNbrMap=std::map<std::string,unsigned int>();
+    std::map<std::string,unsigned int> Position::m_crateToNbrMap=std::map<std::string,unsigned int>();
+    std::map<std::string,unsigned int> Position::m_rackToNbrMap=std::map<std::string,unsigned int>();
+    std::vector<std::string> Position::m_nbrToModuleMap=std::vector<std::string>();
+    std::vector<std::string> Position::m_nbrToCrateMap=std::vector<std::string>();
+    std::vector<std::string> Position::m_nbrToRackMap=std::vector<std::string>();
+    unsigned int Position::m_moduleNbr{0};
+    unsigned int Position::m_crateNbr{0};
+    unsigned int Position::m_rackNbr{0};
+
+std::ostream& operator<<(std::ostream& stream, const Position& Pos)
+{
+        (Pos.getRack()!=-1&&Pos.getRackName(Pos.getRack())!="") ? (stream<<"Rack : "<<Pos.getRack()<<" ("<<Pos.getRackName(Pos.getRack())<<") , ") : (stream<<"") ;
+        (Pos.getCrate()!=-1) ? (stream<<"Crate : "<<Pos.getCrate()<<" ("<<Pos.getCrateName(Pos.getCrate())<<") , ") : (stream<<"");
+        (Pos.getModule()!=-1) ? (stream<<"Module : "<<Pos.getModule()<<" ("<<Pos.getModuleName(Pos.getModule())<<") , ") : (stream<<"");
+        (Pos.getChannel()!=-1) ? (stream<<"Channel : "<<Pos.getChannel()<<", ") : (stream<<"");
+        return stream;
+}

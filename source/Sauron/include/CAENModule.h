@@ -52,20 +52,28 @@ public:
        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*VSet*"+channel.String()+"*"+HV.String());
     }
     //GET VOLTAGE
-    Value getVoltage(const Value& channel)
+    VoltageSet getVoltage(const Value& channel)
     {
         Value a=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VSet*"+channel.String());
         Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VSet*Exp");
         Value vol=a.String()+"e"+exp.String();
-        return vol;
+        VoltageSet ret;
+        ret.setVoltage(vol);
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //MEASURE VOLTAGE
-    Value mesureVoltage(const Value& channel)
+    VoltageMeasured mesureVoltage(const Value& channel)
     {
         Value a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VMon*"+channel.String());
         Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VMon*Exp");
         Value vol=a.String()+"e"+exp.String();
-        return vol;
+        VoltageMeasured ret;
+        ret.setMeasuredVoltage(vol);
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
@@ -73,15 +81,19 @@ public:
        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*ISet*"+channel.String()+"*"+current.String());
     }
     //GET CURRENT
-    virtual Value getCurrent(const Value& channel)
+    virtual CurrentSet getCurrent(const Value& channel)
     {
         Value a=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ISet*"+channel.String());
         Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*ISet*Exp");
         Value vol=a.String()+"e"+exp.String();
-        return vol;
+        CurrentSet ret;
+        ret.setCurrent(vol);
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //MEASURE CURRENT
-    virtual Value mesureCurrent(const Value& channel)
+    virtual CurrentMeasured mesureCurrent(const Value& channel)
     {
        Value a;
        Value exp;
@@ -105,7 +117,11 @@ public:
             }
        }
         Value vol=a.String()+"e"+exp.String();
-        return vol;
+        CurrentMeasured ret;
+        ret.setMeasuredCurrent(vol);
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //GET CHANNEL STATUS
     virtual Status getStatus(const Value& channel)
@@ -119,7 +135,11 @@ public:
         Value status=SendCommand("CAENHV_GetBdParam*"+m_slot.String()+"*Alarm");
         return m_moduleStatus(status.LLong());
     };
-    
+    //SET EMERGENCY  
+    virtual void setEmergency(const Value & channel )
+    {
+        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*PDwn*"+channel.String()+"*0");
+    }
     
     
     CAENModule* Clone() { return new CAENModule(*this);}

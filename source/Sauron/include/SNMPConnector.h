@@ -79,11 +79,12 @@ private:
     void setRetries();
     void setVersion();
     void setReadCommunity();
+    void setIP();
     char findType(Value);
     struct snmp_session * m_session;
     std::string m_MIBFilename{""};
     std::string m_MIBPath{""};
-    std::string m_IP{"10.42.0.201"};
+    std::string m_IP{""};
     std::string m_readCommunity{"public"};
     long m_timeout{300000};   // timeout (us)
     int  m_retries{2};        // retries

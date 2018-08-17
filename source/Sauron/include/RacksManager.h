@@ -70,6 +70,8 @@ public:
             }
         }
     }
+    
+    //ON
     void on()
     {
         std::lock_guard<std::mutex> lock(mutexx);
@@ -78,6 +80,7 @@ public:
             itt->second->on(m_who,m_channel);
         }
     }
+    //OFF
     void off()
     {
         std::lock_guard<std::mutex> lock(mutexx);
@@ -86,6 +89,7 @@ public:
             itt->second->off(m_who,m_channel);
         }
     }
+    //SET VOLTAGE
     void setVoltage(const Value& voltage)
     {
         std::lock_guard<std::mutex> lock(mutexx);
@@ -94,6 +98,22 @@ public:
                 itt->second->setVoltage(m_who,m_channel,voltage);
         }
     }
+    //GET VOLTAGE
+    std::vector<VoltageSet> getVoltage()
+    {
+        std::vector<VoltageSet> ret;
+        std::lock_guard<std::mutex> lock(mutexx);
+        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        {
+                std::vector<VoltageSet> rett=itt->second->getVoltage(m_who,m_channel);
+                ret.insert(ret.end(),rett.begin(),rett.end());
+        }
+        return std::move(ret);
+    }
+    
+    
+    
+    
     void disconnect()
     {
         std::lock_guard<std::mutex> lock(mutexx);
@@ -141,13 +161,13 @@ public:
         }
     }
     
-    std::vector<Measure> getMeasures()
+    std::vector<MeasuresAndSets> getMeasuresAndSets()
     {
-        std::vector<Measure>mes;
+        std::vector<MeasuresAndSets>mes;
         mes.reserve(getNbrChannels());
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
         {
-            std::vector<Measure> mes2=it->second->getMeasures(m_who,m_channel);
+            std::vector<MeasuresAndSets> mes2=it->second->getMeasuresAndSets(m_who,m_channel);
             std::move(mes2.begin(),mes2.end(), std::inserter(mes,mes.end()));
         }
         return std::move(mes);

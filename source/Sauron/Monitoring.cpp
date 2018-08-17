@@ -94,7 +94,7 @@ private:
 
 void ExtractMonitoringHVInfos(Json::Value root,std::vector<Module>& Modules,Connexion& con,Command& com)
 {
-    const Json::Value& monitor = root["MonitoringHV"];
+  /*  const Json::Value& monitor = root["MonitoringHV"];
     con.setWaitingTime(monitor["Waiting Time"].asInt());
     con.setUser(monitor["User"].asString());
     con.setPassword(monitor["Password"].asString());
@@ -113,12 +113,12 @@ void ExtractMonitoringHVInfos(Json::Value root,std::vector<Module>& Modules,Conn
                 module.setChannel(chan);
             }
             Modules.push_back(std::move(module));;
-    }
+    }*/
 }
 
 int main()
 {
-  /*  Controler controller;
+   /* Controler controller;
     std::vector<Module> Modules;
     Connexion conn;
     Command command;

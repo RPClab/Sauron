@@ -56,6 +56,21 @@ void SNMPConnector::setMIBPath()
     }
 }
 
+void SNMPConnector::setIP()
+{
+    if(m_params.hasParam("IP"))
+    {
+        m_IP=m_params["IP"].CString();
+    }
+    else
+    {
+        std::cout<<"You must provide the IP !\n";
+        throw -1;
+    }
+}
+
+
+
 void SNMPConnector::setMIBFilename()
 {
     if(m_params.hasParam("MIB_filename")) m_MIBFilename=m_params["MIB_filename"].CString();
@@ -130,9 +145,10 @@ void SNMPConnector::Initialize()
     setVersion();
     setReadCommunity();
     setMIBFilename();
+    setIP();
 	init_snmp("WIENER_SNMP_DLL");
     setMIBPath();
-	init_mib();	// init MIB processing      
+	init_mib();  
 	if (!read_module(m_MIBFilename.c_str())) 
     {   
         std::cout<<"Unable to load SNMP MIB file "<<m_MIBFilename<<" !\n";

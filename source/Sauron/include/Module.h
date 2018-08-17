@@ -105,13 +105,13 @@ public:
     }
     void Connect()
     {
-        if(!m_connector->IsConnected())
-        {
+        /*if(!m_connector->IsConnected())
+        {*/
             m_connector->Connect();
             FillInfos();
             setChannelStatusBits();
             setModuleStatusBits();
-        }
+        //}
     }
     void Disconnect()
     {
@@ -148,7 +148,6 @@ public:
     virtual Value getModuleRampSpeedCurrent()=0;
     virtual void setModuleRampSpeedVoltage()=0;
     virtual void setModuleRampSpeedCurrent()=0;
-    virtual Value getModuleStatus()=0;
     virtual Value getModuleEventStatus()=0;
     virtual clear()=0;
     /****** channels*/
@@ -156,7 +155,6 @@ public:
     virtual void setName(int,string);
     virtual Value getIndex()=0;
     virtual Value getGroup()=0;
-    virtual Value getStatus()=0;
     virtual Value getPolarity()=0;
     virtual Value setPolarity()=0;
     virtual Value getTemperature();
@@ -207,19 +205,19 @@ public:
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) setVoltage(i,HV);
     }
     //GET VOLTAGE
-    virtual Value getVoltage(const Value&)=0;
-    virtual std::vector<Value> getVoltage()
+    virtual VoltageSet getVoltage(const Value&)=0;
+    virtual std::vector<VoltageSet> getVoltage()
     {
-        std::vector<Value> ret;
+        std::vector<VoltageSet> ret;
         ret.reserve(m_nbrOfChannels.UInt());
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=getVoltage(i);
         return std::move(ret);
     }
     //MEASURE VOLTAGE 
-    virtual Value mesureVoltage(const Value&)=0;
-    virtual std::vector<Value> mesureVoltage()
+    virtual VoltageMeasured mesureVoltage(const Value&)=0;
+    virtual std::vector<VoltageMeasured> mesureVoltage()
     {
-        std::vector<Value> ret;
+        std::vector<VoltageMeasured> ret;
         ret.reserve(m_nbrOfChannels.UInt());
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=mesureVoltage(i);
         return std::move(ret); 
@@ -231,19 +229,19 @@ public:
        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) setCurrent(i,current); 
     }
     //GET CURRENT
-    virtual Value getCurrent(const Value& = Value())=0;
-    virtual std::vector<Value> getCurrent()
+    virtual CurrentSet getCurrent(const Value& = Value())=0;
+    virtual std::vector<CurrentSet> getCurrent()
     {
-        std::vector<Value> ret;
+        std::vector<CurrentSet> ret;
         ret.reserve(m_nbrOfChannels.UInt());
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=getCurrent(i);
         return std::move(ret); 
     }
     //MEASURE CURRENT
-    virtual Value mesureCurrent(const Value&)=0;
-    virtual std::vector<Value> mesureCurrent()
+    virtual CurrentMeasured mesureCurrent(const Value&)=0;
+    virtual std::vector<CurrentMeasured> mesureCurrent()
     {
-        std::vector<Value> ret;
+        std::vector<CurrentMeasured> ret;
         ret.reserve(m_nbrOfChannels.UInt());
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i)ret[i]=mesureCurrent(i);
         return std::move(ret); 
@@ -259,21 +257,27 @@ public:
     }
     //GET MODULE STATUS
     virtual Status getModuleStatus()=0;
-
-    
-    
-    virtual void printSetVoltage(const Value& channel,std::ostream& stream =std::cout)
+    //SET CHANNEL EMERGENCY 
+    virtual void setEmergency(const Value&)=0;
+    //SET CHANNELS EMERGENCY
+    virtual void setEmergency()
     {
-        stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<", channel "<<channel<<" set : "<<getVoltage(channel).Float()<<"V\n";
+        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) setEmergency(i);
     }
     
-    virtual void printSetVoltage(std::ostream& stream =std::cout)
+    virtual void printSetVoltage(const Value& channel,std::ostream& stream =std::cout,const std::string mover="")
+    {
+        stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<" :\n";
+        getVoltage(channel).print(stream,mover);
+    }
+    
+    virtual void printSetVoltage(std::ostream& stream =std::cout,const std::string mover="")
     {
        stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<" :\n";
-        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) stream<<"\t-> channel "<<i<<" set : "<<getVoltage(i).Float()<<"V\n";
+        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) getVoltage(i).print(stream,mover);
     }
     
-    virtual void printMeasuredVoltage(const Value& channel,std::ostream& stream =std::cout)
+   /* virtual void printMeasuredVoltage(const Value& channel,std::ostream& stream =std::cout)
     {
         stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<", channel "<<channel<<" measured : "<<mesureVoltage(channel).Float()<<"V\n";
     }
@@ -329,47 +333,39 @@ public:
     {
         stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<" :\n";
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) stream<<"\t-> channel "<<i<<" measured : "<<mesureCurrent(i).Float()<<"A ["<<getCurrent(i).Float()<<"A]\n";
-    }
+    }*/
     
     
     
-    virtual std::vector<Measure> getMeasures()
+    virtual std::vector<MeasuresAndSets> getMeasuresAndSets()
     {
-        std::vector<Measure> mes(m_nbrOfChannels.UInt());
+        std::vector<MeasuresAndSets> mes(m_nbrOfChannels.UInt());
         for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i)
         {
-            mes[i].setCurrent(mesureCurrent(i));
-            mes[i].setVoltage(mesureVoltage(i));
-            mes[i].setModule(getName());
-            mes[i].setChannel(i);
+            mes[i](Measures(mesureCurrent(i),mesureVoltage(i)),Sets(getVoltage(i),getCurrent(i)));
         }
         return mes;
     }
     
-    virtual std::vector<Measure> getMeasures(const Value& channel)
+    virtual MeasuresAndSets getMeasuresAndSets(const Value& channel)
     {
-        std::vector<Measure> mes(1);
-        mes[0].setCurrent(mesureCurrent(channel));
-        mes[0].setVoltage(mesureVoltage(channel));
-        mes[0].setModule(getName());
-        mes[0].setChannel(channel);
-        return mes;
+        return MeasuresAndSets(Measures(mesureCurrent(channel),mesureVoltage(channel)),Sets(getVoltage(channel),getCurrent(channel)));
     }
     
     
     
     
-    virtual void printVoltageCurrent(std::ostream& stream =std::cout)
+    virtual void printVoltageCurrent(std::ostream& stream =std::cout, const std::string mover="")
     {
         stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<" :\n";
-        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) stream<<"\t-> channel "<<i<<" measured : "<<mesureVoltage(i).Float()<<"V ["<<getVoltage(i).Float()<<"V]"<<", "<<mesureCurrent(i).Float()<<"A ["<<getCurrent(i).Float()<<"A]\n";
+        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) getMeasuresAndSets(i).printVoltageCurrent(stream,mover);
     }
     
     
-        virtual void printVoltageCurrent(const Value& channel,std::ostream& stream =std::cout)
+    virtual void printVoltageCurrent(const Value& channel,std::ostream& stream =std::cout, const std::string mover="")
     {
         stream<<"Module "<<m_name<<" "<<((m_slot.Int()!=-1) ? Value("(slot "+m_slot.String()+")") : Value())<<" :\n";
-        stream<<"\t-> channel "<<channel<<" measured : "<<mesureVoltage(channel).Float()<<"V ["<<getVoltage(channel).Float()<<"V]"<<", "<<mesureCurrent(channel).Float()<<"A ["<<getCurrent(channel).Float()<<"A]\n";
+        getMeasuresAndSets(channel).printVoltageCurrent(stream,mover);
     }
     Value getName() const
     {

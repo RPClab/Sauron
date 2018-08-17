@@ -51,14 +51,22 @@ public:
         SendCommand("***SEND***outputVoltage.u"+GoodChannelNumber(channel).String()+"***VALUE***"+HV.String());
     }
     //GET VOLTAGE
-    Value getVoltage(const Value& channel)
+    VoltageSet getVoltage(const Value& channel)
     {
-        return SendCommand("***RECEIVE***outputVoltage.u"+GoodChannelNumber(channel).String());
+        VoltageSet ret;
+        ret.setVoltage(SendCommand("***RECEIVE***outputVoltage.u"+GoodChannelNumber(channel).String()));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //MEASURE VOLTAGE
-    Value mesureVoltage(const Value& channel)
+    VoltageMeasured mesureVoltage(const Value& channel)
     {
-       return SendCommand("***RECEIVE***outputMeasurementTerminalVoltage.u"+GoodChannelNumber(channel).String());
+        VoltageMeasured ret;
+        ret.setMeasuredVoltage(SendCommand("***RECEIVE***outputMeasurementTerminalVoltage.u"+GoodChannelNumber(channel).String()));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
@@ -66,14 +74,22 @@ public:
         SendCommand("***SEND***outputCurrent.u"+GoodChannelNumber(channel).String()+"***VALUE***"+GoodChannelNumber(current).String());
     }
     //GET CURRENT
-    virtual Value getCurrent(const Value& channel)
+    virtual CurrentSet getCurrent(const Value& channel)
     {
-        return SendCommand("***RECEIVE***outputCurrent.u"+GoodChannelNumber(channel).String());
+        CurrentSet ret;
+        ret.setCurrent(SendCommand("***RECEIVE***outputCurrent.u"+GoodChannelNumber(channel).String()));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //MEASURE CURRENT 
-    virtual Value mesureCurrent(const Value& channel)
+    virtual CurrentMeasured mesureCurrent(const Value& channel)
     {
-        return SendCommand("***RECEIVE***outputMeasurementCurrent.u"+GoodChannelNumber(channel).String());
+        CurrentMeasured ret;
+        ret.setMeasuredCurrent(SendCommand("***RECEIVE***outputMeasurementCurrent.u"+GoodChannelNumber(channel).String()));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //GET CHANNEL STATUS
     virtual Status getStatus(const Value& channel)
@@ -88,6 +104,12 @@ public:
         Value status=SendCommand("***RECEIVE***moduleStatus."+m_slot.String());
         return m_moduleStatus(status.LLong());
     };
+    //SET EMERGENCY  
+    virtual void setEmergency(const Value & channel )
+    {
+        SendCommand("***SEND***outputSwitch.u"+GoodChannelNumber(channel).String()+"***VALUE***3");
+    }
+    
     WIENERModule* Clone() { return new WIENERModule(*this);}
     WIENERModule* Clone() const { return new WIENERModule(*this);} 
 private:

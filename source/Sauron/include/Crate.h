@@ -130,6 +130,21 @@ public:
        }
        m_modules.clear();
     }
+    
+    //ON
+    void on(const std::string& who,const Value& channel)
+    {
+        if(isInRack(who)||isCrate(who)||who=="")
+        {
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                if(channel=="")it->second->on();
+                else it->second->on(channel);
+            }
+        }
+        else if (hasModule(who)) m_modules[who]->on(channel);
+    }
+    //OFF
     void off(const std::string& who,const Value& channel)
     {
         
@@ -143,20 +158,7 @@ public:
         }
         else if (hasModule(who)) m_modules[who]->off(channel);
     }
-    void on(const std::string& who,const Value& channel)
-    {
-        if(isInRack(who)||isCrate(who)||who=="")
-        {
-            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
-            {
-                if(channel=="")it->second->on();
-                else it->second->on(channel);
-            }
-        }
-        else if (hasModule(who)) m_modules[who]->on(channel);
-    }
-    
-    
+    //SET VOLTAGE
     void setVoltage(const std::string& who,const Value& channel,const Value& voltage)
     {
         if(isInRack(who)||isCrate(who)||who=="")
@@ -173,6 +175,30 @@ public:
             else m_modules[who]->setVoltage(channel,voltage);
         }
     }
+    //GET VOLTAGE
+    virtual std::vector<VoltageSet> getVoltage(const std::string& who,const Value& channel)
+    {
+        std::vector<VoltageSet> ret;
+        if(isInRack(who)||isCrate(who)||who=="")
+        {
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                std::vector<VoltageSet> rett;
+                if(channel=="")rett=it->second->getVoltage();
+                else rett.push_back(it->second->getVoltage(channel));
+                ret.insert(ret.end(), rett.begin(), rett.end());
+            }
+        }
+        else if (hasModule(who))
+        {
+            std::vector<VoltageSet> rett;
+            if(channel=="")rett=m_modules[who]->getVoltage();
+            else ret.push_back(m_modules[who]->getVoltage(channel));
+            ret.insert(ret.end(), rett.begin(), rett.end());
+        }
+        return std::move(ret);
+    }
+    
     
     void Connect()
     {
@@ -255,35 +281,35 @@ public:
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         it->second->printParameters(mover+"\t");
     }
-    std::vector<Measure> getMeasures(const std::string& who,const Value& channel)
+    std::vector<MeasuresAndSets> getMeasuresAndSets(const std::string& who,const Value& channel)
     {
         std::vector<std::thread>threads;
-        std::vector<Measure>mes;
+        std::vector<MeasuresAndSets>mes;
         mes.reserve(getNbrChannels());
         if(isInRack(who)||isCrate(who)||who=="")
         {
             for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
             {
-                std::vector<Measure>mes2;
-                if(channel=="")mes2=it->second->getMeasures();
-                else mes2=it->second->getMeasures(channel);
+                std::vector<MeasuresAndSets>mes2;
+                if(channel=="")mes2=it->second->getMeasuresAndSets();
+                else mes2.push_back(it->second->getMeasuresAndSets(channel));
                 for(unsigned int i=0;i!=mes2.size();++i)
                 {
-                    mes2[i].setCrate(getName());
-                    mes2[i].setRack(getRack());
+                    mes2[i].getPosition().setCrate(getName());
+                    if(getRack()!="")mes2[i].getPosition().setRack(getRack());
                 }
                 std::move(mes2.begin(),mes2.end(), std::inserter(mes,mes.end()));
             }
         }
         else if (hasModule(who))
         {
-            std::vector<Measure>mes2;
-            if(channel=="")mes2=m_modules[who]->getMeasures();
-            else mes2= m_modules[who]->getMeasures(channel);
+            std::vector<MeasuresAndSets>mes2;
+            if(channel=="")mes2=m_modules[who]->getMeasuresAndSets();
+            else mes2.push_back(m_modules[who]->getMeasuresAndSets(channel));
             for(unsigned int i=0;i!=mes2.size();++i)
             {
-                    mes2[i].setCrate(getName());
-                    mes2[i].setRack(getRack());
+                    mes2[i].getPosition().setCrate(getName());
+                    if(getRack()!="")mes2[i].getPosition().setRack(getRack());
             }
             std::move(mes2.begin(),mes2.end(), std::inserter(mes,mes.end()));
         }
@@ -335,8 +361,7 @@ public:
     {
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
-           Status a= it->second->getModuleStatus();
-           a.print(0);
+           it->second->getModuleStatus().print();
         }
     }
     
@@ -375,6 +400,6 @@ private:
     Connector* m_connector{nullptr};
     static DumbConnector m_dumb;
     Parameters m_params;
-    Value m_rack{"Unknow"};
+    Value m_rack{""};
 };
 #endif

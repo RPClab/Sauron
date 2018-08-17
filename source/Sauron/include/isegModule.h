@@ -52,14 +52,22 @@ public:
         SendCommand(":VOLT "+HV.String()+",(@"+channel.String()+")");
     }
     //GET VOLTAGE
-    Value getVoltage(const Value& channel)
+    VoltageSet getVoltage(const Value& channel)
     {
-        return SendCommand(":READ:VOLT?(@"+channel.String()+")");
+        VoltageSet ret;
+        ret.setVoltage(SendCommand(":READ:VOLT?(@"+channel.String()+")"));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //MEASURE VOLTAGE
-    Value mesureVoltage(const Value& channel)
+    VoltageMeasured mesureVoltage(const Value& channel)
     {
-       return SendCommand(":MEAS:VOLT?(@"+channel.String()+")"); 
+        VoltageMeasured ret;
+        ret.setMeasuredVoltage(SendCommand(":MEAS:VOLT?(@"+channel.String()+")"));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
@@ -67,28 +75,42 @@ public:
         SendCommand(":CURR "+current.String()+",(@"+channel.String()+")");
     }
     //GET CURRENT
-    virtual Value getCurrent(const Value& channel)
+    virtual CurrentSet getCurrent(const Value& channel)
     {
-        return SendCommand(":READ:CURR?(@"+channel.String()+")");
+        CurrentSet ret;
+        ret.setCurrent(SendCommand(":READ:CURR?(@"+channel.String()+")"));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //MEASURE CURRENT
-    virtual Value mesureCurrent(const Value& channel)
+    virtual CurrentMeasured mesureCurrent(const Value& channel)
     {
-        getStatus(channel);
-        return SendCommand(":MEAS:CURR?(@"+channel.String()+")");
+        CurrentMeasured ret;
+        ret.setMeasuredCurrent(SendCommand(":MEAS:CURR?(@"+channel.String()+")"));
+        ret.getPosition().setChannel(channel);
+        ret.getPosition().setModule(m_name);
+        return ret;
     }
     //GET STATUS
-    Status getStatus(const Value& channel)
+    virtual Status getStatus(const Value& channel)
     {
         Value status =SendCommand(":READ:CHAN:STAT?(@"+channel.String()+")");
         return m_channelStatus(status.LLong());
     }
     //GET MODULE STATUS
-    Status getModuleStatus()
+    virtual Status getModuleStatus()
     {
         Value status =SendCommand(":READ:MOD:STAT?");
         return m_moduleStatus(status.LLong());
     }
+    //SET EMERGENCY  
+    virtual void setEmergency(const Value & channel)
+    {
+        SendCommand(":VOLT:EMCY OFF,(@"+channel.String()+")");
+    }
+    
+    
     isegModule* Clone() { return new isegModule(*this);}
     isegModule* Clone() const { return new isegModule(*this);} 
 private:
