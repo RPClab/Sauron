@@ -16,7 +16,7 @@
                         "Type":"CAEN",
                         "CAENHVSystemType":"N14XX",
                         "LinkType":"VCP",
-                        "Port":"ttyUSB1",
+                        "Port":"ttyUSB0",
                         "Baudrate":"9600",
                         "Bytesize":"8",
                         "Stopbits":"1",
@@ -34,7 +34,7 @@
                     {
                         "Type":"VCP",
                         "SN":"titi",
-                        "Port":"/dev/ttyUSB0",
+                        "Port":"/dev/ttyUSB1",
                         "Baudrate":"9600",
                         "Timeout":"100",
                         "Bytesize":"8",

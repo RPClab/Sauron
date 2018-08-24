@@ -39,6 +39,10 @@
 #include <set>
 #include <chrono>
 #include <thread>
+#include <functional>
+#include "Monitoring.h"
+#include "PrintVoltageCurrent.h"
+#include "MonitorVoltages.h"
 
 class RacksManager 
 {
@@ -53,6 +57,7 @@ public:
         for(std::map<std::string,Connector*>::iterator it=m_connectors.begin();it!=m_connectors.end();++it) delete it->second;
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it) delete it->second;
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) delete it->second;
+        for(std::map<std::string,Monitoring*>::iterator it=m_monitoring.begin();it!=m_monitoring.end();++it)delete it->second;
     }
     void Initialize()
     {
@@ -89,9 +94,20 @@ public:
             itt->second->off(m_who,m_channel);
         }
     }
+    //SET VOLTAGE WANTED
+    void setWantedVoltage(const Value& voltage)
+    {
+        std::lock_guard<std::mutex> lock(mutexx);
+        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        {
+                itt->second->setWantedVoltage(m_who,m_channel,voltage);
+        }
+    }
+    
     //SET VOLTAGE
     void setVoltage(const Value& voltage)
     {
+        setWantedVoltage(voltage);
         std::lock_guard<std::mutex> lock(mutexx);
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
@@ -112,14 +128,21 @@ public:
     }
     
     
-    
+    void Release()
+    {
+        for(std::map<std::string,Monitoring*>::iterator it=m_monitoring.begin();it!=m_monitoring.end();++it)
+        {
+            it->second->stop();
+        }
+    }
     
     void disconnect()
     {
+        Release();
         std::lock_guard<std::mutex> lock(mutexx);
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
-                itt->second->Disconnect();
+            itt->second->Disconnect();
         }
     }
     void connect()
@@ -147,11 +170,29 @@ public:
         }
         return nbr;
     }
-    std::thread printVoltageCurrentthread()
+    void startMonitoring(const std::string& name,unsigned int time=0)
     {
-        return std::thread(&RacksManager::loop,this);
+        if(m_monitoring.find(name)!=m_monitoring.end()) 
+        {
+            if(time!=0)  m_monitoring[name]->setTime(time);
+            m_monitoring[name]->start();
+        }
+        else
+        {
+            std::cout<<"Monitoring with name : "<<name<<" not loaded !! "<<std::endl;
+        }
     }
-    
+    void stopMonitoring(const std::string& name)
+    {
+        if(m_monitoring.find(name)!=m_monitoring.end()) 
+        {
+            m_monitoring[name]->stop();
+        }
+        else
+        {
+            std::cout<<"Monitoring with name : "<<name<<" not loaded !! "<<std::endl;
+        }
+    }
     
     void printModuleStatus()
     {
@@ -189,14 +230,6 @@ private :
     void FillConnectorCrateInfos(const Json::Value& json,Parameters& params);
     void FillModuleInfos(const Json::Value& json,std::map<std::string,Parameters>& m_params,std::map<std::string,Parameters>& c_params);
     void FillModuleConnectorInfos(const Json::Value& json,std::map<std::string,Parameters>& c_params);
-    void loop()
-    {
-        while(1)
-        {
-            printVoltageCurrent();
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    }
 
     std::set<std::string> getListRacks()
     {
@@ -208,6 +241,10 @@ private :
         return std::move(rackNames);
     }
     std::mutex mutexx;
+    std::map<std::string,Monitoring*> m_monitoring{
+                                                    {"PrintVoltageCurrent",new PrintVoltageCurrent(this)},
+                                                    {"MonitorVoltages",new MonitorVoltages(this)},
+                                                  };
     bool keyExists(const Json::Value&,const std::string& string);
     bool keyExists(const std::vector<std::string>,const std::string& string);
     bool keyExistsAndValueIsUnique(const Json::Value& id,const std::string & key);

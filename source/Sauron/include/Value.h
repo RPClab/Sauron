@@ -97,6 +97,7 @@ Value& operator=(const T & value)
     unsigned long long ULLong();
     float Float();
     double Double();
+    double Double() const;
     long double LDouble();
     std::size_t Size();
     Value& operator=(Value const & aValue);

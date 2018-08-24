@@ -230,6 +230,21 @@ double Value::Double()
     }
 };
 
+
+double Value::Double() const
+{
+    try
+    {
+        return std::stod(m_value);
+    }
+    catch(std::exception& e)
+    {
+        std::cout<<"Value : "<<m_value<<" not convertible to double"<<std::endl;
+        throw;
+    }
+};
+
+
 long double Value::LDouble()
 {
     try

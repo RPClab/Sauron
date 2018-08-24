@@ -109,6 +109,7 @@ public:
         {*/
             m_connector->Connect();
             FillInfos();
+            m_WantedVoltage=std::vector<VoltageWanted>(getNbrChannels().UInt());
             setChannelStatusBits();
             setModuleStatusBits();
         //}
@@ -210,7 +211,10 @@ public:
     {
         std::vector<VoltageSet> ret;
         ret.reserve(m_nbrOfChannels.UInt());
-        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i) ret[i]=getVoltage(i);
+        for(unsigned int i=0;i!=m_nbrOfChannels.UInt();++i)
+        {
+            ret[i]=getVoltage(i);
+        }
         return std::move(ret);
     }
     //MEASURE VOLTAGE 
@@ -349,7 +353,8 @@ public:
     
     virtual MeasuresAndSets getMeasuresAndSets(const Value& channel)
     {
-        return MeasuresAndSets(Measures(mesureCurrent(channel),mesureVoltage(channel)),Sets(getVoltage(channel),getCurrent(channel)));
+        MeasuresAndSets mes(Measures(mesureCurrent(channel),mesureVoltage(channel)),Sets(getVoltage(channel),getCurrent(channel)));
+        return std::move(mes);
     }
     
     
@@ -419,7 +424,31 @@ public:
         std::cout<<"setModuleStatusBits not implemented in Module for "<<m_compagny<<"  "<<m_model<<" !\n";
         std::cout<<"It will be more difficult to acces the status !"<<std::endl;
     }
+    void setWantedVoltage(const Value& channel,const Value& HV)
+    {
+         m_WantedVoltage[channel.UInt()].getPosition().setChannel(channel);
+         m_WantedVoltage[channel.UInt()].getPosition().setModule(m_name);
+         m_WantedVoltage[channel.UInt()].setWantedVoltage(HV);
+    }
+    void setWantedVoltage(const Value& HV)
+    {
+        for(unsigned int i=0;i!=m_WantedVoltage.size();++i)
+        {
+            m_WantedVoltage[i].getPosition().setChannel(i);
+            m_WantedVoltage[i].getPosition().setModule(m_name);
+            m_WantedVoltage[i].setWantedVoltage(HV);
+        }
+    }
+    VoltageWanted getWantedVoltage(const unsigned int& i)
+    {
+        return m_WantedVoltage[i];
+    }
+    std::vector<VoltageWanted> getWantedVoltage()
+    {
+        return m_WantedVoltage;
+    }
 protected:
+    std::vector<VoltageWanted> m_WantedVoltage;
     Status m_channelStatus;
     Status m_moduleStatus;
     /* Main parameters */

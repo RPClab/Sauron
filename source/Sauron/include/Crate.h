@@ -186,6 +186,11 @@ public:
                 std::vector<VoltageSet> rett;
                 if(channel=="")rett=it->second->getVoltage();
                 else rett.push_back(it->second->getVoltage(channel));
+                for(unsigned int i=0;i!=rett.size();++i)
+                {
+                    rett[i].getPosition().setCrate(getName());
+                    if(getRack()!="")rett[i].getPosition().setRack(getRack());
+                }
                 ret.insert(ret.end(), rett.begin(), rett.end());
             }
         }
@@ -194,11 +199,32 @@ public:
             std::vector<VoltageSet> rett;
             if(channel=="")rett=m_modules[who]->getVoltage();
             else ret.push_back(m_modules[who]->getVoltage(channel));
+            for(unsigned int i=0;i!=rett.size();++i)
+            {
+                rett[i].getPosition().setCrate(getName());
+                if(getRack()!="")rett[i].getPosition().setRack(getRack());
+            }
             ret.insert(ret.end(), rett.begin(), rett.end());
         }
         return std::move(ret);
     }
-    
+    //SET VOLTAGE WANTED
+    void setWantedVoltage(const std::string& who,const Value& channel,const Value& voltage)
+    {
+        if(isInRack(who)||isCrate(who)||who=="")
+        {
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                if(channel=="")it->second->setWantedVoltage(voltage);
+                else it->second->setWantedVoltage(channel,voltage);
+            }
+        }
+        else if (hasModule(who))
+        {
+            if(channel=="")m_modules[who]->setWantedVoltage(voltage);
+            else m_modules[who]->setWantedVoltage(channel,voltage);
+        }
+    }
     
     void Connect()
     {
@@ -283,7 +309,6 @@ public:
     }
     std::vector<MeasuresAndSets> getMeasuresAndSets(const std::string& who,const Value& channel)
     {
-        std::vector<std::thread>threads;
         std::vector<MeasuresAndSets>mes;
         mes.reserve(getNbrChannels());
         if(isInRack(who)||isCrate(who)||who=="")

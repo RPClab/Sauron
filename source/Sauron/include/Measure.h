@@ -137,6 +137,35 @@ private:
 
 
 
+class VoltageWanted
+{
+public:
+    void printPosition(std::ostream& stream =std::cout,const std::string& mover="")
+    {
+        stream<<mover<<m_pos<<std::endl;
+    }
+    void setWantedVoltage(const Value& voltage)
+    {
+        m_wantedVoltage=voltage;
+    }
+    Value getWantedVoltage() const
+    {
+        return m_wantedVoltage;
+    }
+    Position getPosition() const
+    {
+        return m_pos;
+    }
+    Position& getPosition()
+    {
+        return m_pos;
+    }
+private:
+    Value m_wantedVoltage{""};
+    Position m_pos;
+};
+
+
 class VoltageMeasured 
 {
 public:
@@ -424,6 +453,7 @@ public:
         setMeasuredCurrent(measure.getMeasuredCurrent());
         setVoltage(sets.getSetVoltage());
         setCurrent(sets.getSetCurrent());
+        
     }
     MeasuresAndSets(const Sets& sets,const Measures& measure)
     {
