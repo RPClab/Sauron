@@ -63,10 +63,10 @@ public:
             {
                 m_connector->Initialize();
             }
-        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
-        {
-           it->second->Initialize();
-        }
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+            it->second->Initialize();
+            }
     }
     void setConnector(Connector& connector)
     {
@@ -142,7 +142,11 @@ public:
                 else it->second->on(channel);
             }
         }
-        else if (hasModule(who)) m_modules[who]->on(channel);
+        else if (hasModule(who))
+        {
+            if(channel=="")m_modules[who]->on();
+            else m_modules[who]->on(channel);
+        }
     }
     //OFF
     void off(const std::string& who,const Value& channel)
@@ -156,7 +160,11 @@ public:
                 else it->second->off(channel);
             }
         }
-        else if (hasModule(who)) m_modules[who]->off(channel);
+        else if (hasModule(who))
+        {
+            if(channel=="")m_modules[who]->off();
+            else m_modules[who]->off(channel);
+        }
     }
     //SET VOLTAGE
     void setVoltage(const std::string& who,const Value& channel,const Value& voltage)
@@ -204,10 +212,45 @@ public:
                 rett[i].getPosition().setCrate(getName());
                 if(getRack()!="")rett[i].getPosition().setRack(getRack());
             }
+    
             ret.insert(ret.end(), rett.begin(), rett.end());
         }
         return std::move(ret);
     }
+    //GET VOLTAGE WANTED
+    virtual std::vector<VoltageWanted> getWantedVoltage(const std::string& who,const Value& channel)
+    {
+        std::vector<VoltageWanted> ret;
+        if(isInRack(who)||isCrate(who)||who=="")
+        {
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                std::vector<VoltageWanted> rett;
+                if(channel=="")rett=it->second->getWantedVoltage();
+                else rett.push_back(it->second->getWantedVoltage(channel));
+                for(unsigned int i=0;i!=rett.size();++i)
+                {
+                    rett[i].getPosition().setCrate(getName());
+                    if(getRack()!="")rett[i].getPosition().setRack(getRack());
+                }
+                ret.insert(ret.end(), rett.begin(), rett.end());
+            }
+        }
+        else if (hasModule(who))
+        {
+            std::vector<VoltageWanted> rett;
+            if(channel=="")rett=m_modules[who]->getWantedVoltage();
+            else ret.push_back(m_modules[who]->getWantedVoltage(channel));
+               for(unsigned int i=0;i!=rett.size();++i)
+                {
+                    rett[i].getPosition().setCrate(getName());
+                    if(getRack()!="")rett[i].getPosition().setRack(getRack());
+                }
+            ret.insert(ret.end(), rett.begin(), rett.end());
+        }
+        return std::move(ret);
+    }
+    
     //SET VOLTAGE WANTED
     void setWantedVoltage(const std::string& who,const Value& channel,const Value& voltage)
     {

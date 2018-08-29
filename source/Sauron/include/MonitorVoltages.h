@@ -30,13 +30,21 @@
 #include "mariadb++/account.hpp"
 #include "mariadb++/connection.hpp"
 #include "mariadb++/time.hpp"
+#include <cmath>
+
 class MonitorVoltages : public Monitoring
 {
 public:
+    MonitorVoltages():Monitoring("MonitorVoltages")
+    {
+        Json::Value root=OpenJSONFile("MonitoringHV");
+        ExtractData(root);
+        ConnectToDatabase();
+    }
     MonitorVoltages(RacksManager* rackmanager):Monitoring(rackmanager,"MonitorVoltages")
     {
         Json::Value root=OpenJSONFile("MonitoringHV");
-        ExctractData(root);
+        ExtractData(root);
         ConnectToDatabase();
     }
     void function()
@@ -71,14 +79,46 @@ public:
                 
             }
         }
+        //slow.printParameters();
         std::chrono::seconds::rep now = std::chrono::system_clock::now().time_since_epoch() / std::chrono::seconds(1);
         if(now-ti>=m_params["MaxDelay"].UInt())
         {
             std::cout<<"Slowcontrol was taken "<<now-ti<<"s ago. It,s much bigger than maximal duration asked ("<<m_params["MaxDelay"].UInt()<<"s) !\n";
         }
-        slow.printParameters();
+        else
+        {
+            for(std::map<std::string,std::vector<unsigned int>>::iterator it=Channels.begin();it!=Channels.end();++it)
+            {
+               for(unsigned int chan=0;chan!=it->second.size();++chan) 
+               {    
+                   m_racksmanager->operator()(it->first,it->second[chan]);
+                   VoltageWanted IWant= m_racksmanager->getWantedVoltage()[0];
+                   if(IWant.getWantedVoltage()=="")
+                   {
+                        std::cout<<"Function setWantedVoltage never apply to "<<IWant.getPosition().getModuleName()<<" channel "<<it->second[chan]<<std::endl;
+                        std::cout<<"I don't kmow the reference voltage you want !"<<std::endl;
+                   }
+                   else
+                   {
+                        double IMustApply = formula(IWant,slow["pressure"].Double(),slow["temperature"].Double());
+                        VoltageSet ISet=m_racksmanager->getVoltage()[0];
+                        //std::cout<<IMustApply<<"  "<<ISet.getSetVoltage()<<"  "<<ISet.getSetVoltage().Double()<<std::endl;
+                        if(std::fabs(IMustApply-ISet.getSetVoltage().Double())>=m_params["MaxDiscrepancy"].Double())
+                        {
+                            std::cout<<"Applying "<<IMustApply<<" to Module "<<IWant.getPosition().getModuleName()<<" channel "<<it->second[chan]<<std::endl;
+                            m_racksmanager->setVoltage(IMustApply);
+                        }
+                   }
+               }
+               
+            }
+        }
     }
 private :
+    double formula(const VoltageWanted& voltage, const double& pressure, const double& temperature)
+    {
+        return voltage.getWantedVoltage().Double()*(1013.25/pressure)*(temperature/20.0);
+    }
     std::string getEnvVar( std::string const & key )
     {
         if(std::getenv( key.c_str() )==nullptr) return "";
@@ -102,13 +142,25 @@ private :
         }
         return obj;
     }
-    void ExctractData(const Json::Value& params)
+    void ExtractData(const Json::Value& params)
     {
-        std::vector<std::string> id = params["MonitoringHV"].getMemberNames();
+        std::vector<std::string> id = params["Database"].getMemberNames();
         for(unsigned int i=0;i!=id.size();++i)
         {
-            std::cout<<id[i]<<" "<<params["MonitoringHV"][id[i]].asString()<<std::endl;
-            m_params.addParameter(id[i],params["MonitoringHV"][id[i]].asString());
+            m_params.addParameter(id[i],params["Database"][id[i]].asString());
+        }
+        id = params["Options"].getMemberNames();
+        for(unsigned int i=0;i!=id.size();++i)
+        {
+            m_params.addParameter(id[i],params["Options"][id[i]].asString());
+        }
+        id = params["Monitoring"].getMemberNames();
+        for(unsigned int i=0;i!=id.size();++i)
+        {
+            for(unsigned int j=0;j!=params["Monitoring"][id[i]].size();++j)
+            {
+                Channels[id[i]].push_back(params["Monitoring"][id[i]][j].asInt());
+            }
         }
     }
     void ConnectToDatabase()
@@ -119,6 +171,7 @@ private :
     }
     mariadb::account_ref Myaccount;
     mariadb::connection_ref Myconnection;
+    std::map<std::string,std::vector<unsigned int>> Channels;
 };
 #endif
 

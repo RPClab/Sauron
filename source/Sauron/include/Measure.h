@@ -67,24 +67,24 @@ public:
     int getModule() const {return m_module;}
     int getCrate() const {return m_crate;}
     int getRack() const {return m_rack;}
-    std::string getModuleName(const int& nbr) const 
+    std::string getModuleName() const 
     {
-        return  m_nbrToModuleMap[nbr];
+       return  m_nbrToModuleMap[m_module];
     }
-    std::string getCrateName(const int& nbr) const
+    std::string getCrateName() const
     {
-        return m_nbrToCrateMap[nbr];
+        return m_nbrToCrateMap[m_crate];
     }
-    std::string getRackName(const int& nbr) const
+    std::string getRackName() const
     {
-        return m_nbrToRackMap[nbr];
+        return m_nbrToRackMap[m_rack];
     }
     void  print(std::ostream& stream=std::cout,const std::string mover="")
     {
         stream<<mover;
-        (m_rack!=-1&&getRackName(getRack())!="") ? (stream<<"Rack : "<<getRack()<<" ("<<getRackName(getRack())<<") , ") : (stream<<"") ;
-        (m_crate!=-1) ? (stream<<"Crate : "<<getCrate()<<" ("<<getCrateName(getCrate())<<") , ") : (stream<<"");
-        (m_module!=-1) ? (stream<<"Module : "<<getModule()<<" ("<<getModuleName(getModule())<<") , ") : (stream<<"");
+        (m_rack!=-1&&getRackName()!="") ? (stream<<"Rack : "<<getRack()<<" ("<<getRackName()<<") , ") : (stream<<"") ;
+        (m_crate!=-1) ? (stream<<"Crate : "<<getCrate()<<" ("<<getCrateName()<<") , ") : (stream<<"");
+        (m_module!=-1) ? (stream<<"Module : "<<getModule()<<" ("<<getModuleName()<<") , ") : (stream<<"");
         (m_channel !=-1) ? (stream<<"Channel : "<<getChannel()<<", ") : (stream<<"");
         stream<<"\n";
     }

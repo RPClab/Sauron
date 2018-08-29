@@ -1,13 +1,21 @@
 {
-    "MonitoringHV":
+    "Database":
     {
-        "User":"",
-        "Password": "",
-        "Host":"",
-        "Database" : "",
-        "Table" : "",
+        "User":"sjturpc",
+        "Password": "RPC2018",
+        "Host":"yin",
+        "Database" : "SJTUrpc",
+        "Table" : "slowcontrol"
+    },
+    "Options":
+    {
         "Waiting Time":"2",
-        "MaxDelay":"10"
+        "MaxDelay":"1000000",
+        "MaxDiscrepancy":"5"
+    },
+    "Monitoring":
+    {
+        "iseg1":[0,1,2,3,4,5]
     }
 }
 

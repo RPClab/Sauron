@@ -24,7 +24,6 @@
  */
 
 #include "PrintVoltageCurrent.h"
-#include "RacksManager.h"
 
 void PrintVoltageCurrent::function()
 {

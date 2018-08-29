@@ -23,14 +23,40 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "RacksManager.h"
 #include "Parameters.h"
 #include "json/json.h"
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include "PrintVoltageCurrent.h"
+#include "MonitorVoltages.h"
 
+
+RacksManager::RacksManager()
+{
+    Json::Value root=openJSONFile("RacksConfFile");
+    extractInfos(root);
+    plugMonitor(new PrintVoltageCurrent);
+    plugMonitor(new MonitorVoltages);
+};
+
+std::map<std::string,Monitoring*> RacksManager::m_monitoring=std::map<std::string,Monitoring*>();
+ 
+void RacksManager::plugMonitor(Monitoring* monitoring)
+{
+    m_monitoring[monitoring->getName()]=monitoring;
+    m_monitoring[monitoring->getName()]->setRacksManager(this);
+}
+
+RacksManager::~RacksManager()
+{
+    for(std::map<std::string,Connector*>::iterator it=m_connectors.begin();it!=m_connectors.end();++it) delete it->second;
+    for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it) delete it->second;
+    for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) delete it->second;
+    for(std::map<std::string,Monitoring*>::iterator it=m_monitoring.begin();it!=m_monitoring.end();++it)delete it->second;
+}                                        
+                                                  
 std::string RacksManager::getEnvVar(const std::string & key )
 {
     if(std::getenv( key.c_str() )==nullptr) return "";
@@ -263,5 +289,38 @@ void RacksManager::constructCrate(Parameters& crate_infos,Parameters& connector_
         }
     }
   }
+}
+
+void RacksManager::Release()
+{
+    for(std::map<std::string,Monitoring*>::iterator it=m_monitoring.begin();it!=m_monitoring.end();++it)
+    {
+        it->second->stop();
+    }
+}
+
+void RacksManager::startMonitoring(const std::string& name,unsigned int time)
+{
+    if(m_monitoring.find(name)!=m_monitoring.end()) 
+    {
+        if(time!=0)  m_monitoring[name]->setTime(time);
+        m_monitoring[name]->start();
+    }
+    else
+    {
+        std::cout<<"Monitoring with name : "<<name<<" not loaded !! "<<std::endl;
+    }
+}
+    
+void RacksManager::stopMonitoring(const std::string& name)
+{
+    if(m_monitoring.find(name)!=m_monitoring.end()) 
+    {
+        m_monitoring[name]->stop();
+    }
+    else
+    {
+        std::cout<<"Monitoring with name : "<<name<<" not loaded !! "<<std::endl;
+    }
 }
 

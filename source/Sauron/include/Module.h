@@ -110,6 +110,7 @@ public:
             m_connector->Connect();
             FillInfos();
             m_WantedVoltage=std::vector<VoltageWanted>(getNbrChannels().UInt());
+            setWantedVoltage(Value(""));
             setChannelStatusBits();
             setModuleStatusBits();
         //}
@@ -442,6 +443,10 @@ public:
     VoltageWanted getWantedVoltage(const unsigned int& i)
     {
         return m_WantedVoltage[i];
+    }
+    VoltageWanted getWantedVoltage(const Value& i)
+    {
+        return m_WantedVoltage[i.UInt()];
     }
     std::vector<VoltageWanted> getWantedVoltage()
     {

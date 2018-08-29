@@ -40,25 +40,15 @@
 #include <chrono>
 #include <thread>
 #include <functional>
-#include "Monitoring.h"
-#include "PrintVoltageCurrent.h"
-#include "MonitorVoltages.h"
+
+class Monitoring;
 
 class RacksManager 
 {
 public: 
-    RacksManager()
-    {
-        Json::Value root=openJSONFile("RacksConfFile");
-        extractInfos(root);
-    };
-    ~ RacksManager()
-    {
-        for(std::map<std::string,Connector*>::iterator it=m_connectors.begin();it!=m_connectors.end();++it) delete it->second;
-        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it) delete it->second;
-        for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) delete it->second;
-        for(std::map<std::string,Monitoring*>::iterator it=m_monitoring.begin();it!=m_monitoring.end();++it)delete it->second;
-    }
+    RacksManager();
+    ~ RacksManager();
+    void plugMonitor(Monitoring*);
     void Initialize()
     {
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) it->second->Initialize();
@@ -107,7 +97,6 @@ public:
     //SET VOLTAGE
     void setVoltage(const Value& voltage)
     {
-        setWantedVoltage(voltage);
         std::lock_guard<std::mutex> lock(mutexx);
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
@@ -126,15 +115,20 @@ public:
         }
         return std::move(ret);
     }
-    
-    
-    void Release()
+    // GET WANTED VOLTAGE   
+    std::vector<VoltageWanted> getWantedVoltage()
     {
-        for(std::map<std::string,Monitoring*>::iterator it=m_monitoring.begin();it!=m_monitoring.end();++it)
+        std::vector<VoltageWanted> ret;
+        std::lock_guard<std::mutex> lock(mutexx);
+        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
-            it->second->stop();
+                std::vector<VoltageWanted> rett=itt->second->getWantedVoltage(m_who,m_channel);
+                ret.insert(ret.end(),rett.begin(),rett.end());
         }
+        return std::move(ret);
     }
+    
+    void Release();
     
     void disconnect()
     {
@@ -170,29 +164,10 @@ public:
         }
         return nbr;
     }
-    void startMonitoring(const std::string& name,unsigned int time=0)
-    {
-        if(m_monitoring.find(name)!=m_monitoring.end()) 
-        {
-            if(time!=0)  m_monitoring[name]->setTime(time);
-            m_monitoring[name]->start();
-        }
-        else
-        {
-            std::cout<<"Monitoring with name : "<<name<<" not loaded !! "<<std::endl;
-        }
-    }
-    void stopMonitoring(const std::string& name)
-    {
-        if(m_monitoring.find(name)!=m_monitoring.end()) 
-        {
-            m_monitoring[name]->stop();
-        }
-        else
-        {
-            std::cout<<"Monitoring with name : "<<name<<" not loaded !! "<<std::endl;
-        }
-    }
+    void startMonitoring(const std::string& name,unsigned int time=0);
+
+    void stopMonitoring(const std::string& name);
+
     
     void printModuleStatus()
     {
@@ -241,10 +216,7 @@ private :
         return std::move(rackNames);
     }
     std::mutex mutexx;
-    std::map<std::string,Monitoring*> m_monitoring{
-                                                    {"PrintVoltageCurrent",new PrintVoltageCurrent(this)},
-                                                    {"MonitorVoltages",new MonitorVoltages(this)},
-                                                  };
+    static std::map<std::string,Monitoring*> m_monitoring;
     bool keyExists(const Json::Value&,const std::string& string);
     bool keyExists(const std::vector<std::string>,const std::string& string);
     bool keyExistsAndValueIsUnique(const Json::Value& id,const std::string & key);

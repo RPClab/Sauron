@@ -26,13 +26,12 @@
 #ifndef PRINTVOLTAGECURRENT_H
 #define PRINTVOLTAGECURRENT_H
 #include "Monitoring.h"
-#include "mariadb++/account.hpp"
-#include "mariadb++/connection.hpp"
 
 class PrintVoltageCurrent : public Monitoring
 {
 public: 
     PrintVoltageCurrent(RacksManager* rackmanager):Monitoring(rackmanager,"PrintVoltageCurrent"){}
+    PrintVoltageCurrent():Monitoring("PrintVoltageCurrent"){}
     void function();
 };
 #endif

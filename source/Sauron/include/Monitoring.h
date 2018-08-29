@@ -29,32 +29,37 @@
 #include <thread>
 #include <string>
 #include <atomic>
-class RacksManager;
+#include "RacksManager.h"
 
 class Monitoring 
 {
 public:
-    Monitoring(RacksManager* rackmanager,std::string name, std::string description):m_racksmanager(rackmanager),m_name(name),m_description(description){}
-    Monitoring(RacksManager* rackmanager,std::string name, std::string description,const Parameters& params):m_racksmanager(rackmanager),m_name(name),m_description(description),m_params(params){}
-    Monitoring(RacksManager* rackmanager,std::string name,const Parameters& params):m_racksmanager(rackmanager),m_name(name),m_params(params){}
-    Monitoring(RacksManager* rackmanager,std::string name):m_racksmanager(rackmanager),m_name(name){}
+    Monitoring(RacksManager* rackmanager,const std::string& name,const std::string& description):m_racksmanager(rackmanager),m_name(name),m_description(description){}
+    Monitoring(RacksManager* rackmanager,const std::string& name, const std::string& description,const Parameters& params):m_racksmanager(rackmanager),m_name(name),m_description(description),m_params(params){}
+    Monitoring(RacksManager* rackmanager,const std::string& name,const Parameters& params):m_racksmanager(rackmanager),m_name(name),m_params(params){}
+    Monitoring(RacksManager* rackmanager,const std::string& name):m_racksmanager(rackmanager),m_name(name){}
+    Monitoring(const std::string& name, const std::string& description):m_name(name),m_description(description){}
+    Monitoring(const std::string& name, const std::string& description,const Parameters& params):m_name(name),m_description(description),m_params(params){}
+    Monitoring(const std::string& name,const Parameters& params):m_name(name),m_params(params){}
+    Monitoring(const std::string& name):m_name(name){}
     const Parameters& getParameters() const {return m_params;} 
     void setParameters(const Parameters& params)
     {
         m_params=params;
     }
+    void setRacksManager(RacksManager* rackmanager) { m_racksmanager=rackmanager;}
     void setName(const Value& name){m_name=name.String();}
     void setName(const std::string& name){m_name=name;}
     void setDescription(const Value& description){m_description=description.String();}
     void setDescription(const std::string& description){m_description=description;}
-    std::string getDescription(){return m_description;}
-    std::string getName(){return m_name;}
+    std::string getDescription() const {return m_description;}
+    std::string getName() const {return m_name;}
     virtual void function()=0;
     virtual ~Monitoring()
     {
             if(m_racksmanager!=nullptr) m_racksmanager=nullptr;
     }
-    void setTime(const unsigned int& time){m_time=time;std::cout<<"LLLLLL"<<m_time<<std::endl;}
+    void setTime(const unsigned int& time){m_time=time;}
     int getTime(){return m_time;}
     void start()
     { 

@@ -29,12 +29,6 @@ if(Boost_FOUND)
   install(TARGETS Controler RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
 endif()
 
-
-
-  add_executable(Monitoring Monitoring.cpp)
-  include_directories(${MariaDBClient_INCLUDE_DIRS})
-  target_link_libraries(Monitoring NHRSpp_lib iseg ${MariaDBClient_LIBRARIES} libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so  ${OPENSSL_LIBRARIES} pthread mariadbclientpp)
-  install(TARGETS Monitoring RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
   
    add_executable(Test Test.cpp)
    if(CAEN_DRIVER)

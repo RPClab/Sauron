@@ -24,7 +24,6 @@
  */
 
 #include "Monitoring.h"
-#include "RacksManager.h"
 
 
 void Monitoring::loop()

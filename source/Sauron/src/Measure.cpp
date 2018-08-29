@@ -36,9 +36,9 @@
 
 std::ostream& operator<<(std::ostream& stream, const Position& Pos)
 {
-        (Pos.getRack()!=-1&&Pos.getRackName(Pos.getRack())!="") ? (stream<<"Rack : "<<Pos.getRack()<<" ("<<Pos.getRackName(Pos.getRack())<<") , ") : (stream<<"") ;
-        (Pos.getCrate()!=-1) ? (stream<<"Crate : "<<Pos.getCrate()<<" ("<<Pos.getCrateName(Pos.getCrate())<<") , ") : (stream<<"");
-        (Pos.getModule()!=-1) ? (stream<<"Module : "<<Pos.getModule()<<" ("<<Pos.getModuleName(Pos.getModule())<<") , ") : (stream<<"");
+        (Pos.getRack()!=-1&&Pos.getRackName()!="") ? (stream<<"Rack : "<<Pos.getRack()<<" ("<<Pos.getRackName()<<") , ") : (stream<<"") ;
+        (Pos.getCrate()!=-1) ? (stream<<"Crate : "<<Pos.getCrate()<<" ("<<Pos.getCrateName()<<") , ") : (stream<<"");
+        (Pos.getModule()!=-1) ? (stream<<"Module : "<<Pos.getModule()<<" ("<<Pos.getModuleName()<<") , ") : (stream<<"");
         (Pos.getChannel()!=-1) ? (stream<<"Channel : "<<Pos.getChannel()<<", ") : (stream<<"");
         return stream;
 }
