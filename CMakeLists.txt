@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 17)
 project(sauron)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wl,-rpath=${CMAKE_SOURCE_DIR}/bin/lib/" )
-SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_SOURCE_DIR}/bin/lib/" )
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wl,-rpath=${CMAKE_SOURCE_DIR}/bin/lib/" )
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_SOURCE_DIR}/bin/lib/" )
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/bin/lib)
 
@@ -98,27 +98,16 @@ if(SAURON)
                         GIT_REPOSITORY ${netsnmp_repository}
                         GIT_TAG ${netsnmp_version}
                         GIT_PROGRESS TRUE
-                        UPDATE_DISCONNECTED TRUE
-                        BUILD_ALWAYS FALSE
                         SOURCE_DIR          "${CMAKE_CURRENT_BINARY_DIR}/netsnmp"
                         BINARY_DIR          "${CMAKE_CURRENT_BINARY_DIR}/netsnmp"
-                        CONFIGURE_COMMAND   ""
-                        BUILD_COMMAND       ""
-                        INSTALL_COMMAND     ""
-                        TEST_COMMAND        ""
+                        LIST_SEPARATOR %
+                        UPDATE_COMMAND ""
+                        CONFIGURE_COMMAND "touch" "${CMAKE_SOURCE_DIR}/build/netsnmp/CMakeLists.txt"
+                        BUILD_COMMAND "sh" "${CMAKE_SOURCE_DIR}/build/netsnmp/configure" "--disable-agent" "--disable-applications" "--disable-manuals" "--disable-scripts" "--disable-mibs" "--prefix=${CMAKE_SOURCE_DIR}/bin" "--disable-embedded-perl" "--without-rpm" "--with-sys-contact=\"\"" "--with-sys-location=\"\"" "--with-logfile=\"none\"" "--with-persistent-directory=\"\"" "--with-copy-persistent-files=\"no\"" "--disable-perl-cc-checks" "--with-defaults" "--enable-shared=\"off\""
                         )
-
-    ExternalProject_Add_Step(
-                             netsnmp 
-                             copyCMakeLists
-                             COMMAND "cp" "${CMAKE_SOURCE_DIR}/source/net-snmp/CMakeLists.txt" "${CMAKE_CURRENT_BINARY_DIR}/netsnmp/CMakeLists.txt"
-                             COMMENT "Moving CMakeLists"   
-                             DEPENDEES download
-                             DEPENDERS build
-                             ALWAYS 1
-                            )
-                            
+    include(${CMAKE_SOURCE_DIR}/cmake/MIB.cmake)
+    CHECK_MIB()
     add_definitions(-DUNIX -DLINUX)
-    add_subdirectory(source/CAEN)
     add_subdirectory(source/Sauron)
+    add_subdirectory(source/CAEN)
 endif()

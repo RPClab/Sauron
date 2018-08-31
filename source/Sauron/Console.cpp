@@ -1,6 +1,4 @@
 #include "Connector.h"
-
-#include "iseg/isegNHSR.h"
 #include <iostream>
 #include "serial.h"
 #include <boost/program_options.hpp>
