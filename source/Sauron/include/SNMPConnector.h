@@ -26,12 +26,7 @@
 #ifndef SNMPCONNECTOR_H
 #define SNMPCONNECTOR_H
 #include "Connector.h"
- #define WIN32_LEAN_AND_MEAN
- 
- #include <net-snmp/net-snmp-config.h>
- #include <net-snmp/net-snmp-includes.h>
 #include <memory>
-
 class SNMPConnector : public Connector
 {
 public:
@@ -70,7 +65,7 @@ private:
     std::string m_readCommunity{"public"};
     long m_timeout{300000};   // timeout (us)
     int  m_retries{2};        // retries
-    int  m_version{SNMP_VERSION_2c};
+    int  m_version{1};
 };
 
 #endif
