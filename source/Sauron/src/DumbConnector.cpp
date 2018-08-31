@@ -30,17 +30,17 @@
 #include <iostream>
 #include <fstream>
 
-DumbConnector::DumbConnector(const DumbConnector& other)
+DumbConnector::DumbConnector(const DumbConnector& other):DumbConnector()
 {
     m_params=other.m_params;
 }
 
 DumbConnector::DumbConnector()
 {
-
+    m_name="DumbConnector";
 }
 
-DumbConnector::DumbConnector(const std::map<std::string,std::string>& params)
+DumbConnector::DumbConnector(const std::map<std::string,std::string>& params):DumbConnector()
 {
     m_params=params;
 }

@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2018 Lagarde François lagarde.at.sjtu.edu.cn
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -23,4 +23,34 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "Measure.h"
+#ifndef POSITION_H
+#define POSITION_H
+#include <string>
+#include "Value.h"
+#include <ostream>
+#include "ID.h"
+class Position
+{
+public:
+    bool operator==(const Position& pos) const;
+    bool operator!=(const Position& pos) const;
+    void setChannel(const Value& channel);
+    void setModule(const Value& moduleName);
+    void setCrate(const Value& crateName);
+    void setRack(const Value& rackName);
+    int getChannel() const;
+    int getModule() const;
+    int getCrate() const;
+    int getRack() const;
+    std::string getModuleName() const;
+    std::string getCrateName() const;
+    std::string getRackName() const;
+    void  print(std::ostream& stream=std::cout,const std::string mover="");
+private:
+    friend std::ostream & operator<<(std::ostream &os, const Position& Pos);
+    int m_channel{-1};
+    int m_module{-1};
+    int m_crate{-1};
+    int m_rack{-1};
+};
+#endif

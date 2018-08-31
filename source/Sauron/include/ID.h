@@ -23,37 +23,36 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CONNECTOR_H
-#define CONNECTOR_H
-#include "Value.h"
+#ifndef ID_H
+#define ID_H
 #include <string>
 #include <map>
-#include "Parameters.h"
+#include <vector>
+#include <iostream>
 
-class Connector
+class ID 
 {
-public:
-    Connector();
-    Connector(const Parameters& params);
-    virtual ~Connector();
-    virtual void Initialize()=0;
-    void setParameters(const Parameters& params);
-    void printParameters(std::ostream& stream=std::cout,const std::string& mover="" );
-    void printParameters(const std::string& mover);
-    virtual Value SendCommand(const std::string&)=0;
-    std::size_t getNbrParamaters();
-    void ClearParameters();
-    std::string getName();
-    bool isCrateConnector();
-    void isCrateConnector(const bool bol);
-    virtual void Connect()=0; 
-    virtual void Disconnect()=0;
-    virtual void Release()=0;
-    virtual bool IsConnected()=0;
-    virtual Connector* Clone()=0;
-protected:
-    bool m_IsCrateConnector{false};
-    Parameters m_params;
-    std::string m_name{"VirtualConnector"};
+public :
+    static void add(const std::string& Name,const std::string& type);
+    static void print(std::ostream& stream=std::cout,const std::string& mover="" );
+    static unsigned int getModuleID(const std::string& module);
+    static unsigned int getCrateID(const std::string& crate);
+    static unsigned int getRackID(const std::string& rack);
+    static std::string getModuleName(const unsigned int& module);
+    static std::string getCrateName(const unsigned int& crate);
+    static std::string getRackName(const unsigned int& rack);
+    unsigned int static getNbrOfModules();
+    unsigned int static getNbrOfCrates();
+    unsigned int static getNbrOfRacks();
+private :
+    static std::map<std::string,unsigned int> m_moduleIDs;
+    static std::vector<std::string> m_moduleNames;
+    static std::map<std::string,unsigned int> m_crateIDs;
+    static std::vector<std::string> m_crateNames;
+    static std::map<std::string,unsigned int> m_rackIDs;
+    static std::vector<std::string> m_rackNames;
+    static unsigned int m_moduleNbr;
+    static unsigned int m_crateNbr;
+    static unsigned int m_rackNbr;
 };
 #endif

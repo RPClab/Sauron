@@ -27,46 +27,28 @@
 #define DUMBCONNECTOR_H
 #include "Connector.h"
 #include <fstream> 
-/**
- * @todo write docs
- */
 
 class DumbConnector : public Connector
 {
 public:
-
     DumbConnector();
-
     DumbConnector(const DumbConnector& other);
-    
     DumbConnector& operator=(const DumbConnector& other);
-    
     DumbConnector& operator()(const DumbConnector& other);
-    
     DumbConnector(const std::map<std::string,std::string>& params);
-    
     void Initialize() override;
-    
     void Connect() override;
-    
     DumbConnector* Clone() override { return new DumbConnector(*this);} 
-    
     void Disconnect() override;
-    
     void Release() override;
-    
     bool IsConnected() override;
-    
     Value SendCommand(const std::string&) override;
-    std::string getName(){return m_name;}
 private:
     void setStream();
     void setFilename();
     Value m_stream{"cout"};
     Value m_filename{""};
     std::fstream m_file;
-    std::string m_name{"DumbConnector"};
 };
-
-#endif // ISEGNHSRCONNECTOR_H
+#endif
 

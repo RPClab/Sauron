@@ -30,6 +30,31 @@ Connector::Connector()
 
 }
 
+std::size_t Connector::getNbrParamaters()
+{
+    return m_params.size();
+}
+    
+void Connector::ClearParameters()
+{
+    m_params.clear();
+}
+    
+std::string Connector::getName()
+{
+    return m_name;
+}
+    
+bool Connector::isCrateConnector() 
+{
+    return m_IsCrateConnector;
+}
+    
+void Connector::isCrateConnector(const bool bol) 
+{
+    m_IsCrateConnector=bol;
+}
+
 Connector::Connector(const Parameters& params)
 {
     m_params=params;
@@ -38,4 +63,21 @@ Connector::Connector(const Parameters& params)
 Connector::~Connector()
 {
     m_params.clear();
+}
+
+void Connector::setParameters(const Parameters& params)
+{
+    m_params=params;
+}
+    
+void Connector::printParameters(std::ostream& stream,const std::string& mover)
+{
+    std::cout<<mover<<"Connector type : "<<getName()<<", parameters : \n";
+    m_params.printParameters(stream,mover);
+}
+    
+void Connector::printParameters(const std::string& mover)
+{
+    std::cout<<mover<<"Connector type : "<<getName()<<", parameters : \n";
+    m_params.printParameters(mover);
 }

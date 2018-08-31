@@ -36,7 +36,7 @@ SerialConnector::SerialConnector(const SerialConnector& other):SerialConnector()
 
 SerialConnector::SerialConnector()
 {
-     m_type="SerialConnector";
+     m_name="SerialConnector";
 }
 
 
@@ -49,14 +49,14 @@ SerialConnector::SerialConnector(const std::map<std::string,std::string>& params
 SerialConnector& SerialConnector::operator=(const SerialConnector& other)
 {
     m_params=other.m_params;
-    m_type=other.m_type;
+    m_name=other.m_name;
     return *this;
 }
 
 SerialConnector& SerialConnector::operator()(const SerialConnector& other)
 {
     m_params=other.m_params;
-    m_type=other.m_type;
+    m_name=other.m_name;
     return *this;
 }
 

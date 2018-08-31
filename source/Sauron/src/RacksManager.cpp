@@ -31,7 +31,7 @@
 #include <cstdlib>
 #include "PrintVoltageCurrent.h"
 #include "MonitorVoltages.h"
-
+#include "ID.h"
 
 RacksManager::RacksManager()
 {
@@ -130,6 +130,7 @@ void RacksManager::FillModuleInfos(const Json::Value& json,std::map<std::string,
         std::vector<std::string> id_module = json[module].getMemberNames();
         for (std::vector<std::string>::iterator ot=id_module.begin();ot!=id_module.end();++ot) 
         {
+            ID::add(json[module]["Name"].asString(),"Module");
             if(*ot=="Connector")
             {
                 FillModuleConnectorInfos(json[module],c_params);
@@ -166,6 +167,8 @@ void RacksManager::extractInfos(const Json::Value& root)
             std::cout<<"Crate's name is mandatory and must be unique !"<<std::endl;
             throw -1;
         }
+        ID::add(crates[i]["Name"].asString(),"Crate");
+        ID::add(crates[i]["Rack"].asString(),"Rack");
         for (std::vector<std::string>::iterator it=crate_params.begin();it!=crate_params.end();++it) 
         {
             if(*it=="Connector")

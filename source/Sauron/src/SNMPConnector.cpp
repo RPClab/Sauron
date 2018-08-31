@@ -35,7 +35,7 @@ SNMPConnector::SNMPConnector(const SNMPConnector& other):SNMPConnector()
 
 SNMPConnector::SNMPConnector()
 {
-    m_type="SNMPConnector";
+    m_name="SNMPConnector";
 }
 
 SNMPConnector::SNMPConnector(const std::map<std::string,std::string>& params):SNMPConnector()
@@ -213,7 +213,7 @@ void SNMPConnector::Connect()
 
 SNMPConnector& SNMPConnector::operator=(const SNMPConnector& other)
 {
-    m_type=other.m_type;
+    m_name=other.m_name;
     m_params=other.m_params;
     m_session=new snmp_session(*other.m_session);
     return *this;
@@ -221,7 +221,7 @@ SNMPConnector& SNMPConnector::operator=(const SNMPConnector& other)
 
 SNMPConnector& SNMPConnector::operator()(const SNMPConnector& other)
 {
-    m_type=other.m_type;
+    m_name=other.m_name;
     m_params=other.m_params;
     m_session=new snmp_session(*other.m_session);
     return *this;

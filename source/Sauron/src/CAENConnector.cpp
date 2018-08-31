@@ -36,7 +36,7 @@ CAENConnector::CAENConnector(const CAENConnector& other):CAENConnector()
 
 CAENConnector::CAENConnector()
 {
-     m_type="CAENConnector";
+     m_name="CAENConnector";
 }
 
 
@@ -49,14 +49,14 @@ CAENConnector::CAENConnector(const std::map<std::string,std::string>& params):CA
 CAENConnector& CAENConnector::operator=(const CAENConnector& other)
 {
     m_params=other.m_params;
-    m_type=other.m_type;
+    m_name=other.m_name;
     return *this;
 }
 
 CAENConnector& CAENConnector::operator()(const CAENConnector& other)
 {
     m_params=other.m_params;
-    m_type=other.m_type;
+    m_name=other.m_name;
     return *this;
 }
 
