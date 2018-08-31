@@ -35,7 +35,7 @@ std::size_t Connector::getNbrParamaters()
     return m_params.size();
 }
     
-void Connector::ClearParameters()
+void Connector::clearParameters()
 {
     m_params.clear();
 }
@@ -47,12 +47,12 @@ std::string Connector::getName()
     
 bool Connector::isCrateConnector() 
 {
-    return m_IsCrateConnector;
+    return m_isCrateConnector;
 }
     
 void Connector::isCrateConnector(const bool bol) 
 {
-    m_IsCrateConnector=bol;
+    m_isCrateConnector=bol;
 }
 
 Connector::Connector(const Parameters& params)

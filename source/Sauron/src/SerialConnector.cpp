@@ -61,7 +61,7 @@ SerialConnector& SerialConnector::operator()(const SerialConnector& other)
 }
 
 
-void SerialConnector::Initialize()
+void SerialConnector::initialize()
 {
     setPort();
     setBaudRate();
@@ -72,25 +72,25 @@ void SerialConnector::Initialize()
     setFlowcontrol();
 }
 
-bool SerialConnector::IsConnected()
+bool SerialConnector::isConnected()
 {
     return m_serial.isOpen();
 }
 
-void SerialConnector::Release()
+void SerialConnector::release()
 {
     
 }
 
-void SerialConnector::Disconnect()
+void SerialConnector::disconnect()
 {
-    if(IsConnected()) m_serial.close();
+    if(isConnected()) m_serial.close();
 }
 
 
-void SerialConnector::Connect()
+void SerialConnector::connect()
 {
-    if(!IsConnected()) 
+    if(!isConnected()) 
     {
             m_serial.open();
     }
@@ -225,7 +225,7 @@ void SerialConnector::setFlowcontrol()
     m_serial.setFlowcontrol(m_flowcontrol);
 }
 
-Value SerialConnector::SendCommand(const std::string& command)
+Value SerialConnector::sendCommand(const std::string& command)
 {
         std::string respond="";
         std::string real_command=command+"\n";

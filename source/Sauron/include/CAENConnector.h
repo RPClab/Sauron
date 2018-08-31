@@ -41,37 +41,27 @@ extern "C"
 
 class CAENConnector : public Connector
 {
-
 public:
-
     CAENConnector();
-
     CAENConnector(const CAENConnector& other);
-    
     CAENConnector& operator=(const CAENConnector& other);
     CAENConnector& operator()(const CAENConnector& other);
-    
     CAENConnector(const std::map<std::string,std::string>& params);
-    
-    void Initialize() override;
-    
-    void Connect() override;
-    
-    void Disconnect() override;
-    
-    CAENConnector* Clone() override 
+    void initialize() override;
+    void connect() override;
+    void disconnect() override;
+    CAENConnector* clone() override 
     { 
         if(isCrateConnector()==true) return this;
         else return new CAENConnector(*this);
     }
+    void release() override;
     
-    void Release() override;
-    
-    bool IsConnected() override;
-    Value SendCommand(const std::string&) override;
+    bool isConnected() override;
+    Value sendCommand(const std::string&) override;
     
 private:
-    Value GetCrateMap(const std::vector<Value>& params)
+    Value getCrateMap(const std::vector<Value>& params)
     {
         std::string results;
         unsigned short	NrOfSl;
@@ -104,15 +94,15 @@ private:
         delete SerNumList; delete ModelList; delete DescriptionList; delete FmwRelMinList; delete FmwRelMaxList; delete NrOfCh;
         return Value(results);
     }
-    Value ExecComm(std::vector<Value>& params)
+    Value execComm(std::vector<Value>& params)
     {
          return CAENHV_ExecComm(m_handle,params[1].CString());
     }
     
     
-    Value GetBdParamProp(std::vector<Value>& params)
+    Value getBdParamProp(std::vector<Value>& params)
     {
-        ParProp respond = InternalGetBdParamProp(params);
+        ParProp respond = internalGetBdParamProp(params);
         {
             if(params[2].CString()=="Type") return respond.Type;
             else if (params[2].CString()=="Mode") return respond.Mode;
@@ -141,7 +131,7 @@ private:
     
     
     
-    Value GetChParamProp(std::vector<Value>& params)
+    Value getChParamProp(std::vector<Value>& params)
     {
         ParProp respond = InternalGetChParamProp(params);
             if(params[3].String()=="Type") return respond.Type;
@@ -169,7 +159,7 @@ private:
     }
         
     
-    ParProp InternalGetBdParamProp(std::vector<Value>& params)
+    ParProp internalGetBdParamProp(std::vector<Value>& params)
     {
         ParProp parprop;
         /* First we read the "Type" and "Mode" properties, which are always present */
@@ -232,14 +222,14 @@ private:
     }
     
     
-    Value GetBdParamProp(const unsigned short& slot,const std::string& params, const std::string& property)
+    Value getBdParamProp(const unsigned short& slot,const std::string& params, const std::string& property)
     {
          unsigned long type{0};
          CAENHV_GetBdParamProp(m_handle,slot,params.c_str(),property.c_str(),&type);
          return Value(type);
     }
     
-Value GetBdParam(std::vector<Value>& params)
+Value getBdParam(std::vector<Value>& params)
 {
 	int				temp;
 	unsigned short	SlotList=params[1].UShort(); 
@@ -273,7 +263,7 @@ Value GetBdParam(std::vector<Value>& params)
     else return Value(lParValList);
 }
 
-Value GetBdParamInfo(const unsigned short& slot)
+Value getBdParamInfo(const unsigned short& slot)
 {
     std::string param{""};
     int	parNum{0};
@@ -292,13 +282,13 @@ Value GetBdParamInfo(const unsigned short& slot)
 	return Value(param);
 }
 
-Value GetBdParamInfo(std::vector<Value>& params)
+Value getBdParamInfo(std::vector<Value>& params)
 {
-    return GetBdParamInfo(params[1].UShort());
+    return getBdParamInfo(params[1].UShort());
 }
 
 
-Value GetChName(std::vector<Value>& params)
+Value getChName(std::vector<Value>& params)
 {
     std::string chnames{""};
     unsigned short listaCh[2048];
@@ -323,7 +313,7 @@ Value GetChName(std::vector<Value>& params)
 }
     
     
-Value GetChParam(std::vector<Value>& params)
+Value getChParam(std::vector<Value>& params)
 {
     std::string respond{""};
 	float fParValList{0};
@@ -359,7 +349,7 @@ Value GetChParam(std::vector<Value>& params)
     return respond;
 }
  
-Value GetChParamInfo(std::vector<Value>& params)
+Value getChParamInfo(std::vector<Value>& params)
 {
     std::string param{""};
     int	parNum{0};
@@ -377,7 +367,7 @@ Value GetChParamInfo(std::vector<Value>& params)
 	return Value(param);
 }
 
-Value GetChParamInfo(const unsigned short& slot,const unsigned short& channel)
+Value getChParamInfo(const unsigned short& slot,const unsigned short& channel)
 {
     std::string param{""};
     int	parNum{0};
@@ -395,7 +385,7 @@ Value GetChParamInfo(const unsigned short& slot,const unsigned short& channel)
 	return Value(param);
 }
  
-Value GetExecCommList(std::vector<Value>& params)
+Value getExecCommList(std::vector<Value>& params)
 {
 	unsigned short	NrOfExec;
 	std::string d{""};
@@ -424,13 +414,13 @@ void keepAliveFunction()
     std::vector<Value> dumb;
     while(1)
     {
-        GetSysPropList(dumb);
+        getSysPropList(dumb);
         std::this_thread::sleep_for(std::chrono::seconds(20));
     }
 }
  
  
-Value GetSysPropList(std::vector<Value>& params)
+Value getSysPropList(std::vector<Value>& params)
 {
     std::string retour{""};
 	unsigned short	NrOfProp{0};
@@ -453,14 +443,14 @@ Value GetSysPropList(std::vector<Value>& params)
     return retour;
 }
  
-Value GetSysProp(std::vector<Value>& params)
+Value getSysProp(std::vector<Value>& params)
 {
     unsigned long type{0};
     CAENHV_GetSysProp(m_handle,params[1].CString(),&type);
     return Value(type);
 }
 
-Value GetSysPropInfo(std::vector<Value>& params)
+Value getSysPropInfo(std::vector<Value>& params)
 {
     unsigned int mode{0};
     unsigned type{0};
@@ -474,7 +464,7 @@ Value GetSysPropInfo(std::vector<Value>& params)
 	return Value(param);
 }
 
-Value SetBdParam(std::vector<Value>& params)
+Value setBdParam(std::vector<Value>& params)
 {
 	float fParVal=params[3].Float();
     unsigned short slot=params[1].UShort();
@@ -497,7 +487,7 @@ Value SetBdParam(std::vector<Value>& params)
     return ret;
 }
 
-Value SetChName(std::vector<Value>& params)
+Value setChName(std::vector<Value>& params)
 {
     unsigned short channel=params[2].UShort();
 	CAENHVRESULT ret = CAENHV_SetChName(m_handle,params[1].UShort(),1,&channel,params[3].CString());
@@ -508,7 +498,7 @@ Value SetChName(std::vector<Value>& params)
     return ret;
 }
 
-Value SetChParam(std::vector<Value>& params)
+Value setChParam(std::vector<Value>& params)
 {
     float fParVal=params[4].Float();
 	unsigned long	tipo{0};
@@ -531,7 +521,7 @@ Value SetChParam(std::vector<Value>& params)
     return ret;
 }
 
-Value SetSysProp(std::vector<Value>& params)
+Value setSysProp(std::vector<Value>& params)
 {
 	unsigned Mode{0};
     unsigned Type{0};
@@ -589,7 +579,7 @@ Value SetSysProp(std::vector<Value>& params)
     return Value(ret);
 }
 
-Value TestBdPresence(std::vector<Value>& params)
+Value testBdPresence(std::vector<Value>& params)
 {
     unsigned short NrOfCh{0};
     unsigned short serNumb{0};

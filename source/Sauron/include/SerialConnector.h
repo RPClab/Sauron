@@ -28,47 +28,25 @@
 #include "Connector.h"
 #include "serial.h"
 
-/**
- * @todo write docs
- */
-
 class SerialConnector : public Connector
 {
 public:
-    /**
-     * Default constructor
-     */
     SerialConnector();
-
-    /**
-     * Copy Constructor
-     *
-     * @param other TODO
-     */
     SerialConnector(const SerialConnector& other);
-    
     SerialConnector& operator=(const SerialConnector& other);
     SerialConnector& operator()(const SerialConnector& other);
-    
     SerialConnector(const std::map<std::string,std::string>& params);
-    
-    void Initialize() override;
-    
-    void Connect() override;
-    
-    void Disconnect() override;
-    
-    SerialConnector* Clone() override 
+    void initialize() override;
+    void connect() override;
+    void disconnect() override;
+    SerialConnector* clone() override 
     { 
         if(isCrateConnector()==true) return this;
         else return new SerialConnector(*this);
     }
-
-    void Release() override;
-    
-    bool IsConnected() override;
-    Value SendCommand(const std::string&) override;
-    
+    void release() override;
+    bool isConnected() override;
+    Value sendCommand(const std::string&) override;
 private:
     void setPort();
     void setBaudRate();
@@ -86,5 +64,4 @@ private:
     serial::stopbits_t m_stopbits{serial::stopbits_one};
     serial::flowcontrol_t m_flowcontrol{serial::flowcontrol_none};
 };
-
-#endif // ISEGNHSRCONNECTOR_H
+#endif

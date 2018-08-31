@@ -36,13 +36,13 @@ public:
     DumbConnector& operator=(const DumbConnector& other);
     DumbConnector& operator()(const DumbConnector& other);
     DumbConnector(const std::map<std::string,std::string>& params);
-    void Initialize() override;
-    void Connect() override;
-    DumbConnector* Clone() override { return new DumbConnector(*this);} 
-    void Disconnect() override;
-    void Release() override;
-    bool IsConnected() override;
-    Value SendCommand(const std::string&) override;
+    void initialize() override;
+    void connect() override;
+    DumbConnector* clone() override { return new DumbConnector(*this);} 
+    void disconnect() override;
+    void release() override;
+    bool isConnected() override;
+    Value sendCommand(const std::string&) override;
 private:
     void setStream();
     void setFilename();

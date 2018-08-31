@@ -39,23 +39,23 @@ public:
     //ON
     void on(const Value& channel)
     {
-        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*1");
+        sendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*1");
     }
     //OFF
     void off(const Value& channel)
     {
-        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*0");
+        sendCommand("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*0");
     }
     //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
-       SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*VSet*"+channel.String()+"*"+HV.String());
+       sendCommand("CAENHV_SetChParam*"+m_slot.String()+"*VSet*"+channel.String()+"*"+HV.String());
     }
     //GET VOLTAGE
     VoltageSet getVoltage(const Value& channel)
     {
-        Value a=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VSet*"+channel.String());
-        Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VSet*Exp");
+        Value a=sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VSet*"+channel.String());
+        Value exp=sendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VSet*Exp");
         Value vol=a.String()+"e"+exp.String();
         VoltageSet ret;
         ret.setVoltage(vol);
@@ -66,8 +66,8 @@ public:
     //MEASURE VOLTAGE
     VoltageMeasured mesureVoltage(const Value& channel)
     {
-        Value a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VMon*"+channel.String());
-        Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VMon*Exp");
+        Value a= sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*VMon*"+channel.String());
+        Value exp=sendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VMon*Exp");
         Value vol=a.String()+"e"+exp.String();
         VoltageMeasured ret;
         ret.setMeasuredVoltage(vol);
@@ -78,13 +78,13 @@ public:
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
-       SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*ISet*"+channel.String()+"*"+current.String());
+       sendCommand("CAENHV_SetChParam*"+m_slot.String()+"*ISet*"+channel.String()+"*"+current.String());
     }
     //GET CURRENT
     virtual CurrentSet getCurrent(const Value& channel)
     {
-        Value a=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ISet*"+channel.String());
-        Value exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*ISet*Exp");
+        Value a=sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ISet*"+channel.String());
+        Value exp=sendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*ISet*Exp");
         Value vol=a.String()+"e"+exp.String();
         CurrentSet ret;
         ret.setCurrent(vol);
@@ -97,23 +97,23 @@ public:
     {
        Value a;
        Value exp;
-       if(ChannelHasParameter(channel,"IMon")==true)
+       if(channelHasParameter(channel,"IMon")==true)
        {
-            a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMon*"+channel.String());
-            exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMon*Exp");
+            a= sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMon*"+channel.String());
+            exp=sendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMon*Exp");
        }
        else
        {
-            Value HL=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ImonRange*"+channel.String());
+            Value HL=sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ImonRange*"+channel.String());
             if(HL.String()==""||HL.String()=="1")
             {
-                a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonL*"+channel.String());
-                exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonL*Exp");
+                a= sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonL*"+channel.String());
+                exp=sendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonL*Exp");
             }
             else
             {
-                 a= SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonH*"+channel.String());
-                exp=SendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonH*Exp");
+                 a= sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*IMonH*"+channel.String());
+                exp=sendCommand("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonH*Exp");
             }
        }
         Value vol=a.String()+"e"+exp.String();
@@ -126,24 +126,24 @@ public:
     //GET CHANNEL STATUS
     virtual Status getStatus(const Value& channel)
     {
-        Value status=SendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ChStatus*"+channel.String());
+        Value status=sendCommand("CAENHV_GetChParam*"+m_slot.String()+"*ChStatus*"+channel.String());
         return m_channelStatus(status.LLong());
     };
     //GET MODULE STATUS 
     virtual Status getModuleStatus()
     {
-        Value status=SendCommand("CAENHV_GetBdParam*"+m_slot.String()+"*Alarm");
+        Value status=sendCommand("CAENHV_GetBdParam*"+m_slot.String()+"*Alarm");
         return m_moduleStatus(status.LLong());
     };
     //SET EMERGENCY  
     virtual void setEmergency(const Value & channel )
     {
-        SendCommand("CAENHV_SetChParam*"+m_slot.String()+"*PDwn*"+channel.String()+"*0");
+        sendCommand("CAENHV_SetChParam*"+m_slot.String()+"*PDwn*"+channel.String()+"*0");
     }
     
     
-    CAENModule* Clone() { return new CAENModule(*this);}
-    CAENModule* Clone() const { return new CAENModule(*this);} 
+    CAENModule* clone() { return new CAENModule(*this);}
+    CAENModule* clone() const { return new CAENModule(*this);} 
 private:
     void setChannelStatusBits()
     {
@@ -175,16 +175,16 @@ private:
          ("HVCKFAIL","Internal HV Clock Fail (!=200+-10kHz)",6,1);
     }
     
-    bool ChannelHasParameter(const Value& channel,const std::string& param)
+    bool channelHasParameter(const Value& channel,const std::string& param)
     {
-        Value list= SendCommand("CAENHV_GetChParamInfo*"+m_slot.String()+"*"+channel.String());
+        Value list= sendCommand("CAENHV_GetChParamInfo*"+m_slot.String()+"*"+channel.String());
         std::vector<Value>vec= list.Tokenize(", ");
         std::vector<Value>::iterator it=find(vec.begin(),vec.end(),param);
         if(it==vec.end()) return false;
         else return true;
         
     }
-    void FillInfos()
+    void fillInfos()
     {
         std::vector<Value> infos=ID().Tokenize("*");
         m_nbrOfChannels=infos[2];
@@ -194,7 +194,7 @@ private:
     }
     Value ID()
     { 
-        Value ret=SendCommand("CAENHV_GetCrateMap*"+m_slot.String());
+        Value ret=sendCommand("CAENHV_GetCrateMap*"+m_slot.String());
         if(ret.Size()==0)
         {
             throw -3;

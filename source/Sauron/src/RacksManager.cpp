@@ -237,7 +237,7 @@ void RacksManager::constructCrate(Parameters& crate_infos,Parameters& connector_
   Connector* connector_crate=nullptr;
   if(m_connectors.find(connector_infos_crate["Type"].String())!=m_connectors.end())
   {
-      connector_crate=m_connectors[connector_infos_crate["Type"].String()]->Clone();
+      connector_crate=m_connectors[connector_infos_crate["Type"].String()]->clone();
       connector_crate->isCrateConnector(true);
       connector_crate->setParameters(connector_infos_crate);
   }
@@ -265,7 +265,7 @@ void RacksManager::constructCrate(Parameters& crate_infos,Parameters& connector_
         }
         else
         {
-            m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"].String()]->Clone());
+            m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"].String()]->clone());
             m_racks[crate_infos["Name"].String()]->setModuleConnectorParameters(itt->first,connector_infos_modules[itt->first]);
         }
     }
@@ -287,7 +287,7 @@ void RacksManager::constructCrate(Parameters& crate_infos,Parameters& connector_
         }
         else
         {
-            m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"].String()]->Clone());
+            m_racks[crate_infos["Name"].String()]->setModuleConnector(itt->first,m_connectors[connector_infos_modules[itt->first]["Type"].String()]->clone());
             m_racks[crate_infos["Name"].String()]->setModuleConnectorParameters(itt->first,connector_infos_modules[itt->first]);
         }
     }

@@ -31,47 +31,29 @@
  #include <net-snmp/net-snmp-config.h>
  #include <net-snmp/net-snmp-includes.h>
 #include <memory>
-/**
- * @todo write docs
- */
 
 class SNMPConnector : public Connector
 {
 public:
-    /**
-     * Default constructor
-     */
     SNMPConnector();
-
-    /**
-     * Copy Constructor
-     *
-     * @param other TODO
-     */
     SNMPConnector(const SNMPConnector& other);
-    
     SNMPConnector(const std::map<std::string,std::string>& params);
     SNMPConnector& operator=(const SNMPConnector& other);
     SNMPConnector& operator()(const SNMPConnector& other);
-    void Initialize() override;
-    
-    void Connect() override;
-    
-    void Disconnect() override;
-    
-    void Release() override;
-    SNMPConnector* Clone() override 
+    void initialize() override;
+    void connect() override;
+    void disconnect() override;
+    void release() override;
+    SNMPConnector* clone() override 
     { 
        /* if(isCrateConnector()==true) return this;
         else return new SNMPConnector(*this);*/
        return new SNMPConnector(*this);
     }
-    
-    bool IsConnected() override;
-
-    Value SendCommand(const std::string&) override;
-    Value ReceiveInfos(const std::string&);
-    Value SendInfos(const std::string&);
+    bool isConnected() override;
+    Value sendCommand(const std::string&) override;
+    Value receiveInfos(const std::string&);
+    Value sendInfos(const std::string&);
 private:
     void setMIBPath();
     void setMIBFilename();

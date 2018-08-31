@@ -91,7 +91,7 @@ void DumbConnector::setFilename()
 } 
     
 
-void DumbConnector::Initialize()
+void DumbConnector::initialize()
 {
     setStream();
     if(m_stream=="fstream")
@@ -100,7 +100,7 @@ void DumbConnector::Initialize()
     }
 }
 
-bool DumbConnector::IsConnected()
+bool DumbConnector::isConnected()
 {
     if(m_stream=="fstream")
     {
@@ -109,26 +109,26 @@ bool DumbConnector::IsConnected()
     else return true;
 }
 
-void DumbConnector::Release()
+void DumbConnector::release()
 {
     
 }
 
-void DumbConnector::Disconnect()
+void DumbConnector::disconnect()
 {
     if (m_stream=="fstream") m_file.close();
 }
 
 
-void DumbConnector::Connect()
+void DumbConnector::connect()
 {
-    if(!IsConnected()&&m_stream=="fstream") 
+    if(!isConnected()&&m_stream=="fstream") 
     {
         m_file.open(m_filename.CString(),std::ios_base::in | std::ios_base::app);
     }
 }
 
-Value DumbConnector::SendCommand(const std::string& command)
+Value DumbConnector::sendCommand(const std::string& command)
 {
     if(m_stream=="fstream") m_file<<command<<"\n";
     else if (m_stream=="cout") std::cout<<command<<"\n";

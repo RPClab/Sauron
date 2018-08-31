@@ -36,11 +36,11 @@ class Crate
 {
 public:
     Crate():m_connector(&m_dumb){};
-    Crate(Parameters & param,Connector& connector):m_connector(connector.Clone())
+    Crate(Parameters & param,Connector& connector):m_connector(connector.clone())
     {
         m_params=param;
     };
-    Crate(Parameters& param,Connector* connector):m_connector(connector->Clone())
+    Crate(Parameters& param,Connector* connector):m_connector(connector->clone())
     {
         m_params=param;
     };
@@ -52,8 +52,8 @@ public:
     {
         m_params=param;
     }
-    Crate(Connector& connector):m_connector(connector.Clone()){};
-    Crate(Connector* connector):m_connector(connector->Clone()){};
+    Crate(Connector& connector):m_connector(connector.clone()){};
+    Crate(Connector* connector):m_connector(connector->clone()){};
     void Initialize()
     {
             setName();
@@ -61,11 +61,11 @@ public:
             setRack();
             if(m_connector!=nullptr)
             {
-                m_connector->Initialize();
+                m_connector->initialize();
             }
             for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
             {
-            it->second->Initialize();
+            it->second->initialize();
             }
     }
     void setConnector(Connector& connector)
@@ -74,7 +74,7 @@ public:
         {
             delete m_connector;
         }
-        m_connector=connector.Clone();
+        m_connector=connector.clone();
     }
     void setConnector(Connector* connector)
     {
@@ -82,16 +82,16 @@ public:
         {
             delete m_connector;
         }
-        m_connector=connector->Clone();
+        m_connector=connector->clone();
     }
     Crate& operator()(const Crate& module)
     {
-        m_connector=module.m_connector->Clone();
+        m_connector=module.m_connector->clone();
         return *this;
     }
     void addModule(Module* module)
     {
-        module->Initialize();
+        module->initialize();
         if(module->getName().String()=="")
         {
             std::cout<<"Module must have a name !"<<std::endl;
@@ -104,16 +104,16 @@ public:
         }
         else
         {
-            m_modules.insert(std::pair<std::string,Module*>(module->getName().String(),module->Clone()));
+            m_modules.insert(std::pair<std::string,Module*>(module->getName().String(),module->clone()));
         }
     }
     void addModule(const std::string& name,Module* module)
     {
-        m_modules.insert(std::pair<std::string,Module*>(name,module->Clone()));
+        m_modules.insert(std::pair<std::string,Module*>(name,module->clone()));
     }
     Crate& operator=(const Crate& module)
     {
-        m_connector=module.m_connector->Clone();
+        m_connector=module.m_connector->clone();
         return *this;
     }
     ~Crate()
@@ -275,7 +275,7 @@ public:
         {
            /* try
             {*/
-                m_connector->Connect();
+                m_connector->connect();
            /* }
             catch (...)
             {
@@ -287,7 +287,7 @@ public:
         {
            try
            {
-                it->second->Connect();
+                it->second->connect();
            }
            catch(...)
            {
@@ -302,11 +302,11 @@ public:
     {
         if(m_connector!=nullptr)
         {
-            m_connector->Disconnect();
+            m_connector->disconnect();
         }
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
-           it->second->Disconnect();
+           it->second->disconnect();
         }
     }
     

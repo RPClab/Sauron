@@ -61,27 +61,27 @@ CAENConnector& CAENConnector::operator()(const CAENConnector& other)
 }
 
 
-void CAENConnector::Initialize()
+void CAENConnector::initialize()
 {
    setCAENHVSystemType();
    setLinkType();
    setArg();
 }
 
-bool CAENConnector::IsConnected()
+bool CAENConnector::isConnected()
 {
     if(m_connected==0) return true;
     else return false;
 }
 
-void CAENConnector::Release()
+void CAENConnector::release()
 {
     
 }
 
-void CAENConnector::Disconnect()
+void CAENConnector::disconnect()
 {
-    if(IsConnected())
+    if(isConnected())
     {
         m_connected=CAENHV_DeinitSystem(m_handle);
         if( m_connected == CAENHV_OK )
@@ -94,9 +94,9 @@ void CAENConnector::Disconnect()
 }
 
 
-void CAENConnector::Connect()
+void CAENConnector::connect()
 {
-    if(!IsConnected()) 
+    if(!isConnected()) 
     {
         m_connected=CAENHV_InitSystem(m_CAENHVSystemType,m_linkType,(void*)m_arg.c_str(),m_username.c_str(),m_password.c_str(),&m_handle);
         std::cout<<"CAENHV_InitSystem: "<<CAENHV_GetError(m_handle)<<"(num. "<<m_connected<<")\n";
@@ -418,28 +418,28 @@ void CAENConnector::setPassword()
 
 
 
-Value CAENConnector::SendCommand(const std::string& command)
+Value CAENConnector::sendCommand(const std::string& command)
 {
     Value com(command);
     std::vector<Value> params=com.Tokenize("*");
-    if(params[0].String()=="CAENHV_GetCrateMap") return GetCrateMap(params);
-    else if(params[0].String()=="CAENHV_ExecComm") return ExecComm(params);
-    else if(params[0].String()=="CAENHV_GetBdParamProp") return GetBdParamProp(params);
-    else if(params[0].String()=="CAENHV_GetBdParam") return GetBdParam(params);
-    else if(params[0].String()=="CAENHV_GetBdParamInfo") return GetBdParamInfo(params);
-    else if(params[0].String()=="CAENHV_GetChName") return GetChName(params);
-    else if(params[0].String()=="CAENHV_GetChParamProp") return GetChParamProp(params);
-    else if(params[0].String()=="CAENHV_GetChParam") return GetChParam(params);
-    else if(params[0].String()=="CAENHV_GetChParamInfo") return GetChParamInfo(params);
-    else if(params[0].String()=="CAENHV_GetExecCommList") return GetExecCommList(params);
-    else if(params[0].String()=="CAENHV_GetSysPropList") return GetSysPropList(params);
-    else if(params[0].String()=="CAENHV_GetSysProp") return GetSysProp(params);
-    else if(params[0].String()=="CAENHV_GetSysPropInfo") return GetSysPropInfo(params);
-    else if(params[0].String()=="CAENHV_SetBdParam") return SetBdParam(params);
-    else if(params[0].String()=="CAENHV_SetChName") return SetChName(params);
-    else if(params[0].String()=="CAENHV_SetChParam") return SetChParam(params);
-    else if(params[0].String()=="CAENHV_SetSysProp") return SetSysProp(params);
-    else if(params[0].String()=="CAENHV_TestBdPresence") return TestBdPresence(params);
+    if(params[0].String()=="CAENHV_GetCrateMap") return getCrateMap(params);
+    else if(params[0].String()=="CAENHV_ExecComm") return execComm(params);
+    else if(params[0].String()=="CAENHV_GetBdParamProp") return getBdParamProp(params);
+    else if(params[0].String()=="CAENHV_GetBdParam") return getBdParam(params);
+    else if(params[0].String()=="CAENHV_GetBdParamInfo") return getBdParamInfo(params);
+    else if(params[0].String()=="CAENHV_GetChName") return getChName(params);
+    else if(params[0].String()=="CAENHV_GetChParamProp") return getChParamProp(params);
+    else if(params[0].String()=="CAENHV_GetChParam") return getChParam(params);
+    else if(params[0].String()=="CAENHV_GetChParamInfo") return getChParamInfo(params);
+    else if(params[0].String()=="CAENHV_GetExecCommList") return getExecCommList(params);
+    else if(params[0].String()=="CAENHV_GetSysPropList") return getSysPropList(params);
+    else if(params[0].String()=="CAENHV_GetSysProp") return getSysProp(params);
+    else if(params[0].String()=="CAENHV_GetSysPropInfo") return getSysPropInfo(params);
+    else if(params[0].String()=="CAENHV_SetBdParam") return setBdParam(params);
+    else if(params[0].String()=="CAENHV_SetChName") return setChName(params);
+    else if(params[0].String()=="CAENHV_SetChParam") return setChParam(params);
+    else if(params[0].String()=="CAENHV_SetSysProp") return setSysProp(params);
+    else if(params[0].String()=="CAENHV_TestBdPresence") return testBdPresence(params);
     else
     {
         std::cout<<"Command unknown"<<std::endl;

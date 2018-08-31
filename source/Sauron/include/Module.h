@@ -36,16 +36,16 @@ class Module
 {
 public:
     Module():m_connector(&m_dumb){};
-    Module(Connector& connector,std::map<std::string,std::string>& params):m_connector(connector.Clone())
+    Module(Connector& connector,std::map<std::string,std::string>& params):m_connector(connector.clone())
     {
         m_params=params;
     };
-    Module(Connector* connector,std::map<std::string,std::string>& params):m_connector(connector->Clone())
+    Module(Connector* connector,std::map<std::string,std::string>& params):m_connector(connector->clone())
     {
         m_params=params;
     };
-    Module(Connector& connector):m_connector(connector.Clone()){};
-    Module(Connector* connector):m_connector(connector->Clone()){};
+    Module(Connector& connector):m_connector(connector.clone()){};
+    Module(Connector* connector):m_connector(connector->clone()){};
     Module(std::map<std::string,std::string>& params)
     {
         m_params=params;
@@ -56,7 +56,7 @@ public:
         {
             delete m_connector;
         }
-        m_connector=connector.Clone();
+        m_connector=connector.clone();
     }
     void setConnector(Connector* connector)
     {
@@ -64,17 +64,17 @@ public:
         {
             delete m_connector;
         }
-        m_connector=connector->Clone();
+        m_connector=connector->clone();
     }
     Module& operator()(const Module& module)
     {
-        m_connector=module.m_connector->Clone();
+        m_connector=module.m_connector->clone();
         return *this;
     }
     
     Module& operator=(const Module& module)
     {
-        m_connector=module.m_connector->Clone();
+        m_connector=module.m_connector->clone();
         return *this;
     }
     
@@ -96,33 +96,33 @@ public:
     {
         m_params=params;
     }
-    void Initialize()
+    void initialize()
     {
             setName();
             setDescription();
             setSlot();
-            m_connector->Initialize();
+            m_connector->initialize();
     }
-    void Connect()
+    void connect()
     {
         /*if(!m_connector->IsConnected())
         {*/
-            m_connector->Connect();
-            FillInfos();
+            m_connector->connect();
+            fillInfos();
             m_WantedVoltage=std::vector<VoltageWanted>(getNbrChannels().UInt());
             setWantedVoltage(Value(""));
             setChannelStatusBits();
             setModuleStatusBits();
         //}
     }
-    void Disconnect()
+    void disconnect()
     {
-        m_connector->Disconnect();
+        m_connector->disconnect();
     }
 
-    bool IsConnected()
+    bool isConnected()
     {
-        return m_connector->IsConnected();
+        return m_connector->isConnected();
     }
     virtual ~Module()
     {
@@ -378,8 +378,8 @@ public:
         return m_name;
     }
     
-    virtual Module* Clone()=0;
-    virtual Module* Clone() const =0;
+    virtual Module* clone()=0;
+    virtual Module* clone() const =0;
     
     void setName(const std::string name)
     {
@@ -505,16 +505,16 @@ protected:
             std::cout<<"Slot puuted to default value "<<m_slot<<"\n";
         }
     }
-    virtual Value GoodChannelNumber(const Value& channel) const
+    virtual Value goodChannelNumber(const Value& channel) const
     {
         if (m_slot.Int()==0) return channel;
         return (m_slot.Int()-1)*100+channel.UInt();
     }
-    Value SendCommand(const std::string& command)
+    Value sendCommand(const std::string& command)
     {
-        return m_connector->SendCommand(command);
+        return m_connector->sendCommand(command);
     }
     
-    virtual void FillInfos()=0;
+    virtual void fillInfos()=0;
 };
 #endif

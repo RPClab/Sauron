@@ -138,7 +138,7 @@ void SNMPConnector::setVersion()
 }
 
 
-void SNMPConnector::Initialize()
+void SNMPConnector::initialize()
 {
     setTimeout();
     setRetries();
@@ -157,20 +157,20 @@ void SNMPConnector::Initialize()
 	SOCK_STARTUP;
 }
 
-bool SNMPConnector::IsConnected()
+bool SNMPConnector::isConnected()
 {
     if(m_session==nullptr) return false;
     else return true;
 }
 
-void SNMPConnector::Release()
+void SNMPConnector::release()
 {
 
 }
 
-void SNMPConnector::Disconnect()
+void SNMPConnector::disconnect()
 {
-    if(IsConnected())
+    if(isConnected())
     {    
         snmp_close(m_session);
         m_session=nullptr;
@@ -180,9 +180,9 @@ void SNMPConnector::Disconnect()
 }
 
 
-void SNMPConnector::Connect()
+void SNMPConnector::connect()
 {
-    if(!IsConnected())
+    if(!isConnected())
     {
         SOCK_STARTUP;
         struct snmp_session session;
@@ -227,7 +227,7 @@ SNMPConnector& SNMPConnector::operator()(const SNMPConnector& other)
     return *this;
 }
 
-Value SNMPConnector::ReceiveInfos(const std::string& command)
+Value SNMPConnector::receiveInfos(const std::string& command)
 {
     netsnmp_pdu* pdu= snmp_pdu_create(SNMP_MSG_GET);
     netsnmp_pdu* response=nullptr;
@@ -334,7 +334,7 @@ Value SNMPConnector::ReceiveInfos(const std::string& command)
     return Value(retour);
 }
 
-Value SNMPConnector::SendInfos(const std::string& command)
+Value SNMPConnector::sendInfos(const std::string& command)
 {
     std::size_t where=command.find("***VALUE***");
     if(where==std::string::npos)
@@ -345,7 +345,7 @@ Value SNMPConnector::SendInfos(const std::string& command)
     }
     std::string com=command.substr(0,where);
     std::string value=command.substr(where+11);
-    char type=findType(ReceiveInfos(com));
+    char type=findType(receiveInfos(com));
     netsnmp_pdu* pdu= snmp_pdu_create(SNMP_MSG_SET);
     netsnmp_pdu* response;
     netsnmp_variable_list *vars=nullptr;
@@ -385,7 +385,7 @@ Value SNMPConnector::SendInfos(const std::string& command)
         snmp_sess_perror("snmpset",m_session);
     } 
     if (response) snmp_free_pdu(response);
-    return ReceiveInfos(com);
+    return receiveInfos(com);
 }
 
 
@@ -400,18 +400,18 @@ char SNMPConnector::findType(Value value)
     else throw 3;
 }
 
-Value SNMPConnector::SendCommand(const std::string& command)
+Value SNMPConnector::sendCommand(const std::string& command)
 {   
     std::size_t where=command.find("***SEND***");
     if(where!=std::string::npos&&where==0)
     {
         std::string com=command;
-        return SendInfos(com.erase(0,10));
+        return sendInfos(com.erase(0,10));
     }
     else if(where=command.find("***RECEIVE***"),where!=std::string::npos&&where==0)
     {
         std::string com=command;
-        return ReceiveInfos(com.erase(0,13));
+        return receiveInfos(com.erase(0,13));
     }
     else 
     {

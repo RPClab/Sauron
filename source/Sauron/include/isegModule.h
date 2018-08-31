@@ -39,23 +39,23 @@ public:
     //ON
     void on(const Value& channel)
     {
-        SendCommand(":VOLT ON,(@"+channel.String()+")");
+        sendCommand(":VOLT ON,(@"+channel.String()+")");
     }
     //OFF
     void off(const Value& channel)
     {
-        SendCommand(":VOLT OFF,(@"+channel.String()+")");
+        sendCommand(":VOLT OFF,(@"+channel.String()+")");
     }
     //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
-        SendCommand(":VOLT "+HV.String()+",(@"+channel.String()+")");
+        sendCommand(":VOLT "+HV.String()+",(@"+channel.String()+")");
     }
     //GET VOLTAGE
     VoltageSet getVoltage(const Value& channel)
     {
         VoltageSet ret;
-        ret.setVoltage(SendCommand(":READ:VOLT?(@"+channel.String()+")"));
+        ret.setVoltage(sendCommand(":READ:VOLT?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -64,7 +64,7 @@ public:
     VoltageMeasured mesureVoltage(const Value& channel)
     {
         VoltageMeasured ret;
-        ret.setMeasuredVoltage(SendCommand(":MEAS:VOLT?(@"+channel.String()+")"));
+        ret.setMeasuredVoltage(sendCommand(":MEAS:VOLT?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -72,13 +72,13 @@ public:
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
-        SendCommand(":CURR "+current.String()+",(@"+channel.String()+")");
+        sendCommand(":CURR "+current.String()+",(@"+channel.String()+")");
     }
     //GET CURRENT
     virtual CurrentSet getCurrent(const Value& channel)
     {
         CurrentSet ret;
-        ret.setCurrent(SendCommand(":READ:CURR?(@"+channel.String()+")"));
+        ret.setCurrent(sendCommand(":READ:CURR?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -87,7 +87,7 @@ public:
     virtual CurrentMeasured mesureCurrent(const Value& channel)
     {
         CurrentMeasured ret;
-        ret.setMeasuredCurrent(SendCommand(":MEAS:CURR?(@"+channel.String()+")"));
+        ret.setMeasuredCurrent(sendCommand(":MEAS:CURR?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -95,24 +95,24 @@ public:
     //GET STATUS
     virtual Status getStatus(const Value& channel)
     {
-        Value status =SendCommand(":READ:CHAN:STAT?(@"+channel.String()+")");
+        Value status =sendCommand(":READ:CHAN:STAT?(@"+channel.String()+")");
         return m_channelStatus(status.LLong());
     }
     //GET MODULE STATUS
     virtual Status getModuleStatus()
     {
-        Value status =SendCommand(":READ:MOD:STAT?");
+        Value status =sendCommand(":READ:MOD:STAT?");
         return m_moduleStatus(status.LLong());
     }
     //SET EMERGENCY  
     virtual void setEmergency(const Value & channel)
     {
-        SendCommand(":VOLT:EMCY OFF,(@"+channel.String()+")");
+        sendCommand(":VOLT:EMCY OFF,(@"+channel.String()+")");
     }
     
     
-    isegModule* Clone() { return new isegModule(*this);}
-    isegModule* Clone() const { return new isegModule(*this);} 
+    isegModule* clone() { return new isegModule(*this);}
+    isegModule* clone() const { return new isegModule(*this);} 
 private:
     void setChannelStatusBits()//NHR and NHS devices with USB and CAN Interface version 1.18 page 12
     {
@@ -148,9 +148,9 @@ private:
          ("TMP","Module temperature good",14,1)
          ("KIL","Module state of kill enable",15,1);
     }
-    void FillInfos()
+    void fillInfos()
     {
-        m_nbrOfChannels=NbrOfChannels();
+        m_nbrOfChannels=nbrOfChannels();
         std::vector<Value> infos=ID().Tokenize(",");
         m_compagny=infos[0];
         m_model=infos[1];
@@ -159,16 +159,16 @@ private:
     }
     Value ID()
     {
-        Value ret =SendCommand("*IDN?");
+        Value ret =sendCommand("*IDN?");
         if(ret.Size()==0)
         {
             throw -3;
         }
         else return ret;
     }
-    Value NbrOfChannels()
+    Value nbrOfChannels()
     {
-        return SendCommand(":READ:MOD:CHAN?");
+        return sendCommand(":READ:MOD:CHAN?");
     }
 };
 #endif
