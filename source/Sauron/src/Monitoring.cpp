@@ -28,7 +28,7 @@
 
 void Monitoring::loop()
 {
-    while(m_stopMonitoring!=true)
+    while (m_stopMonitoring!=true)
     {
         std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
         function();

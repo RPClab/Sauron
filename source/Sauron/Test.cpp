@@ -7,13 +7,21 @@ int main()
     manager.Initialize();
     //manager.printParameters();
     manager.connect();
-    manager.off();
+   // manager.off();
     //std::cout<<manager.getNbrChannels()<<std::endl;
-    manager("LV",1).on();
-    manager("Crate2").on();
-    manager("LV","2").setVoltage(3);
-    manager("Crate2").setVoltage(4000);
-    manager("Crate2",0).setVoltage(3000);
+    //manager("LV",1).on();
+    //manager("Crate2").on();
+    //manager("LV").setVoltage(3);
+    
+    //manager("HV").on();
+    manager("iseg1").on();
+    manager("iseg2").on();
+    manager("N1741A").on();
+    manager("iseg1").setWantedVoltage(1000);
+    manager("iseg2").setWantedVoltage(1000);
+    manager("N1741A").setWantedVoltage(500);
+    //manager("Crate2").setVoltage(4000);
+    //manager("Crate2",0).setVoltage(3000);
     //manager.printModuleStatus();
     //std::vector<MeasuresAndSets> po=manager().getMeasuresAndSets();
     //for(unsigned int i=0;i!=po.size();++i) po[i].print();
@@ -32,15 +40,14 @@ int main()
         manager.setVoltage(i);
         std::this_thread::sleep_for(std::chrono::seconds(50));
     }*/
-    manager.startMonitoring("MonitorVoltages",2);
+    manager.startMonitoring("MonitorVoltages",5);
+    manager.startMonitoring("PrintVoltageCurrent",30);
   //  manager.stopMonitoring("PrintVoltageCurrent");
-    /*    for(unsigned int i=0;i!=100;i++)
+    while(1)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        std::cout<<i<<std::endl;
-    }*/
-    std::this_thread::sleep_for(std::chrono::seconds(1000));
+        std::this_thread::sleep_for(std::chrono::seconds(10000));
+    }
+   // while(1){;}
     manager.disconnect();
  return 0;       
 }
