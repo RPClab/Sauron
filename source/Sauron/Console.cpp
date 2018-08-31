@@ -3,7 +3,6 @@
 #include "iseg/isegNHSR.h"
 #include <iostream>
 #include "serial.h"
-#include "Controler.h"
 #include <boost/program_options.hpp>
 #include <string>
 #include <regex>
