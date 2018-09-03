@@ -105,7 +105,7 @@ public:
        else
        {
             Value HL=command("CAENHV_GetChParam",m_slot.String(),"ImonRange",channel.String());
-            if(HL.String()==""||HL.String()=="1")
+            if(HL.String()=="1")
             {
                 a= command("CAENHV_GetChParam",m_slot.String(),"IMonL",channel.String());
                 exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMonL","Exp");

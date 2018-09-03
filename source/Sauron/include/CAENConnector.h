@@ -328,23 +328,14 @@ Value getChParam(std::vector<Value>& params)
 	if( tipo == PARAM_TYPE_NUMERIC )
 	{
 		ret = CAENHV_GetChParam(m_handle,params[1].UShort(),params[2].CString(),1,&channel,&fParValList);
+        if( ret != CAENHV_OK ) printf("CAENHV_GetChParam: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+        else respond=std::to_string(fParValList);
 	}
 	else
 	{
 		ret = CAENHV_GetChParam(m_handle,params[1].UShort(),params[2].CString(),1,&channel,&lParValList);
-	}
-
-	if( ret != CAENHV_OK ) printf("CAENHV_GetChParam: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
-	else
-	{
-        if( tipo == PARAM_TYPE_NUMERIC )
-        {
-            respond=std::to_string(fParValList);
-        }
-        else
-        {
-            respond=std::to_string(lParValList);
-        }
+        if( ret != CAENHV_OK && params[2].String()!="ImonRange" ) printf("CAENHV_GetChParam: %s (num. %d)\n\n", CAENHV_GetError(m_handle), ret);
+        else respond=std::to_string(lParValList);
 	}
     return respond;
 }
