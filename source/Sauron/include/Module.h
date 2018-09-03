@@ -510,11 +510,19 @@ protected:
         if (m_slot.Int()==0) return channel;
         return (m_slot.Int()-1)*100+channel.UInt();
     }
-    Value command(const std::string& command)
+    Value command()
     {
-        return m_connector->command(command);
+        Value val=m_connector->buildCommand(params);
+        params.clear();
+        return val;
     }
-    
+    template<typename T, typename ... Args>
+    Value command(T first, Args ... args) 
+    {	
+        params.push_back(Value(first));
+        return command(args ...);
+    }    
     virtual void fillInfos()=0;
+    std::vector<Value> params;
 };
 #endif

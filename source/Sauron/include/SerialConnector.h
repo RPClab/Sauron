@@ -46,7 +46,7 @@ public:
     }
     void release() override;
     bool isConnected() override;
-    Value command(const std::string&) override;
+    Value buildCommand(const std::vector<Value>&) override;
 private:
     void setPort();
     void setBaudRate();

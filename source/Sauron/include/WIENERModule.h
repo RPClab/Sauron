@@ -38,23 +38,23 @@ public:
     //ON
     void on(const Value& channel)
     {
-        command("***SEND***outputSwitch.u"+goodChannelNumber(channel).String()+"***VALUE***1");
+        command("SEND","outputSwitch.u"+goodChannelNumber(channel).String(),"1");
     }
     //OFF
     void off(const Value& channel)
     {
-        command("***SEND***outputSwitch.u"+goodChannelNumber(channel).String()+"***VALUE***0");
+        command("SEND","outputSwitch.u"+goodChannelNumber(channel).String(),"0");
     }
     //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
-        command("***SEND***outputVoltage.u"+goodChannelNumber(channel).String()+"***VALUE***"+HV.String());
+        command("SEND","outputVoltage.u"+goodChannelNumber(channel).String(),HV.String());
     }
     //GET VOLTAGE
     VoltageSet getVoltage(const Value& channel)
     {
         VoltageSet ret;
-        ret.setVoltage(command("***RECEIVE***outputVoltage.u"+goodChannelNumber(channel).String()));
+        ret.setVoltage(command("RECEIVE","outputVoltage.u"+goodChannelNumber(channel).String()));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -63,7 +63,7 @@ public:
     VoltageMeasured mesureVoltage(const Value& channel)
     {
         VoltageMeasured ret;
-        ret.setMeasuredVoltage(command("***RECEIVE***outputMeasurementTerminalVoltage.u"+goodChannelNumber(channel).String()));
+        ret.setMeasuredVoltage(command("RECEIVE","outputMeasurementTerminalVoltage.u"+goodChannelNumber(channel).String()));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -71,13 +71,13 @@ public:
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
-        command("***SEND***outputCurrent.u"+goodChannelNumber(channel).String()+"***VALUE***"+goodChannelNumber(current).String());
+        command("SEND","outputCurrent.u"+goodChannelNumber(channel).String(),goodChannelNumber(current).String());
     }
     //GET CURRENT
     virtual CurrentSet getCurrent(const Value& channel)
     {
         CurrentSet ret;
-        ret.setCurrent(command("***RECEIVE***outputCurrent.u"+goodChannelNumber(channel).String()));
+        ret.setCurrent(command("RECEIVE","outputCurrent.u"+goodChannelNumber(channel).String()));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -86,7 +86,7 @@ public:
     virtual CurrentMeasured mesureCurrent(const Value& channel)
     {
         CurrentMeasured ret;
-        ret.setMeasuredCurrent(command("***RECEIVE***outputMeasurementCurrent.u"+goodChannelNumber(channel).String()));
+        ret.setMeasuredCurrent(command("RECEIVE","outputMeasurementCurrent.u"+goodChannelNumber(channel).String()));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -94,20 +94,20 @@ public:
     //GET CHANNEL STATUS
     virtual Status getStatus(const Value& channel)
     {
-        Value status=command("***RECEIVE***outputStatus.u"+goodChannelNumber(channel).String());
+        Value status=command("RECEIVE","outputStatus.u"+goodChannelNumber(channel).String());
         return m_channelStatus(status.LLong());
         return 0;
     };
     //GET MODULE STATUS 
     virtual Status getModuleStatus()
     {
-        Value status=command("***RECEIVE***moduleStatus."+m_slot.String());
+        Value status=command("RECEIVE","moduleStatus."+m_slot.String());
         return m_moduleStatus(status.LLong());
     };
     //SET EMERGENCY  
     virtual void setEmergency(const Value & channel )
     {
-        command("***SEND***outputSwitch.u"+goodChannelNumber(channel).String()+"***VALUE***3");
+        command("SEND","outputSwitch.u"+goodChannelNumber(channel).String(),"3");
     }
     
     WIENERModule* clone() { return new WIENERModule(*this);}
@@ -166,7 +166,7 @@ private:
     }
     Value ID()
     {
-       Value ret=command("***RECEIVE***moduleDescription."+m_slot.String());
+       Value ret=command("RECEIVE","moduleDescription."+m_slot.String());
        if(ret.Size()==0)
        {
            throw -3;

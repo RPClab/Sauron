@@ -46,9 +46,9 @@ public:
        return new SNMPConnector(*this);
     }
     bool isConnected() override;
-    Value command(const std::string&) override;
-    Value receiveInfos(const std::string&);
-    Value sendInfos(const std::string&);
+    Value buildCommand(const std::vector<Value>&) override;
+    Value receiveInfos(const std::vector<Value>&);
+    Value sendInfos(const std::vector<Value>&);
 private:
     void setMIBPath();
     void setMIBFilename();

@@ -40,7 +40,7 @@ public:
     void setParameters(const Parameters& params);
     void printParameters(std::ostream& stream=std::cout,const std::string& mover="" );
     void printParameters(const std::string& mover);
-    virtual Value command(const std::string&)=0;
+    //virtual Value command(const std::string&)=0;
     std::size_t getNbrParamaters();
     void clearParameters();
     std::string getName();
@@ -51,6 +51,7 @@ public:
     virtual void release()=0;
     virtual bool isConnected()=0;
     virtual Connector* clone()=0;
+    virtual Value buildCommand(const std::vector<Value>& params)=0;
 protected:
     bool m_isCrateConnector{false};
     Parameters m_params;

@@ -228,16 +228,17 @@ SNMPConnector& SNMPConnector::operator()(const SNMPConnector& other)
     return *this;
 }
 
-Value SNMPConnector::receiveInfos(const std::string& command)
+Value SNMPConnector::receiveInfos(const std::vector<Value>& command)
 {
     netsnmp_pdu* pdu= snmp_pdu_create(SNMP_MSG_GET);
     netsnmp_pdu* response=nullptr;
     netsnmp_variable_list *vars=nullptr;
+    std::string com=command[1].String();
     std::size_t name_length = MAX_OID_LEN;
     oid name[MAX_OID_LEN];
-    if (!snmp_parse_oid(command.c_str(),name, &name_length)) 
+    if (!snmp_parse_oid(com.c_str(),name, &name_length)) 
     {
-        snmp_perror(command.c_str());
+        snmp_perror(com.c_str());
         throw -1;
     } 
     else snmp_add_null_var(pdu, name, name_length);
@@ -335,18 +336,11 @@ Value SNMPConnector::receiveInfos(const std::string& command)
     return Value(retour);
 }
 
-Value SNMPConnector::sendInfos(const std::string& command)
+Value SNMPConnector::sendInfos(const std::vector<Value>& command)
 {
-    std::size_t where=command.find("***VALUE***");
-    if(where==std::string::npos)
-    {
-        std::string e="No key ***VALUE*** found in the command";
-        std::cout<<e<<std::endl;
-        throw e;
-    }
-    std::string com=command.substr(0,where);
-    std::string value=command.substr(where+11);
-    char type=findType(receiveInfos(com));
+    std::string com=command[1].String();
+    std::string value=command[2].String();
+    char type=findType(receiveInfos({com}));
     netsnmp_pdu* pdu= snmp_pdu_create(SNMP_MSG_SET);
     netsnmp_pdu* response;
     netsnmp_variable_list *vars=nullptr;
@@ -386,7 +380,7 @@ Value SNMPConnector::sendInfos(const std::string& command)
         snmp_sess_perror("snmpset",m_session);
     } 
     if (response) snmp_free_pdu(response);
-    return receiveInfos(com);
+    return receiveInfos({com});
 }
 
 
@@ -401,18 +395,15 @@ char SNMPConnector::findType(Value value)
     else throw 3;
 }
 
-Value SNMPConnector::command(const std::string& command)
+Value SNMPConnector::buildCommand(const std::vector<Value>& command)
 {   
-    std::size_t where=command.find("***SEND***");
-    if(where!=std::string::npos&&where==0)
+    if(command[0]=="SEND")
     {
-        std::string com=command;
-        return sendInfos(com.erase(0,10));
+        return sendInfos(command);
     }
-    else if(where=command.find("***RECEIVE***"),where!=std::string::npos&&where==0)
+    else if(command[0]=="RECEIVE")
     {
-        std::string com=command;
-        return receiveInfos(com.erase(0,13));
+        return receiveInfos(command);
     }
     else 
     {

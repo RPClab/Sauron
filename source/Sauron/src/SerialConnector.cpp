@@ -225,10 +225,10 @@ void SerialConnector::setFlowcontrol()
     m_serial.setFlowcontrol(m_flowcontrol);
 }
 
-Value SerialConnector::command(const std::string& command)
+Value SerialConnector::buildCommand(const std::vector<Value>& command)
 {
         std::string respond="";
-        std::string real_command=command+"\n";
+        std::string real_command=command[0].String()+"\n";
         std::size_t bytes_wrote = m_serial.write(real_command);
         if(bytes_wrote==real_command.size()) 
         {

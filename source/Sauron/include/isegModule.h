@@ -101,7 +101,7 @@ public:
     //GET MODULE STATUS
     virtual Status getModuleStatus()
     {
-        Value status =command(":READ:MOD:STAT?");
+        Value status =command(Value(":READ:MOD:STAT?"));
         return m_moduleStatus(status.LLong());
     }
     //SET EMERGENCY  

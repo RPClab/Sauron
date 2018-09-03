@@ -39,23 +39,23 @@ public:
     //ON
     void on(const Value& channel)
     {
-        command("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*1");
+        command("CAENHV_SetChParam",m_slot.String(),"Pw",channel.String(),"1");
     }
     //OFF
     void off(const Value& channel)
     {
-        command("CAENHV_SetChParam*"+m_slot.String()+"*Pw*"+channel.String()+"*0");
+        command("CAENHV_SetChParam",m_slot.String(),"Pw",channel.String(),"0");
     }
     //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
-       command("CAENHV_SetChParam*"+m_slot.String()+"*VSet*"+channel.String()+"*"+HV.String());
+       command("CAENHV_SetChParam",m_slot.String(),"VSet",channel.String(),HV.String());
     }
     //GET VOLTAGE
     VoltageSet getVoltage(const Value& channel)
     {
-        Value a=command("CAENHV_GetChParam*"+m_slot.String()+"*VSet*"+channel.String());
-        Value exp=command("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VSet*Exp");
+        Value a=command("CAENHV_GetChParam",m_slot.String(),"VSet",channel.String());
+        Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"VSet","Exp");
         Value vol=a.String()+"e"+exp.String();
         VoltageSet ret;
         ret.setVoltage(vol);
@@ -66,8 +66,8 @@ public:
     //MEASURE VOLTAGE
     VoltageMeasured mesureVoltage(const Value& channel)
     {
-        Value a= command("CAENHV_GetChParam*"+m_slot.String()+"*VMon*"+channel.String());
-        Value exp=command("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*VMon*Exp");
+        Value a= command("CAENHV_GetChParam",m_slot.String(),"VMon",channel.String());
+        Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"VMon","Exp");
         Value vol=a.String()+"e"+exp.String();
         VoltageMeasured ret;
         ret.setMeasuredVoltage(vol);
@@ -78,13 +78,13 @@ public:
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
-       command("CAENHV_SetChParam*"+m_slot.String()+"*ISet*"+channel.String()+"*"+current.String());
+       command("CAENHV_SetChParam",m_slot.String(),"ISet",channel.String(),current.String());
     }
     //GET CURRENT
     virtual CurrentSet getCurrent(const Value& channel)
     {
-        Value a=command("CAENHV_GetChParam*"+m_slot.String()+"*ISet*"+channel.String());
-        Value exp=command("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*ISet*Exp");
+        Value a=command("CAENHV_GetChParam",m_slot.String(),"ISet",channel.String());
+        Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"ISet","Exp");
         Value vol=a.String()+"e"+exp.String();
         CurrentSet ret;
         ret.setCurrent(vol);
@@ -99,21 +99,21 @@ public:
        Value exp;
        if(channelHasParameter(channel,"IMon")==true)
        {
-            a= command("CAENHV_GetChParam*"+m_slot.String()+"*IMon*"+channel.String());
-            exp=command("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMon*Exp");
+            a= command("CAENHV_GetChParam",m_slot.String(),"IMon",channel.String());
+            exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMon","Exp");
        }
        else
        {
-            Value HL=command("CAENHV_GetChParam*"+m_slot.String()+"*ImonRange*"+channel.String());
+            Value HL=command("CAENHV_GetChParam",m_slot.String(),"ImonRange",channel.String());
             if(HL.String()==""||HL.String()=="1")
             {
-                a= command("CAENHV_GetChParam*"+m_slot.String()+"*IMonL*"+channel.String());
-                exp=command("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonL*Exp");
+                a= command("CAENHV_GetChParam",m_slot.String(),"IMonL",channel.String());
+                exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMonL","Exp");
             }
             else
             {
-                 a= command("CAENHV_GetChParam*"+m_slot.String()+"*IMonH*"+channel.String());
-                exp=command("CAENHV_GetChParamProp*"+m_slot.String()+"*"+channel.String()+"*IMonH*Exp");
+                 a= command("CAENHV_GetChParam",m_slot.String(),"IMonH",channel.String());
+                exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMonH","Exp");
             }
        }
         Value vol=a.String()+"e"+exp.String();
@@ -126,19 +126,19 @@ public:
     //GET CHANNEL STATUS
     virtual Status getStatus(const Value& channel)
     {
-        Value status=command("CAENHV_GetChParam*"+m_slot.String()+"*ChStatus*"+channel.String());
+        Value status=command("CAENHV_GetChParam",m_slot.String(),"ChStatus",channel.String());
         return m_channelStatus(status.LLong());
     };
     //GET MODULE STATUS 
     virtual Status getModuleStatus()
     {
-        Value status=command("CAENHV_GetBdParam*"+m_slot.String()+"*Alarm");
+        Value status=command("CAENHV_GetBdParam",m_slot.String(),"Alarm");
         return m_moduleStatus(status.LLong());
     };
     //SET EMERGENCY  
     virtual void setEmergency(const Value & channel )
     {
-        command("CAENHV_SetChParam*"+m_slot.String()+"*PDwn*"+channel.String()+"*0");
+        command("CAENHV_SetChParam",m_slot.String(),"PDwn",channel.String(),"0");
     }
     
     
@@ -177,7 +177,7 @@ private:
     
     bool channelHasParameter(const Value& channel,const std::string& param)
     {
-        Value list= command("CAENHV_GetChParamInfo*"+m_slot.String()+"*"+channel.String());
+        Value list= command("CAENHV_GetChParamInfo",m_slot.String(),channel.String());
         std::vector<Value>vec= list.Tokenize(", ");
         std::vector<Value>::iterator it=find(vec.begin(),vec.end(),param);
         if(it==vec.end()) return false;
@@ -194,7 +194,7 @@ private:
     }
     Value ID()
     { 
-        Value ret=command("CAENHV_GetCrateMap*"+m_slot.String());
+        Value ret=command("CAENHV_GetCrateMap",m_slot.String());
         if(ret.Size()==0)
         {
             throw -3;

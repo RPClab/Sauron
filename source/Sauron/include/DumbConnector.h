@@ -42,7 +42,7 @@ public:
     void disconnect() override;
     void release() override;
     bool isConnected() override;
-    Value command(const std::string&) override;
+    Value buildCommand(const std::vector<Value>&) override;
 private:
     void setStream();
     void setFilename();

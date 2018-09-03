@@ -128,11 +128,11 @@ void DumbConnector::connect()
     }
 }
 
-Value DumbConnector::command(const std::string& command)
+Value DumbConnector::buildCommand(const std::vector<Value>& command)
 {
-    if(m_stream=="fstream") m_file<<command<<"\n";
-    else if (m_stream=="cout") std::cout<<command<<"\n";
-    else if (m_stream=="clog") std::clog<<command<<"\n";
+    if(m_stream=="fstream") for(unsigned int i=0;i!=command.size();++i) m_file<<command[i]<<"\n";
+    else if (m_stream=="cout") for(unsigned int i=0;i!=command.size();++i) std::cout<<command[i]<<"\n";
+    else if (m_stream=="clog") for(unsigned int i=0;i!=command.size();++i) std::cerr<<command[i]<<"\n";
     return Value("");
 }
 
