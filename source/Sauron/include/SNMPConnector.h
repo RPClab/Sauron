@@ -46,7 +46,7 @@ public:
        return new SNMPConnector(*this);
     }
     bool isConnected() override;
-    Value sendCommand(const std::string&) override;
+    Value command(const std::string&) override;
     Value receiveInfos(const std::string&);
     Value sendInfos(const std::string&);
 private:

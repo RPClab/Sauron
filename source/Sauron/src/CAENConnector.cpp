@@ -418,7 +418,7 @@ void CAENConnector::setPassword()
 
 
 
-Value CAENConnector::sendCommand(const std::string& command)
+Value CAENConnector::command(const std::string& command)
 {
     Value com(command);
     std::vector<Value> params=com.Tokenize("*");

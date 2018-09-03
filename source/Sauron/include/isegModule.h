@@ -39,23 +39,23 @@ public:
     //ON
     void on(const Value& channel)
     {
-        sendCommand(":VOLT ON,(@"+channel.String()+")");
+        command(":VOLT ON,(@"+channel.String()+")");
     }
     //OFF
     void off(const Value& channel)
     {
-        sendCommand(":VOLT OFF,(@"+channel.String()+")");
+        command(":VOLT OFF,(@"+channel.String()+")");
     }
     //SET VOLTAGE
     void setVoltage(const Value& channel,const Value& HV)
     {
-        sendCommand(":VOLT "+HV.String()+",(@"+channel.String()+")");
+        command(":VOLT "+HV.String()+",(@"+channel.String()+")");
     }
     //GET VOLTAGE
     VoltageSet getVoltage(const Value& channel)
     {
         VoltageSet ret;
-        ret.setVoltage(sendCommand(":READ:VOLT?(@"+channel.String()+")"));
+        ret.setVoltage(command(":READ:VOLT?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -64,7 +64,7 @@ public:
     VoltageMeasured mesureVoltage(const Value& channel)
     {
         VoltageMeasured ret;
-        ret.setMeasuredVoltage(sendCommand(":MEAS:VOLT?(@"+channel.String()+")"));
+        ret.setMeasuredVoltage(command(":MEAS:VOLT?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -72,13 +72,13 @@ public:
     //SET CURRENT
     void setCurrent(const Value& channel,const Value& current)
     {
-        sendCommand(":CURR "+current.String()+",(@"+channel.String()+")");
+        command(":CURR "+current.String()+",(@"+channel.String()+")");
     }
     //GET CURRENT
     virtual CurrentSet getCurrent(const Value& channel)
     {
         CurrentSet ret;
-        ret.setCurrent(sendCommand(":READ:CURR?(@"+channel.String()+")"));
+        ret.setCurrent(command(":READ:CURR?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -87,7 +87,7 @@ public:
     virtual CurrentMeasured mesureCurrent(const Value& channel)
     {
         CurrentMeasured ret;
-        ret.setMeasuredCurrent(sendCommand(":MEAS:CURR?(@"+channel.String()+")"));
+        ret.setMeasuredCurrent(command(":MEAS:CURR?(@"+channel.String()+")"));
         ret.getPosition().setChannel(channel);
         ret.getPosition().setModule(m_name);
         return ret;
@@ -95,19 +95,19 @@ public:
     //GET STATUS
     virtual Status getStatus(const Value& channel)
     {
-        Value status =sendCommand(":READ:CHAN:STAT?(@"+channel.String()+")");
+        Value status =command(":READ:CHAN:STAT?(@"+channel.String()+")");
         return m_channelStatus(status.LLong());
     }
     //GET MODULE STATUS
     virtual Status getModuleStatus()
     {
-        Value status =sendCommand(":READ:MOD:STAT?");
+        Value status =command(":READ:MOD:STAT?");
         return m_moduleStatus(status.LLong());
     }
     //SET EMERGENCY  
     virtual void setEmergency(const Value & channel)
     {
-        sendCommand(":VOLT:EMCY OFF,(@"+channel.String()+")");
+        command(":VOLT:EMCY OFF,(@"+channel.String()+")");
     }
     
     
@@ -159,7 +159,7 @@ private:
     }
     Value ID()
     {
-        Value ret =sendCommand("*IDN?");
+        Value ret =command("*IDN?");
         if(ret.Size()==0)
         {
             throw -3;
@@ -168,7 +168,7 @@ private:
     }
     Value nbrOfChannels()
     {
-        return sendCommand(":READ:MOD:CHAN?");
+        return command(":READ:MOD:CHAN?");
     }
 };
 #endif

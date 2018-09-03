@@ -40,7 +40,7 @@ public:
     void setParameters(const Parameters& params);
     void printParameters(std::ostream& stream=std::cout,const std::string& mover="" );
     void printParameters(const std::string& mover);
-    virtual Value sendCommand(const std::string&)=0;
+    virtual Value command(const std::string&)=0;
     std::size_t getNbrParamaters();
     void clearParameters();
     std::string getName();

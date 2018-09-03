@@ -128,7 +128,7 @@ void DumbConnector::connect()
     }
 }
 
-Value DumbConnector::sendCommand(const std::string& command)
+Value DumbConnector::command(const std::string& command)
 {
     if(m_stream=="fstream") m_file<<command<<"\n";
     else if (m_stream=="cout") std::cout<<command<<"\n";

@@ -58,7 +58,7 @@ public:
     void release() override;
     
     bool isConnected() override;
-    Value sendCommand(const std::string&) override;
+    Value command(const std::string&) override;
     
 private:
     Value getCrateMap(const std::vector<Value>& params)

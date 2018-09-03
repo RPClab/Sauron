@@ -510,9 +510,9 @@ protected:
         if (m_slot.Int()==0) return channel;
         return (m_slot.Int()-1)*100+channel.UInt();
     }
-    Value sendCommand(const std::string& command)
+    Value command(const std::string& command)
     {
-        return m_connector->sendCommand(command);
+        return m_connector->command(command);
     }
     
     virtual void fillInfos()=0;

@@ -225,7 +225,7 @@ void SerialConnector::setFlowcontrol()
     m_serial.setFlowcontrol(m_flowcontrol);
 }
 
-Value SerialConnector::sendCommand(const std::string& command)
+Value SerialConnector::command(const std::string& command)
 {
         std::string respond="";
         std::string real_command=command+"\n";

@@ -401,7 +401,7 @@ char SNMPConnector::findType(Value value)
     else throw 3;
 }
 
-Value SNMPConnector::sendCommand(const std::string& command)
+Value SNMPConnector::command(const std::string& command)
 {   
     std::size_t where=command.find("***SEND***");
     if(where!=std::string::npos&&where==0)
