@@ -44,6 +44,14 @@ public:
     {
         m_wantedVoltage=voltage;
     }
+    void setIsMonitored(const bool& mon)
+    {
+        m_isMonitored=mon;
+    }
+    bool isMonitored()
+    {
+        return m_isMonitored;
+    }
     Value getWantedVoltage() const
     {
         return m_wantedVoltage;
@@ -58,6 +66,7 @@ public:
     }
 private:
     Value m_wantedVoltage{""};
+    bool m_isMonitored{false};
     Position m_pos;
 };
 

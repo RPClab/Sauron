@@ -1,0 +1,17 @@
+{
+    "Database":
+    {
+        "User":"",
+        "Password": "",
+        "Host":"",
+        "HVDatabase" : "SJTUrpc",
+        "HVTable" : "hv",
+        "ConfigDatabase" : "SJTUrpc",
+        "ConfigTable" : "config_racks"
+    },
+    "Options":
+    {
+        "Waiting Time":"30"
+    }
+}
+

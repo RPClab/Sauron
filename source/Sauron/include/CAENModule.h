@@ -55,7 +55,8 @@ public:
     VoltageSet getVoltage(const Value& channel)
     {
         Value a=command("CAENHV_GetChParam",m_slot.String(),"VSet",channel.String());
-        Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"VSet","Exp");
+        Value exp=getProperty(channel,"VSet","Exp");
+        //Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"VSet","Exp");
         Value vol=a.String()+"e"+exp.String();
         VoltageSet ret;
         ret.setVoltage(vol);
@@ -67,7 +68,8 @@ public:
     VoltageMeasured mesureVoltage(const Value& channel)
     {
         Value a= command("CAENHV_GetChParam",m_slot.String(),"VMon",channel.String());
-        Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"VMon","Exp");
+        Value exp=getProperty(channel,"VMon","Exp");
+       // Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"VMon","Exp");
         Value vol=a.String()+"e"+exp.String();
         VoltageMeasured ret;
         ret.setMeasuredVoltage(vol);
@@ -84,7 +86,8 @@ public:
     virtual CurrentSet getCurrent(const Value& channel)
     {
         Value a=command("CAENHV_GetChParam",m_slot.String(),"ISet",channel.String());
-        Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"ISet","Exp");
+        //Value exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"ISet","Exp");
+        Value exp=getProperty(channel,"ISet","Exp");
         Value vol=a.String()+"e"+exp.String();
         CurrentSet ret;
         ret.setCurrent(vol);
@@ -100,7 +103,8 @@ public:
        if(channelHasParameter(channel,"IMon")==true)
        {
             a= command("CAENHV_GetChParam",m_slot.String(),"IMon",channel.String());
-            exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMon","Exp");
+            exp=getProperty(channel,"IMon","Exp");
+           // exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMon","Exp");
        }
        else
        {
@@ -108,12 +112,14 @@ public:
             if(HL.String()=="1")
             {
                 a= command("CAENHV_GetChParam",m_slot.String(),"IMonL",channel.String());
-                exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMonL","Exp");
+                //exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMonL","Exp");
+                exp=getProperty(channel,"IMonL","Exp");
             }
             else
             {
                  a= command("CAENHV_GetChParam",m_slot.String(),"IMonH",channel.String());
-                exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMonH","Exp");
+               // exp=command("CAENHV_GetChParamProp",m_slot.String(),channel.String(),"IMonH","Exp");
+                 exp=getProperty(channel,"IMonH","Exp");
             }
        }
         Value vol=a.String()+"e"+exp.String();
@@ -145,6 +151,7 @@ public:
     CAENModule* clone() { return new CAENModule(*this);}
     CAENModule* clone() const { return new CAENModule(*this);} 
 private:
+    std::vector<std::map<Value,ParProp>> m_paramsChannels;
     void setChannelStatusBits()
     {
          m_channelStatus
@@ -175,15 +182,71 @@ private:
          ("HVCKFAIL","Internal HV Clock Fail (!=200+-10kHz)",6,1);
     }
     
+    void fillParamsChannels()
+    {
+        for(int i=0;i!=m_nbrOfChannels.Int();++i)
+        {
+            Value list= command("CAENHV_GetChParamInfo",m_slot.String(),i);
+            std::vector<Value> param = list.Tokenize(", ");
+            std::map<Value,ParProp> p;
+            for(unsigned int j=0;j!=param.size();++j)
+            {
+                Value par=command("CAENHV_GetChParamProp",m_slot.String(),i,param[j],"All");
+                ParProp par2(par);
+                p.insert(std::pair<Value,ParProp>(param[j],par2));
+            }
+            m_paramsChannels.push_back(p);
+        }
+    }
+    
     bool channelHasParameter(const Value& channel,const std::string& param)
     {
-        Value list= command("CAENHV_GetChParamInfo",m_slot.String(),channel.String());
-        std::vector<Value>vec= list.Tokenize(", ");
-        std::vector<Value>::iterator it=find(vec.begin(),vec.end(),param);
-        if(it==vec.end()) return false;
-        else return true;
-        
+        if(m_paramsChannels[channel.UInt()].find(param)!=m_paramsChannels[channel.UInt()].end()) return true;
+        return false;
     }
+    
+    ParProp getParameter(const Value& channel,const Value& param)
+    {
+        if(m_paramsChannels[channel.UInt()].find(param)!=m_paramsChannels[channel.UInt()].end()) return m_paramsChannels[channel.UInt()][param];
+        else
+        {
+            std::cout<<"Parameter "<<param.String()<<" unknown !"<<std::endl;
+            throw -1;
+        }
+    }
+    
+    Value getProperty(const Value& channel,const std::string& param,const std::string& property)
+    {
+        ParProp respond=getParameter(channel,param);
+        if(property=="Type") return respond.getType();
+        else if (property=="Mode") return respond.getMode();
+        else if(respond.getType() == PARAM_TYPE_NUMERIC)
+        {
+            if(property=="MinVal") return respond.getMinVal();
+            else if(property=="MaxVal") return respond.getMaxVal();
+            else if(property=="Unit") return respond.getUnit();
+            else if(property=="Exp") return respond.getExp();
+            else
+            {
+                throw -1;
+            }
+        }
+        else if(respond.getType() == PARAM_TYPE_ONOFF)
+        {
+            if(property=="OnState") return respond.getOnState();
+            else if(property=="OffState") return respond.getOffState();
+            else
+            {
+                throw -1;
+            }
+        }
+        else
+        {
+            std::cout<<"What !!"<<std::endl;
+            throw -1;
+        } 
+    }
+    
     void fillInfos()
     {
         std::vector<Value> infos=ID().Tokenize("*");
@@ -191,6 +254,7 @@ private:
         m_model=infos[0];
         m_serialNumber=infos[4];
         m_version=infos[3];
+        fillParamsChannels();
     }
     Value ID()
     { 

@@ -163,6 +163,11 @@ private:
         m_nbrOfChannels=infos[2];
         m_compagny=infos[0];
         m_model=infos[1];
+        if(infos.size()>3)
+        {
+            m_serialNumber=infos[3];
+            if(infos.size()>4) m_version=infos[4];
+        }
     }
     Value ID()
     {

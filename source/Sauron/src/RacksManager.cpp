@@ -31,14 +31,17 @@
 #include <cstdlib>
 #include "PrintVoltageCurrent.h"
 #include "MonitorVoltages.h"
+#include "RecordVoltages.h"
 #include "ID.h"
 
 RacksManager::RacksManager()
 {
     Json::Value root=openJSONFile("RacksConfFile");
+    identify(root);
     extractInfos(root);
     plugMonitor(new PrintVoltageCurrent);
     plugMonitor(new MonitorVoltages);
+    plugMonitor(new RecordVoltages);
 };
 
 std::map<std::string,Monitoring*> RacksManager::m_monitoring=std::map<std::string,Monitoring*>();
@@ -120,28 +123,72 @@ void RacksManager::FillModuleConnectorInfos(const Json::Value& json,std::map<std
 
 void RacksManager::FillModuleInfos(const Json::Value& json,std::map<std::string,Parameters>& m_params,std::map<std::string,Parameters>& c_params)
 {
-    for(unsigned int module=0;module!=json.size();++module)
+    for(unsigned int module=0;module!=json["Modules"].size();++module)
     {
-        if(keyExistsAndValueIsUnique(json[module],"Name")!=true)
+        if(keyExistsAndValueIsUnique(json["Modules"][module],"Name")!=true)
         {
             std::cout<<"Module's name is mandatory and must be unique !"<<std::endl;
             throw -1;
         }
-        std::vector<std::string> id_module = json[module].getMemberNames();
+        std::vector<std::string> id_module = json["Modules"][module].getMemberNames();
         for (std::vector<std::string>::iterator ot=id_module.begin();ot!=id_module.end();++ot) 
         {
-            ID::add(json[module]["Name"].asString(),"Module");
             if(*ot=="Connector")
             {
-                FillModuleConnectorInfos(json[module],c_params);
+                FillModuleConnectorInfos(json["Modules"][module],c_params);
             }
             else
             {
-                m_params[json[module]["Name"].asString()].addParameter(*ot,json[module][*ot].asString());
+                m_params[json["Modules"][module]["Name"].asString()].addParameter(*ot,json["Modules"][module][*ot].asString());
+                ID::addModule(json["Rack"].asString(),json["Name"].asString(),json["Modules"][module]["Name"].asString());
+                if(keyExists(json["Modules"][module],"Description"))
+                {
+                    ID::addDescription(json["Modules"][module]["Name"].asString(),json["Modules"][module]["Description"].asString());
+                }
             }
         }
     }
 }
+
+//This is to arrange rack, crate, module in alphabetical order to have the same id each time;
+void RacksManager::identify(const Json::Value& root)
+{
+    std::set<std::string> racks;
+    std::set<std::string> crates;
+    std::set<std::string> modules;
+    const Json::Value& crate = root["Crates"]; 
+    for (unsigned int i = 0; i < crate.size(); i++)
+    {
+        std::vector<std::string> crate_params = crate[i].getMemberNames();
+        if(keyExists(crate[i],"Name")!=true)
+        {
+            std::cout<<"Crate's name is mandatory and must be unique !"<<std::endl;
+            throw -1;
+        }
+        racks.insert(crate[i]["Rack"].asString());
+        crates.insert(crate[i]["Name"].asString());
+        for (std::vector<std::string>::iterator it=crate_params.begin();it!=crate_params.end();++it) 
+        {
+            if(*it=="Modules")
+            {
+                for(unsigned int module=0;module!=crate[i]["Modules"].size();++module)
+                {
+                    if(keyExists(crate[i]["Modules"][module],"Name")!=true)
+                    {
+                        std::cout<<"Module's name is mandatory and must be unique !"<<std::endl;
+                        throw -1;
+                    }
+                    modules.insert(crate[i]["Modules"][module]["Name"].asString());
+                }
+            }
+        }
+    }
+    for(std::set<std::string>::iterator it=racks.begin();it!=racks.end();++it) ID::createRackID(*it);
+    for(std::set<std::string>::iterator it=crates.begin();it!=crates.end();++it) ID::createCrateID(*it);
+    for(std::set<std::string>::iterator it=modules.begin();it!=modules.end();++it)ID::createModuleID(*it);
+}
+
+
 
 void RacksManager::extractInfos(const Json::Value& root)
 {
@@ -167,8 +214,9 @@ void RacksManager::extractInfos(const Json::Value& root)
             std::cout<<"Crate's name is mandatory and must be unique !"<<std::endl;
             throw -1;
         }
-        ID::add(crates[i]["Name"].asString(),"Crate");
-        ID::add(crates[i]["Rack"].asString(),"Rack");
+        ID::addCrate(crates[i]["Rack"].asString(),crates[i]["Name"].asString());
+        ID::addRack(crates[i]["Rack"].asString());
+        if(keyExists(crates[i],"Description")) ID::addDescription(crates[i]["Name"].asString(),crates[i]["Description"].asString());
         for (std::vector<std::string>::iterator it=crate_params.begin();it!=crate_params.end();++it) 
         {
             if(*it=="Connector")
@@ -177,7 +225,7 @@ void RacksManager::extractInfos(const Json::Value& root)
             }
             else if(*it=="Modules")
             {
-                FillModuleInfos(crates[i]["Modules"],module_infos,connector_infos_modules);
+                FillModuleInfos(crates[i],module_infos,connector_infos_modules);
             }
             else
             {

@@ -9,13 +9,15 @@
     },
     "Options":
     {
-        "Waiting Time":"2",
-        "MaxDelay":"1000000",
-        "MaxDiscrepancy":"5"
+        "Waiting Time":"30",
+        "MaxDelay":"300",
+        "MaxDiscrepancy":"60"
     },
     "Monitoring":
     {
-        "iseg1":[0,1,2,3,4,5]
+        "iseg1":[0,1,2,3,4,5],
+        "iseg2":[0,1,2,3,4,5],
+        "A Module who dont exist to try to make you crash":[1,2,3,4,5]
     }
 }
 

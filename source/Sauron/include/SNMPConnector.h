@@ -47,8 +47,8 @@ public:
     }
     bool isConnected() override;
     Value buildCommand(const std::vector<Value>&) override;
-    Value receiveInfos(const std::vector<Value>&);
-    Value sendInfos(const std::vector<Value>&);
+    Value receiveInfos(std::vector<Value>);
+    Value sendInfos(std::vector<Value>);
 private:
     void setMIBPath();
     void setMIBFilename();

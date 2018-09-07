@@ -47,6 +47,14 @@ public:
         ExtractData(root);
         ConnectToDatabase();
     }
+    void init()
+    {
+        setMonitored(true);
+    }
+    void release()
+    {
+        setMonitored(false);
+    }
     void function()
     {
         std::string command="SELECT * FROM "+m_params["Database"].String()+"."+m_params["Table"].String()+" WHERE date=(SELECT max(date) FROM  "+m_params["Database"].String()+"."+m_params["Table"].String()+");";
@@ -115,6 +123,16 @@ public:
         }
     }
 private :
+    void setMonitored(const bool& mon)
+    {
+        for(std::map<std::string,std::vector<unsigned int>>::iterator it=Channels.begin();it!=Channels.end();++it)
+        {
+            for(unsigned int chan=0;chan!=it->second.size();++chan) 
+            {
+                m_racksmanager->setIsMonitored(it->first,it->second[chan],mon);
+            }
+        }
+    }
     double formula(const VoltageWanted& voltage, const double& pressure, const double& temperature)
     {
         return voltage.getWantedVoltage().Double()*(1013.25/pressure)*(temperature/20.0);
@@ -157,9 +175,16 @@ private :
         id = params["Monitoring"].getMemberNames();
         for(unsigned int i=0;i!=id.size();++i)
         {
-            for(unsigned int j=0;j!=params["Monitoring"][id[i]].size();++j)
+            if(ID::isModule(id[i])==true)
             {
-                Channels[id[i]].push_back(params["Monitoring"][id[i]][j].asInt());
+                for(unsigned int j=0;j!=params["Monitoring"][id[i]].size();++j)
+                {   
+                    Channels[id[i]].push_back(params["Monitoring"][id[i]][j].asInt());
+                }
+            }
+            else
+            {
+                std::cout<<"["<<id[i]<<"]"" is not a Module or it has not been declared ! SKIPING IT !!!"<<std::endl;
             }
         }
     }

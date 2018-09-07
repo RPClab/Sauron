@@ -2,21 +2,22 @@
     "Crates":
     [
         {
-            "Name" : "Crate2",
+            "Name" : "Up",
             "Type" : "WIENER",
+            "Description":"WIENER Crate Up",
             "Modules" :
             [
                 { 
                     "Name":"N1741A", 
-                    "Description":"LV module",
+                    "Description":"CAEN Module",
                     "Type":"CAEN",
                     "Slot":"0",
+                    "SN":"1093",
                     "Connector": 
                     {
                         "Type":"CAEN",
                         "CAENHVSystemType":"N14XX",
                         "LinkType":"VCP",
-                        "Port":"ttyUSB0",
                         "Baudrate":"9600",
                         "Bytesize":"8",
                         "Stopbits":"1",
@@ -26,15 +27,15 @@
                 }
                 ,
                 { 
-                    "Name":"iseg1", 
+                    "Name":"iseg2", 
                     "Type":"iseg",
-                    "Slot":"1",
-                    "Description":"HV module1",
+                    "Slot":"2",
+                    "SN":"8000234",
+                    "Description":"HV Negative Polarity",
                     "Connector" : 
                     {
                         "Type":"VCP",
-                        "SN":"titi",
-                        "Port":"/dev/ttyUSB1",
+                        "LinkType":"VCP",
                         "Baudrate":"9600",
                         "Timeout":"100",
                         "Bytesize":"8",
@@ -44,15 +45,15 @@
                     }
                 },
                 { 
-                    "Name":"iseg2", 
+                    "Name":"iseg1", 
                     "Type":"iseg",
-                    "Slot":"2",
-                    "Description":"HV module2",
+                    "Slot":"1",
+                    "Description":"HV Positive Polarity",
+                    "SN":"8000235",
                     "Connector" : 
                     {
                         "Type":"VCP",
-                        "SN":"titi",
-                        "Port":"/dev/ttyUSB2",
+                        "LinkType":"VCP",
                         "Baudrate":"9600",
                         "Timeout":"100",
                         "Bytesize":"8",
@@ -64,11 +65,13 @@
             ]
         },
         {
-            "Name":"Crate1",
+            "Name":"Down",
             "Type":"WIENER",
+            "Description":"WIENER Crate Down",
             "Connector":
             {
                 "Type":"SNMP",
+                "LinkType":"SNMP",
                 "MIB_path":"/home/sjturpc/Desktop/Sauron2/conf/MIB",
                 "MIB_filename":"WIENER-CRATE-MIB",
                 "Timeout":"3000",
@@ -82,12 +85,14 @@
                 { 
                     "Name":"HV", 
                     "Type":"WIENER",
+                    "SN":"730002",
                     "Description":"HV module",
                     "Slot":"2"
                 },
                 { 
                     "Name":"LV", 
                     "Type":"WIENER",
+                    "SN":"",
                     "Description":"LV module",
                     "Slot":"1"
                 }

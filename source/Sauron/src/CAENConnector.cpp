@@ -99,7 +99,7 @@ void CAENConnector::connect()
     if(!isConnected()) 
     {
         m_connected=CAENHV_InitSystem(m_CAENHVSystemType,m_linkType,(void*)m_arg.c_str(),m_username.c_str(),m_password.c_str(),&m_handle);
-        std::cout<<"CAENHV_InitSystem: "<<CAENHV_GetError(m_handle)<<"(num. "<<m_connected<<")\n";
+        if(m_connected!=4100)std::cout<<"CAENHV_InitSystem: "<<CAENHV_GetError(m_handle)<<"(num. "<<m_connected<<")\n";
         if(m_connected!=0)
         {
             throw -1;
@@ -109,10 +109,6 @@ void CAENConnector::connect()
             m_keepAlive=std::thread(&CAENConnector::keepAliveFunction,this);
             m_keepAlive.detach();
         }
-    }
-    else
-    {
-        std::cout<<"Yet connected"<<std::endl;
     }
 }
 
@@ -303,13 +299,12 @@ void CAENConnector::setPort()
 {
     if(m_params.hasParam("Port"))
     {
-        m_port=m_params["Port"].String();
+        std::size_t const pos=m_params["Port"].String().find_last_of('/');
+        m_port=m_params["Port"].String().substr(pos+1);
     }
     else
     {
-        std::string error="Port is mandatory ! \n";
-        std::cout<<error;
-        throw error;
+        std::cout<<"Sauron will try to find it if you have provided a SN for the Module !\n";
     } 
 }
 

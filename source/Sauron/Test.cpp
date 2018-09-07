@@ -4,32 +4,25 @@
 int main()
 {
     RacksManager manager;
-    manager.Initialize();
+    manager.initialize();
     //manager.printParameters();
     manager.connect();
-   // manager.off();
-    //std::cout<<manager.getNbrChannels()<<std::endl;
-    //manager("LV",1).on();
+    manager.on();
+    std::cout<<manager.getNbrChannels()<<std::endl;
     //manager("Crate2").on();
     //manager("LV").setVoltage(3);
-    
-    //manager("HV").on();
+    //ID::writeJSON("./toto.json");
+    //std::cout<<"Config ID : "<<ID::getConfigID()<<std::endl;
+    /*manager("HV").on();
     manager("iseg1").on();
     manager("iseg2").on();
-    manager("N1741A").on();
+    manager("N1741A").on();*/
     manager("iseg1").setWantedVoltage(1000);
     manager("iseg2").setWantedVoltage(1000);
     manager("N1741A").setWantedVoltage(500);
-    //manager("Crate2").setVoltage(4000);
-    //manager("Crate2",0).setVoltage(3000);
-    //manager.printModuleStatus();
+   // manager.printModuleStatus();
     //std::vector<MeasuresAndSets> po=manager().getMeasuresAndSets();
     //for(unsigned int i=0;i!=po.size();++i) po[i].print();
-    /*manager.setVoltage("Crate2",1000);
-    manager.setVoltage("Crate1",7);
-    manager.setVoltage("Crate1",0,5);
-    manager.setVoltage("HV",1500);
-    manager.setVoltage("Crate2",0,2000);*/
     //std::this_thread::sleep_for(std::chrono::seconds(5));
     //std::thread toto=manager.printVoltageCurrentthread();
     //toto.detach();
@@ -40,14 +33,14 @@ int main()
         manager.setVoltage(i);
         std::this_thread::sleep_for(std::chrono::seconds(50));
     }*/
-    manager.startMonitoring("MonitorVoltages",5);
-    manager.startMonitoring("PrintVoltageCurrent",30);
-  //  manager.stopMonitoring("PrintVoltageCurrent");
+    manager.startMonitoring("MonitorVoltages");
+    manager.startMonitoring("RecordVoltages");
+    manager.startMonitoring("PrintVoltageCurrent",10);
+    //manager.stopMonitoring("PrintVoltageCurrent");
     while(1)
     {
         std::this_thread::sleep_for(std::chrono::seconds(10000));
     }
-   // while(1){;}
     manager.disconnect();
  return 0;       
 }

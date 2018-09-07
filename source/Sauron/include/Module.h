@@ -31,7 +31,7 @@
 #include <iostream>
 #include "Measure.h"
 #include "Status.h"
-		
+#include "serial.h"	
 class Module
 {
 public:
@@ -107,8 +107,15 @@ public:
     {
         /*if(!m_connector->IsConnected())
         {*/
-            m_connector->connect();
-            fillInfos();
+            try
+            {
+                m_connector->connect();
+                fillInfos();
+            }
+            catch(...)
+            {
+                findPort();
+            }
             m_WantedVoltage=std::vector<VoltageWanted>(getNbrChannels().UInt());
             setWantedVoltage(Value(""));
             setChannelStatusBits();
@@ -440,6 +447,10 @@ public:
             m_WantedVoltage[i].setWantedVoltage(HV);
         }
     }
+    void setIsMonitored(const unsigned int& i,const bool& mon)
+    {
+        m_WantedVoltage[i].setIsMonitored(mon);
+    }
     VoltageWanted getWantedVoltage(const unsigned int& i)
     {
         return m_WantedVoltage[i];
@@ -452,7 +463,57 @@ public:
     {
         return m_WantedVoltage;
     }
+    Value getSerialNumber()
+    {
+        return m_serialNumber;
+    }
 protected:
+    void findPort()
+    {
+        std::string old_port="";
+        if(m_connector->getLinkType()=="VCP")
+        {
+            if(m_params.hasParam("SN")==false)
+            {
+                if(m_connector->getParameters().hasParam("Port")==false)
+                {
+                    std::cout<<"Connector "<<m_connector->getName()<<" is VCP !"
+                    <<" You should provide or the Port connector of the module "
+                    <<m_name.String()<<" or the SN of the module !"<<std::endl;
+                }
+                else
+                {
+                    std::cout<<"Something is wrong with the Connector parameters of module "<<m_name.String()<<std::endl;
+                    std::cout<<"Maybe the Port as change... But you didn't provide SN for this module ! Sauron cant't help you !"<<std::endl;
+                }
+                throw;
+            }
+            else
+            {
+                Parameters par=m_connector->getParameters();
+                old_port=par["Port"].String();
+                std::vector<serial::PortInfo> inf=serial::list_ports();
+                for(unsigned int i=0;i!=inf.size();++i)
+                {
+                    par=m_connector->getParameters();
+                    par["Port"]=inf[i].port;
+                    m_connector->setParameters(par);
+                    m_connector->initialize();
+                    try
+                    {
+                        m_connector->connect();
+                        fillInfos();
+                    }
+                    catch(...){}
+                    if(m_params["SN"]==m_serialNumber)
+                    {
+                        std::cout<<"Port "<<old_port<<" for Module "<<m_name<<" has changed to "<<par["Port"]<<std::endl;
+                        break;
+                    }
+                }
+            }
+        }
+    }
     std::vector<VoltageWanted> m_WantedVoltage;
     Status m_channelStatus;
     Status m_moduleStatus;

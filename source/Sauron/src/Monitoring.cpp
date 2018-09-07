@@ -25,20 +25,26 @@
 
 #include "Monitoring.h"
 
+std::atomic_bool Monitoring::m_imProcessing{false};
 
 void Monitoring::loop()
 {
     while (m_stopMonitoring!=true)
     {
+        while (m_imProcessing==true){std::this_thread::sleep_for(std::chrono::nanoseconds(100));}
+        m_imProcessing=true;
         std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
         function();
         std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
         double duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
         long rest=m_time*1000000-duration;
-        std::this_thread::sleep_for(std::chrono::microseconds(rest));
+        m_imProcessing=false;
+        if(rest>0) std::this_thread::sleep_for(std::chrono::microseconds(rest));
+        else std::this_thread::sleep_for(std::chrono::microseconds(m_time));
     }
     if(m_stopMonitoring==true)
     {
         m_started=false;
+        release();
     }
 }

@@ -55,6 +55,8 @@ public:
     std::string getDescription() const {return m_description;}
     std::string getName() const {return m_name;}
     virtual void function()=0;
+    virtual void init(){};
+    virtual void release(){};
     virtual ~Monitoring()
     {
             if(m_racksmanager!=nullptr) m_racksmanager=nullptr;
@@ -63,6 +65,7 @@ public:
     int getTime(){return m_time;}
     void start()
     { 
+        init();
         m_monitoring=std::thread(&Monitoring::loop,this);
         m_monitoring.detach();
         m_started=true;
@@ -72,6 +75,7 @@ public:
     void stop(){ m_stopMonitoring=true;}
 protected:
     std::atomic_bool m_stopMonitoring{false};
+    static std::atomic_bool m_imProcessing;
     bool m_started=false;
     Monitoring()=delete;
     void loop();

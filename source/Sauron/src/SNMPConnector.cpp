@@ -147,7 +147,7 @@ void SNMPConnector::initialize()
     setReadCommunity();
     setMIBFilename();
     setIP();
-	init_snmp("WIENER_SNMP_DLL");
+	init_snmp("");
     setMIBPath();
 	init_mib();  
 	if (!read_module(m_MIBFilename.c_str())) 
@@ -206,10 +206,6 @@ void SNMPConnector::connect()
         }
         std::cout<<"SNMP session for host "<<m_IP<<" opened \n";
     }
-    else
-    {
-        std::cout<<"Yet connected"<<std::endl;
-    }
 }
 
 SNMPConnector& SNMPConnector::operator=(const SNMPConnector& other)
@@ -228,17 +224,17 @@ SNMPConnector& SNMPConnector::operator()(const SNMPConnector& other)
     return *this;
 }
 
-Value SNMPConnector::receiveInfos(const std::vector<Value>& command)
+Value SNMPConnector::receiveInfos(std::vector<Value> command)
 {
+    const char* com=command[1].CString();
     netsnmp_pdu* pdu= snmp_pdu_create(SNMP_MSG_GET);
     netsnmp_pdu* response=nullptr;
     netsnmp_variable_list *vars=nullptr;
-    std::string com=command[1].String();
     std::size_t name_length = MAX_OID_LEN;
     oid name[MAX_OID_LEN];
-    if (!snmp_parse_oid(com.c_str(),name, &name_length)) 
+    if (!snmp_parse_oid(com,name, &name_length)) 
     {
-        snmp_perror(com.c_str());
+        snmp_perror(com);
         throw -1;
     } 
     else snmp_add_null_var(pdu, name, name_length);
@@ -287,7 +283,6 @@ Value SNMPConnector::receiveInfos(const std::vector<Value>& command)
                         std::string ret{reinterpret_cast<char*>(vars->val.string)};
                         ret.erase(vars->val_len);
                         retour.setPersonalType("ASN_BIT_STR");
-                        std::cout<<"Toto"<<std::endl;
                         retour=ret;
                     }
                     else if (vars->type == ASN_OPAQUE_FLOAT)
@@ -336,11 +331,11 @@ Value SNMPConnector::receiveInfos(const std::vector<Value>& command)
     return Value(retour);
 }
 
-Value SNMPConnector::sendInfos(const std::vector<Value>& command)
+Value SNMPConnector::sendInfos(std::vector<Value> command)
 {
     std::string com=command[1].String();
     std::string value=command[2].String();
-    char type=findType(receiveInfos({com}));
+    char type=findType(receiveInfos(command));
     netsnmp_pdu* pdu= snmp_pdu_create(SNMP_MSG_SET);
     netsnmp_pdu* response;
     netsnmp_variable_list *vars=nullptr;
@@ -350,7 +345,7 @@ Value SNMPConnector::sendInfos(const std::vector<Value>& command)
     {
         snmp_perror(com.c_str());
         throw -1;
-    } 
+    }
     else if (snmp_add_var(pdu,name,name_length,type,value.c_str()))
     {
         snmp_perror(com.c_str());
@@ -380,7 +375,7 @@ Value SNMPConnector::sendInfos(const std::vector<Value>& command)
         snmp_sess_perror("snmpset",m_session);
     } 
     if (response) snmp_free_pdu(response);
-    return receiveInfos({com});
+    return receiveInfos(command);
 }
 
 
@@ -397,17 +392,17 @@ char SNMPConnector::findType(Value value)
 
 Value SNMPConnector::buildCommand(const std::vector<Value>& command)
 {   
-    if(command[0]=="SEND")
+    if(command[0].String()=="SEND")
     {
         return sendInfos(command);
     }
-    else if(command[0]=="RECEIVE")
+    else if(command[0].String()=="RECEIVE")
     {
         return receiveInfos(command);
     }
     else 
     {
-        std::string e="No key ***SEND*** or ***RECEIVE*** found in the command";
+        std::string e="No key SEND or RECEIVE found in the command";
         std::cout<<e<<std::endl;
         throw e;
     }

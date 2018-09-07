@@ -94,10 +94,6 @@ void SerialConnector::connect()
     {
             m_serial.open();
     }
-    else
-    {
-        std::cout<<"Yet connected"<<std::endl;
-    }
 }
 
 void SerialConnector::setPort()
@@ -109,10 +105,7 @@ void SerialConnector::setPort()
     }
     else
     {
-        
-        std::string error="Port is mandatory ! \n";
-        std::cout<<error;
-        throw error;
+        std::cout<<"Sauron will try to find it if you have provided a SN for the Module !\n";
     }
 }
 

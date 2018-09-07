@@ -45,6 +45,11 @@ std::string Connector::getName()
     return m_name;
 }
     
+std::string Connector::getLinkType()
+{
+    return m_params["LinkType"].String();
+}
+    
 bool Connector::isCrateConnector() 
 {
     return m_isCrateConnector;

@@ -49,7 +49,7 @@ public:
     RacksManager();
     ~ RacksManager();
     void plugMonitor(Monitoring*);
-    void Initialize()
+    void initialize()
     {
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) it->second->Initialize();
     }
@@ -146,6 +146,7 @@ public:
         {
                 itt->second->Connect();
         }
+        fillSerialNumbers();
     }
     void printVoltageCurrent()
     {
@@ -184,9 +185,9 @@ public:
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
         {
             std::vector<MeasuresAndSets> mes2=it->second->getMeasuresAndSets(m_who,m_channel);
-            std::move(mes2.begin(),mes2.end(), std::inserter(mes,mes.end()));
+            mes.insert(mes.end(),mes2.begin(),mes2.end());
         }
-        return std::move(mes);
+        return mes;
     }
     RacksManager& operator()(const std::string& who="",const std::string& channel="")
     {
@@ -201,11 +202,31 @@ public:
         return *this;
     }
     
+    void setIsMonitored(const Value& name,const Value& channel,const bool& mon)
+    {
+        for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
+        {
+            it->second->setIsMonitored(name,channel,mon);
+        }
+    }
+
 private :
+    void fillSerialNumbers()
+    {
+        for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
+        {
+            ID::addSerialNumber(it->first,it->second->getSerialNumber().String());
+            std::vector<Value> a= it->second->getModuleNames();
+            for(unsigned int i=0;i!=a.size();++i)
+            {
+                ID::addSerialNumber(a[i].String(),it->second->getSerialNumberModule(a[i].String()).String());
+            }
+        }
+    }
     void FillConnectorCrateInfos(const Json::Value& json,Parameters& params);
     void FillModuleInfos(const Json::Value& json,std::map<std::string,Parameters>& m_params,std::map<std::string,Parameters>& c_params);
     void FillModuleConnectorInfos(const Json::Value& json,std::map<std::string,Parameters>& c_params);
-
+    void identify(const Json::Value& json);
     std::set<std::string> getListRacks()
     {
         std::set<std::string> rackNames; 

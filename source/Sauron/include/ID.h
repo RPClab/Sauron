@@ -29,12 +29,24 @@
 #include <map>
 #include <vector>
 #include <iostream>
-
+#include <array>
 class ID 
 {
 public :
-    static void add(const std::string& Name,const std::string& type);
-    static void print(std::ostream& stream=std::cout,const std::string& mover="" );
+    static void addDescription(const std::string& who,const std::string& description);
+    static void addSerialNumber(const std::string& who,const std::string& sn);
+    static void printJSON(std::ostream& stream=std::cout,const std::string& mover="");
+    static void writeJSON(const std::string& file); 
+    static std::string createJSON(const std::string& mover="");
+    static bool isRack(const std::string& who);
+    static bool isCrate(const std::string& who);
+    static bool isModule(const std::string& who);
+    static void addRack(const std::string& rack);
+    static void addCrate(const std::string& rack,const std::string& crate);
+    static void addModule(const std::string& rack,const std::string& crate,const std::string& module);
+    static void createRackID(const std::string& rack);
+    static void createCrateID(const std::string& crate);
+    static void createModuleID(const std::string& module);
     static unsigned int getModuleID(const std::string& module);
     static unsigned int getCrateID(const std::string& crate);
     static unsigned int getRackID(const std::string& rack);
@@ -44,15 +56,19 @@ public :
     unsigned int static getNbrOfModules();
     unsigned int static getNbrOfCrates();
     unsigned int static getNbrOfRacks();
+    unsigned int static getConfigID();
+    static void setConfigID(const unsigned int&);
+    static void print(std::ostream& stream=std::cout,const std::string& mover="");
 private :
-    static std::map<std::string,unsigned int> m_moduleIDs;
-    static std::vector<std::string> m_moduleNames;
-    static std::map<std::string,unsigned int> m_crateIDs;
-    static std::vector<std::string> m_crateNames;
-    static std::map<std::string,unsigned int> m_rackIDs;
-    static std::vector<std::string> m_rackNames;
+    static std::map<std::string,int> m_rackIDs;
+    static std::vector<std::array<std::string,3>> m_rackInfos;
+    static std::map<std::string,std::array<int,2>> m_crateIDs;
+    static std::vector<std::array<std::string,3>> m_crateInfos;
+    static std::map<std::string,std::array<int,3>> m_moduleIDs;
+    static std::vector<std::array<std::string,3>> m_moduleInfos;
     static unsigned int m_moduleNbr;
     static unsigned int m_crateNbr;
     static unsigned int m_rackNbr;
+    static unsigned int m_configID;
 };
 #endif
