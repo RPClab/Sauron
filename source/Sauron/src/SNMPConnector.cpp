@@ -246,12 +246,13 @@ Value SNMPConnector::receiveInfos(std::vector<Value> command)
         int status = snmp_synch_response(m_session, pdu, &response);
             if (status == STAT_SUCCESS) 
             {
-                 if (response->errstat == SNMP_ERR_NOERROR) 
+                if (response->errstat == SNMP_ERR_NOERROR) 
                 {
                 for(vars = response->variables; vars; vars = vars->next_variable) 
                 {
                     if (vars->type == ASN_OCTET_STR) 
                     {
+                        bool imstring=true;
                         std::string str;
                         uint64_t toto={0};
                         retour.setPersonalType("ASN_OCTET_STR");
@@ -267,16 +268,44 @@ Value SNMPConnector::receiveInfos(std::vector<Value> command)
                                 std::bitset<8> p=(vars->val.bitstring)[i];
                                 for(std::size_t o=0;o!=4;++o)
                                 {
-                                    std::bitset<1> dumb;
-                                    dumb[0]=p[0];
+                                    static std::bitset<1> dumb;
+                                    dumb[0]=p[o];
                                     p[o]=p[7-o];
                                     p[7-o]=dumb[0];
                                 }
-                                toto|=p.to_ulong()<<8*i;
+                                toto|=(p.to_ulong()<<8*(i));
                             }
                             retour=toto;
                         }
-                        else retour=str;
+                        else
+                        {
+                            for ( int i = 0 ; i < ret.length(); i++)
+                            {
+                                if(!iscntrl(ret[i])&&!isprint(ret[i]))
+                                {
+                                    imstring=false;
+                                    break;
+                                }
+                            }
+                            if(imstring==true) retour=str;
+                            else
+                            {
+                                for(unsigned int i=0;i!=vars->val_len;++i)
+                                {
+                                    std::bitset<8> p=(vars->val.bitstring)[i];
+                                    for(std::size_t o=0;o!=4;++o)
+                                    {
+                                        static std::bitset<1> dumb;
+                                        dumb[0]=p[o];
+                                        p[o]=p[7-o];
+                                        p[7-o]=dumb[0];
+                                    }
+                                    toto|=(p.to_ulong()<<8*(i));
+                                }
+                                retour=toto;
+                            }
+                            
+                        }
                     } 
                     else if(vars->type == ASN_BIT_STR)
                     {

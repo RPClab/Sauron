@@ -31,6 +31,7 @@
 #include <cstdlib>
 #include "PrintVoltageCurrent.h"
 #include "MonitorVoltages.h"
+#include "MonitorEvents.h"
 #include "RecordVoltages.h"
 #include "ID.h"
 
@@ -42,6 +43,7 @@ RacksManager::RacksManager()
     plugMonitor(new PrintVoltageCurrent);
     plugMonitor(new MonitorVoltages);
     plugMonitor(new RecordVoltages);
+    plugMonitor(new MonitorEvents);
 };
 
 std::map<std::string,Monitoring*> RacksManager::m_monitoring=std::map<std::string,Monitoring*>();

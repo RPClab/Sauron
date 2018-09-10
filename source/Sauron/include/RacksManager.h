@@ -178,6 +178,14 @@ public:
         }
     }
     
+    void printChannelsStatus()
+    {
+        for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
+        {
+           it->second->printChannelsStatus();
+        }
+    }
+    
     std::vector<MeasuresAndSets> getMeasuresAndSets()
     {
         std::vector<MeasuresAndSets>mes;

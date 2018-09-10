@@ -96,7 +96,6 @@ public:
     {
         Value status=command("RECEIVE","outputStatus.u"+goodChannelNumber(channel).String());
         return m_channelStatus(status.LLong());
-        return 0;
     };
     //GET MODULE STATUS 
     virtual Status getModuleStatus()

@@ -9,6 +9,7 @@ int main()
     manager.connect();
     manager.on();
     std::cout<<manager.getNbrChannels()<<std::endl;
+    ID::writeJSON("./toto.txt");
     //manager("Crate2").on();
     //manager("LV").setVoltage(3);
     //ID::writeJSON("./toto.json");
@@ -35,7 +36,8 @@ int main()
     }*/
     manager.startMonitoring("MonitorVoltages");
     manager.startMonitoring("RecordVoltages");
-    manager.startMonitoring("PrintVoltageCurrent",10);
+    manager.startMonitoring("MonitorEvents",20);
+    //manager.startMonitoring("PrintVoltageCurrent",10);
     //manager.stopMonitoring("PrintVoltageCurrent");
     while(1)
     {

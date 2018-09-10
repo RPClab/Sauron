@@ -434,9 +434,24 @@ public:
     {
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
-           it->second->getModuleStatus().print();
+           std::cout<<"Module "<<it->second->getName()<<" : "<<std::endl;
+           it->second->getModuleStatus().print(1);
         }
     }
+    
+    void printChannelsStatus()
+    {
+        for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+        {
+           std::cout<<"Module "<<it->second->getName()<<" : "<<std::endl;
+           for(unsigned int j=0;j!=it->second->getNbrChannels().UInt();++j)
+           {
+               std::cout<<"Channel "<<j<<" : "<<std::endl;
+               it->second->getStatus(j).print(1);
+           }
+        }
+    }
+    
     unsigned int getNbrChannels()
     {
         unsigned int nbr=0;
