@@ -29,6 +29,7 @@
 #include <string>
 #include <map>
 #include "Parameters.h"
+#include "Driver.h"
 
 class Connector
 {
@@ -53,9 +54,19 @@ public:
     virtual Connector* clone()=0;
     virtual Value buildCommand(const std::vector<Value>& params)=0;
     Parameters getParameters(){return m_params;};
+    int getPluginVersion(){ return m_pluginVersion;}
+    static const std::string server_name() {return "Connector";}
 protected:
     bool m_isCrateConnector{false};
     Parameters m_params;
     std::string m_name{"VirtualConnector"};
+    static const int m_pluginVersion;
+};
+
+class ConnectorDriver : public pugg::Driver
+{
+public:
+    ConnectorDriver(std::string name, int version) : pugg::Driver(Connector::server_name(),name,version) {}
+    virtual Connector* create() = 0;
 };
 #endif

@@ -37,17 +37,29 @@
 
 RacksManager::RacksManager()
 {
-    Json::Value root=openJSONFile("RacksConfFile");
-    identify(root);
-    extractInfos(root);
-    plugMonitor(new PrintVoltageCurrent);
-    plugMonitor(new MonitorVoltages);
-    plugMonitor(new RecordVoltages);
-    plugMonitor(new MonitorEvents);
+
 };
 
+    void RacksManager::initialize()
+    {
+        if(isInitialized==false)
+        {
+                    values.clear();
+        Json::Value root=openJSONFile("RacksConfFile");
+        identify(root);
+        extractInfos(root);
+        plugMonitor(new PrintVoltageCurrent);
+        plugMonitor(new MonitorVoltages);
+        plugMonitor(new RecordVoltages);
+        plugMonitor(new MonitorEvents);
+            for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) it->second->Initialize();
+            isInitialized=true;
+        }
+    }
+
+
 std::map<std::string,Monitoring*> RacksManager::m_monitoring=std::map<std::string,Monitoring*>();
- 
+std::map<std::string,std::vector<std::string>> RacksManager::values=std::map<std::string,std::vector<std::string>>();
 void RacksManager::plugMonitor(Monitoring* monitoring)
 {
     m_monitoring[monitoring->getName()]=monitoring;
@@ -253,7 +265,6 @@ bool RacksManager::keyExists(const Json::Value& id,const std::string & key)
 
 bool RacksManager::keyExistsAndValueIsUnique(const Json::Value& id,const std::string & key)
 {
-    static std::map<std::string,std::vector<std::string>> values;
     if(keyExists(id,key)==false)
     {
         return false;

@@ -36,4 +36,6 @@ endif()
   include_directories(${MariaDBClient_INCLUDE_DIRS})
   target_link_libraries(Test ${MariaDBClient_LIBRARIES} pthread mariadbclientpp libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so ${OPENSSL_LIBRARIES} Sauron )
   install(TARGETS Test RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+  
+#add_subdirectory(Wt)
 

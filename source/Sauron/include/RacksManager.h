@@ -46,13 +46,13 @@ class Monitoring;
 class RacksManager 
 {
 public: 
-    RacksManager();
-    ~ RacksManager();
-    void plugMonitor(Monitoring*);
-    void initialize()
+    static RacksManager& instance() 
     {
-        for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) it->second->Initialize();
+        static RacksManager S;
+        return S;
     }
+    void plugMonitor(Monitoring*);
+    void initialize();
     void printParameters(std::ostream& stream=std::cout,const std::string mover="")
     {
         stream<<"Parameters : \n";
@@ -132,21 +132,34 @@ public:
     
     void disconnect()
     {
-        Release();
-        std::lock_guard<std::mutex> lock(mutexx);
-        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        if(isConnected==true)
         {
-            itt->second->Disconnect();
+            Release();
+            std::lock_guard<std::mutex> lock(mutexx);
+            for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+            {
+                itt->second->Disconnect();
+            }
+            isInitialized=false;
+            isConnected=false;
         }
     }
     void connect()
     {
-        std::lock_guard<std::mutex> lock(mutexx);
-        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        if(isInitialized==false)
         {
-                itt->second->Connect();
+            std::cout<<"Initialize first !!"<<std::endl;
         }
-        fillSerialNumbers();
+        else if(isConnected==false&&isInitialized==true)
+        {
+            std::lock_guard<std::mutex> lock(mutexx);
+            for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+            {
+                itt->second->Connect();
+            }
+            fillSerialNumbers();
+            isConnected=true;
+        }
     }
     void printVoltageCurrent()
     {
@@ -161,7 +174,7 @@ public:
         unsigned int nbr=0;
         for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
         {
-            nbr+=itt->second->getNbrChannels();
+            nbr+=itt->second->getNbrChannels(m_who);
         }
         return nbr;
     }
@@ -219,6 +232,10 @@ public:
     }
 
 private :
+    bool isInitialized{false};
+    bool isConnected{false};
+    RacksManager();
+    ~RacksManager();
     void fillSerialNumbers()
     {
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
@@ -245,6 +262,7 @@ private :
         return std::move(rackNames);
     }
     std::mutex mutexx;
+    static std::map<std::string,std::vector<std::string>> values;
     static std::map<std::string,Monitoring*> m_monitoring;
     bool keyExists(const Json::Value&,const std::string& string);
     bool keyExists(const std::vector<std::string>,const std::string& string);

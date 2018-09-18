@@ -212,7 +212,7 @@ void ID::print(std::ostream& stream,const std::string& mover)
             {
                 stream<<mover<<"\t\tCrate "<<crate->first<<" ID("<<crate->second[1]<<"), ";
                 stream<<"Description : "<<m_crateInfos[crate->second[1]][1]<<", ";
-                stream<<"SR : "<<m_crateInfos[crate->second[1]][2]<<std::endl;
+                stream<<"SN : "<<m_crateInfos[crate->second[1]][2]<<std::endl;
             }
             else continue;
             for(std::map<std::string,std::array<int,3>>::iterator module=m_moduleIDs.begin();module!=m_moduleIDs.end();++module)
@@ -221,7 +221,7 @@ void ID::print(std::ostream& stream,const std::string& mover)
                 {
                     stream<<mover<<"\t\t\t "<<module->first<<" ID("<<module->second[2]<<"), ";
                     stream<<"Description : "<<m_moduleInfos[module->second[2]][1]<<", ";
-                    stream<<"SR : "<<m_moduleInfos[module->second[2]][2]<<std::endl;
+                    stream<<"SN : "<<m_moduleInfos[module->second[2]][2]<<std::endl;
                 }
             }
         }

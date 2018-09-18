@@ -452,13 +452,13 @@ public:
         }
     }
     
-    unsigned int getNbrChannels()
+    unsigned int getNbrChannels(const Value& who=Value(""))
     {
         unsigned int nbr=0;
         for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
         {
-           nbr+=it->second->getNbrChannels().UInt();
-        }
+           if(who==it->second->getName()||who.String()==""||who==m_name) nbr+=it->second->getNbrChannels().UInt();
+        }        
         return nbr;
     }
     Value getSerialNumberModule(const std::string& module)

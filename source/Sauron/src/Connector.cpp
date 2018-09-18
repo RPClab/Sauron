@@ -25,6 +25,9 @@
 
 #include "Connector.h"
 
+const int Connector::m_pluginVersion=1;
+
+
 Connector::Connector()
 {
 

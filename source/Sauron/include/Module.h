@@ -98,10 +98,10 @@ public:
     }
     void initialize()
     {
-            setName();
-            setDescription();
-            setSlot();
-            m_connector->initialize();
+        setName();
+        setDescription();
+        setSlot();
+        m_connector->initialize();
     }
     void connect()
     {
@@ -111,6 +111,7 @@ public:
             {
                 m_connector->connect();
                 fillInfos();
+                std::cout<<m_nbrOfChannels<<std::endl;
             }
             catch(...)
             {
