@@ -494,7 +494,6 @@ protected:
             {
                     try
                     {
-                        std::cout<<"here"<<std::endl;
                         m_connector->connect();
                         try
                         {
@@ -511,7 +510,6 @@ protected:
                     }
                     catch(std::out_of_range&)
                     {
-                        std::cout<<"here2"<<std::endl;
                         std::exit(1);
                     }
             }
