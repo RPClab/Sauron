@@ -8,25 +8,6 @@
             "Modules" :
             [
                 { 
-                    "Name":"N1741A", 
-                    "Description":"CAEN Module",
-                    "Type":"CAEN",
-                    "Slot":"0",
-                    "SN":"1093",
-                    "Connector": 
-                    {
-                        "Type":"CAEN",
-                        "CAENHVSystemType":"N14XX",
-                        "LinkType":"VCP",
-                        "Baudrate":"9600",
-                        "Bytesize":"8",
-                        "Stopbits":"1",
-                        "Parity":"none",
-                        "IBusAddress":"0"
-                    }
-                }
-                ,
-                { 
                     "Name":"iseg2", 
                     "Type":"iseg",
                     "Slot":"2",
@@ -72,7 +53,7 @@
             {
                 "Type":"SNMP",
                 "LinkType":"SNMP",
-                "MIB_path":"/home/sjturpc/Desktop/Sauron2/conf/MIB",
+                "MIB_path":"/home/sjturpc/Desktop/Sauron/conf/MIB",
                 "MIB_filename":"WIENER-CRATE-MIB",
                 "Timeout":"3000",
                 "IP":"10.42.0.201",
@@ -84,14 +65,14 @@
             [
                 { 
                     "Name":"HV", 
-                    "Type":"WIENER",
+                    "Type":"MPOD",
                     "SN":"730002",
                     "Description":"HV module",
                     "Slot":"2"
                 },
                 { 
                     "Name":"LV", 
-                    "Type":"WIENER",
+                    "Type":"MPOD",
                     "SN":"",
                     "Description":"LV module",
                     "Slot":"1"

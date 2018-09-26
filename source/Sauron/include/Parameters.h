@@ -61,6 +61,10 @@ public :
     {
         m_params.insert({key,value});
     }
+    void changeParameter(const std::string& key ,const std::string& value)
+    {
+        m_params[key]=value;
+    }
     Parameters& operator=(const Parameters& params)
     {
         m_params=params.m_params;

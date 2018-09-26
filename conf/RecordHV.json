@@ -1,9 +1,9 @@
 {
     "Database":
     {
-        "User":"",
-        "Password": "",
-        "Host":"",
+        "User":"sjturpc",
+        "Password": "RPC2018",
+        "Host":"yin",
         "HVDatabase" : "SJTUrpc",
         "HVTable" : "hv",
         "ConfigDatabase" : "SJTUrpc",

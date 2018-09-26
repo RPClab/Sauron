@@ -31,7 +31,8 @@
 #include <iostream>
 #include "Measure.h"
 #include "Status.h"
-#include "serial.h"	
+#include "Driver.h"
+
 class Module
 {
 public:
@@ -111,7 +112,6 @@ public:
             {
                 m_connector->connect();
                 fillInfos();
-                std::cout<<m_nbrOfChannels<<std::endl;
             }
             catch(...)
             {
@@ -468,10 +468,11 @@ public:
     {
         return m_serialNumber;
     }
+    static int getPluginVersion(){ return m_pluginVersion;}
+    static const std::string server_name() {return "Module";}
 protected:
     void findPort()
     {
-        std::string old_port="";
         if(m_connector->getLinkType()=="VCP")
         {
             if(m_params.hasParam("SN")==false)
@@ -491,27 +492,28 @@ protected:
             }
             else
             {
-                Parameters par=m_connector->getParameters();
-                old_port=par["Port"].String();
-                std::vector<serial::PortInfo> inf=serial::list_ports();
-                for(unsigned int i=0;i!=inf.size();++i)
-                {
-                    par=m_connector->getParameters();
-                    par["Port"]=inf[i].port;
-                    m_connector->setParameters(par);
-                    m_connector->initialize();
                     try
                     {
+                        std::cout<<"here"<<std::endl;
                         m_connector->connect();
-                        fillInfos();
+                        try
+                        {
+                            fillInfos();
+                        }
+                        catch(...){}
+                        if(m_params["SN"].String()!=m_serialNumber.String())
+                        {
+                            m_connector->disconnect();
+                            m_connector->getParameters().changeParameter("Port","");
+                            findPort();
+                        }
+                        else return;
                     }
-                    catch(...){}
-                    if(m_params["SN"]==m_serialNumber)
+                    catch(std::out_of_range&)
                     {
-                        std::cout<<"Port "<<old_port<<" for Module "<<m_name<<" has changed to "<<par["Port"]<<std::endl;
-                        break;
+                        std::cout<<"here2"<<std::endl;
+                        std::exit(1);
                     }
-                }
             }
         }
     }
@@ -586,5 +588,13 @@ protected:
     }    
     virtual void fillInfos()=0;
     std::vector<Value> params;
+    static const int m_pluginVersion;
+};
+
+class ModuleDriver : public pugg::Driver
+{
+public:
+    ModuleDriver(std::string name, int version) : pugg::Driver(Module::server_name(),name,version) {}
+    virtual Module* create() = 0;
 };
 #endif

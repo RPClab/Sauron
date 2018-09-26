@@ -29,9 +29,6 @@
 #include <vector>
 #include <iostream>
 #include "json/json.h"
-#include "mariadb++/account.hpp"
-#include "mariadb++/connection.hpp"
-#include "mariadb++/time.hpp"
 #include <fstream>
 
 std::map<std::string,int> ID::m_rackIDs=std::map<std::string,int>();

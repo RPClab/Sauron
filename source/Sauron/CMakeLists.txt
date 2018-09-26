@@ -11,7 +11,7 @@ link_directories(${PROJECT_SOURCE_DIR}/bin/lib)
 file(GLOB SAURON_SOURCES src/*.cpp)
 
 add_library( Sauron STATIC ${SAURON_SOURCES})
-link_libraries(Sauron serial jsoncpp pthread netsnmp)
+link_libraries(Sauron jsoncpp pthread dl)
 
 ## Install executable
 install(TARGETS Sauron ARCHIVE DESTINATION ${PROJECT_SOURCE_DIR}/bin/lib LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/bin/lib)
@@ -19,14 +19,13 @@ install(TARGETS Sauron ARCHIVE DESTINATION ${PROJECT_SOURCE_DIR}/bin/lib LIBRARY
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    ON)
-find_package(Boost 1.67.0 COMPONENTS program_options system thread container)
+find_package(Boost 1.67.0 COMPONENTS program_options system thread container filesystem)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
-  add_executable(Controler Console.cpp)
-  target_link_libraries(Controler Sauron libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
-  install(TARGETS Controler RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-endif()
+ # add_executable(Controler Console.cpp)
+ # target_link_libraries(Controler Sauron  ${CAENVME}  ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
+ # install(TARGETS Controler RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
 
   
    add_executable(Test Test.cpp)
@@ -34,8 +33,11 @@ endif()
    add_dependencies(Test drivers)
    endif()
   include_directories(${MariaDBClient_INCLUDE_DIRS})
-  target_link_libraries(Test ${MariaDBClient_LIBRARIES} pthread mariadbclientpp libnetsnmp.so ${CAENVME} libcaenhvwrapper.so libCAENComm.so ${OPENSSL_LIBRARIES} Sauron )
+  target_link_libraries(Test ${MariaDBClient_LIBRARIES} pthread mariadbclientpp ${Boost_LIBRARIES} Sauron )
   install(TARGETS Test RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-  
+  endif()
 #add_subdirectory(Wt)
 
+add_subdirectory(Connectors)
+add_subdirectory(Monitors)
+add_subdirectory(Modules)

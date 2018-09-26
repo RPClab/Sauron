@@ -29,15 +29,79 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
-#include "PrintVoltageCurrent.h"
-#include "MonitorVoltages.h"
-#include "MonitorEvents.h"
-#include "RecordVoltages.h"
 #include "ID.h"
+#include "Kernel.h"
+#include "boost/filesystem.hpp"
+#include "Monitoring.h"
+using namespace boost::filesystem;
+
+
+void RacksManager::loadPlugins(const std::string ppath)
+{
+    path p(ppath);
+    std::vector<directory_entry> v; // To save the file names in a vector.
+    if(is_directory(p))
+    {
+        copy(directory_iterator(p), directory_iterator(), back_inserter(v));
+    }
+    for(std::vector<directory_entry>::const_iterator it = v.begin(); it != v.end();  ++ it)
+    {
+        if((*it).path().extension()==".so"||(*it).path().extension()==".dll")
+        {
+            std::cout<<(*it).path().string()<<std::endl;
+            m_kernel.load_plugin((*it).path().string());
+        }
+    }
+}
+
+void RacksManager::loadConnectors()
+{
+    m_kernel.add_server(Connector::server_name(), Connector::getPluginVersion());
+    loadPlugins(m_connectorsPath);
+    std::vector<ConnectorDriver*> drivers = m_kernel.get_all_drivers<ConnectorDriver>(Connector::server_name());
+    for (std::vector<ConnectorDriver*>::iterator iter = drivers.begin(); iter != drivers.end(); ++iter) 
+    {
+        m_connectors[(*(*iter)).name()]=(*(*iter)).create();
+    }
+}
+
+void RacksManager::loadModules()
+{
+    m_kernel.add_server(Module::server_name(), Module::getPluginVersion());
+    loadPlugins(m_modulesPath);
+    std::vector<ModuleDriver*> drivers = m_kernel.get_all_drivers<ModuleDriver>(Module::server_name());
+    for (std::vector<ModuleDriver*>::iterator iter = drivers.begin(); iter != drivers.end(); ++iter) 
+    {
+        std::cout<<(*(*iter)).name()<<std::endl;
+        m_modules[(*(*iter)).name()]=(*(*iter)).create();
+    }
+}
+
+void RacksManager::loadMonitors()
+{
+    m_kernel.add_server(Monitoring::server_name(), Monitoring::getPluginVersion());
+    loadPlugins(m_monitorPath);
+    std::vector<MonitorDriver*> drivers = m_kernel.get_all_drivers<MonitorDriver>(Monitoring::server_name());
+    for (std::vector<MonitorDriver*>::iterator iter = drivers.begin(); iter != drivers.end(); ++iter) 
+    {
+        m_monitoring[(*(*iter)).name()]=(*(*iter)).create();
+        m_monitoring[(*(*iter)).name()]->setRacksManager(this);
+    }
+}
+
 
 RacksManager::RacksManager()
 {
-
+    std::cout<<"Loading General Configuration File !"<<std::endl;
+    m_loadGeneralConfigs();
+    std::cout<<"Loading Connectors Plugins ! "<<std::endl;
+    loadConnectors();
+    std::cout<<"Loading Modules Plugins ! "<<std::endl;
+    loadModules();
+    std::cout<<"Loading Crates Plugins soooooooon ! HAVE TO BE DONE "<<std::endl;
+    std::cout<<"Loading Monitors Plugins ! "<<std::endl;
+    loadMonitors();
+    
 };
 
     void RacksManager::initialize()
@@ -45,13 +109,9 @@ RacksManager::RacksManager()
         if(isInitialized==false)
         {
                     values.clear();
-        Json::Value root=openJSONFile("RacksConfFile");
+        Json::Value root=openJSONFile(m_configsPath+"RacksConfig.json");
         identify(root);
         extractInfos(root);
-        plugMonitor(new PrintVoltageCurrent);
-        plugMonitor(new MonitorVoltages);
-        plugMonitor(new RecordVoltages);
-        plugMonitor(new MonitorEvents);
             for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) it->second->Initialize();
             isInitialized=true;
         }
@@ -69,6 +129,7 @@ void RacksManager::plugMonitor(Monitoring* monitoring)
 RacksManager::~RacksManager()
 {
     for(std::map<std::string,Connector*>::iterator it=m_connectors.begin();it!=m_connectors.end();++it) delete it->second;
+    m_connectors.clear();
     for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it) delete it->second;
     for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) delete it->second;
     for(std::map<std::string,Monitoring*>::iterator it=m_monitoring.begin();it!=m_monitoring.end();++it)delete it->second;
@@ -80,15 +141,15 @@ std::string RacksManager::getEnvVar(const std::string & key )
     else return std::string(std::getenv( key.c_str()));
 }
 
-Json::Value RacksManager::openJSONFile(const std::string & envVar)
+Json::Value RacksManager::openJSONFile(const std::string & name)
 {
     Json::CharReaderBuilder builder;
     Json::Value obj;   // will contain the root value after parsing.
     std::string errs{""};
-    std::string FileName=getEnvVar(envVar.c_str());
+    std::string FileName=name;
     if(FileName=="")
     {
-        std::cout<<"Please add "<<envVar<<" as variable environment ! \n";
+        std::cout<<"File "<<name<<" don't exist !\n";
         std::exit(2);
     }
     std::ifstream ConfFile(FileName.c_str(),std::ifstream::binary);
@@ -295,7 +356,7 @@ void RacksManager::constructCrate(Parameters& crate_infos,Parameters& connector_
                    std::map<std::string,Parameters>& connector_infos_modules)
 {
   m_racks[crate_infos["Name"].String()]=new Crate(crate_infos);
-  Connector* connector_crate=nullptr;
+  Connector* connector_crate{nullptr};
   if(m_connectors.find(connector_infos_crate["Type"].String())!=m_connectors.end())
   {
       connector_crate=m_connectors[connector_infos_crate["Type"].String()]->clone();
@@ -336,6 +397,7 @@ void RacksManager::constructCrate(Parameters& crate_infos,Parameters& connector_
         m_racks[crate_infos["Name"].String()]->setModuleParameters(itt->first,module_infos[itt->first]);
         if(connector_infos_modules.find(itt->first)==connector_infos_modules.end())
         {
+            
             if(connector_crate==nullptr)
             {
                 std::cout<<"Error : or crate and/or Module should have a connector attached \n";

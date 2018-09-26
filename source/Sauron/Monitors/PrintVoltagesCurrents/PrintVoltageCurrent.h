@@ -23,31 +23,23 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef PRINTVOLTAGECURRENT_H
+#define PRINTVOLTAGECURRENT_H
 #include "Monitoring.h"
 
-
-const int Monitoring::m_pluginVersion=1;
-
-std::atomic_bool Monitoring::m_imProcessing{false};
-
-void Monitoring::loop()
+class PrintVoltageCurrent : public Monitoring
 {
-    while (m_stopMonitoring!=true)
-    {
-        while (m_imProcessing==true){std::this_thread::sleep_for(std::chrono::nanoseconds(100));}
-        m_imProcessing=true;
-        std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-        function();
-        std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-        double duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-        long rest=m_time*1000000-duration;
-        m_imProcessing=false;
-        if(rest>0) std::this_thread::sleep_for(std::chrono::microseconds(rest));
-        else std::this_thread::sleep_for(std::chrono::microseconds(m_time));
-    }
-    if(m_stopMonitoring==true)
-    {
-        m_started=false;
-        release();
-    }
-}
+public: 
+    PrintVoltageCurrent(RacksManager* rackmanager):Monitoring(rackmanager,"PrintVoltageCurrent"){}
+    PrintVoltageCurrent():Monitoring("PrintVoltageCurrent"){}
+    void function();
+};
+
+
+class PrintVoltageCurrentDriver : public MonitorDriver
+{
+public:
+    PrintVoltageCurrentDriver() : MonitorDriver("PrintVoltageCurrent", Monitoring::getPluginVersion()) {}
+    Monitoring* create() {return new PrintVoltageCurrent();}
+};
+#endif

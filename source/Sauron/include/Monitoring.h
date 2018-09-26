@@ -30,6 +30,7 @@
 #include <string>
 #include <atomic>
 #include "RacksManager.h"
+#include "Driver.h"
 
 class Monitoring 
 {
@@ -73,6 +74,8 @@ public:
     bool isStarted(){return m_started;}
     bool isStoped(){return !m_started;}
     void stop(){ m_stopMonitoring=true;}
+    static int getPluginVersion(){ return m_pluginVersion;}
+    static const std::string server_name() {return "Connector";}
 protected:
     std::atomic_bool m_stopMonitoring{false};
     static std::atomic_bool m_imProcessing;
@@ -85,5 +88,13 @@ protected:
     RacksManager* m_racksmanager{nullptr};
     std::string m_name{""};
     std::string m_description{""};
+    static const int m_pluginVersion;
+};
+
+class MonitorDriver : public pugg::Driver
+{
+public:
+    MonitorDriver(std::string name, int version) : pugg::Driver(Monitoring::server_name(),name,version) {}
+    virtual Monitoring* create() = 0;
 };
 #endif

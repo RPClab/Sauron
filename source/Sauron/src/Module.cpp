@@ -26,5 +26,5 @@
 
 #include "Module.h"
 #include "DumbConnector.h"
-
+const int Module::m_pluginVersion=1;
 DumbConnector Module::m_dumb=DumbConnector(std::map<std::string,std::string>{{"Stream","cout"}});

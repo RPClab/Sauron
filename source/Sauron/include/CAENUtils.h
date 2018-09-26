@@ -26,16 +26,7 @@
 #define CAENUTILS_H
 #include "Value.h"
 #include <string>
-extern "C" 
-{
-    #include "CAEN/CAENComm.h"
-    #include "CAEN/CAENHVWrapper.h"
-    #include "CAEN/CAENVMElib.h"
-    #include "CAEN/CAENVMEoslib.h"
-    #include "CAEN/CAENVMEtypes.h"
-}
- 
- 
+
 class UglyCParProp
 {
 public:
@@ -62,14 +53,14 @@ public:
         std::vector<Value> val=value.Tokenize(", ");
         m_ugly.Type=val[0].ULong();
         m_ugly.Mode=val[1].ULong();
-        if(m_ugly.Type==PARAM_TYPE_NUMERIC)
+        if(m_ugly.Type==0)
         {
             m_ugly.MinVal=val[2].Float();
             m_ugly.MaxVal=val[3].Float();
             m_ugly.Unit=val[4].UShort();
             m_ugly.Exp=val[5].Short();
         }
-        else if (m_ugly.Type == PARAM_TYPE_ONOFF)
+        else if (m_ugly.Type == 1)
         {
             m_ugly.OnState=val[2].String();
             m_ugly.OffState=val[3].String();
@@ -78,14 +69,14 @@ public:
     Value toValue()
     {
         std::string valu=std::to_string(m_ugly.Type)+", "+std::to_string(m_ugly.Mode);
-        if(m_ugly.Type==PARAM_TYPE_NUMERIC)
+        if(m_ugly.Type==0)
         {
             valu+=", "+std::to_string(m_ugly.MinVal);
             valu+=", "+std::to_string(m_ugly.MaxVal);
             valu+=", "+std::to_string(m_ugly.Unit);
             valu+=", "+std::to_string(m_ugly.Exp);
         }
-        else if(m_ugly.Type == PARAM_TYPE_ONOFF)
+        else if(m_ugly.Type == 1)
         {
             valu+=", "+m_ugly.OnState;
             valu+=", "+m_ugly.OffState;
@@ -97,14 +88,14 @@ public:
     {
         stream<<"Type : "<<m_ugly.Type<<"\n";
         stream<<"Mode : "<<m_ugly.Mode<<"\n";
-        if(m_ugly.Type==PARAM_TYPE_NUMERIC)
+        if(m_ugly.Type==0)
         {
             stream<<"MinVal : "<<m_ugly.MinVal<<"\n";
             stream<<"MaxVal : "<<m_ugly.MaxVal<<"\n";
             stream<<"Unit : "<<m_ugly.Unit<<"\n";
             stream<<"Exp : "<<m_ugly.Exp<<"\n";
         }
-        else if (m_ugly.Type == PARAM_TYPE_ONOFF)
+        else if (m_ugly.Type == 1)
         {
             stream<<"OnState : "<<m_ugly.OnState<<"\n";
             stream<<"OffState : "<<m_ugly.OffState<<"\n";

@@ -1,0 +1,10 @@
+{
+    "Paths":
+    {
+        "Connectors":"/home/sjturpc/Desktop/Sauron/bin/lib/Connectors/",
+        "Modules":"/home/sjturpc/Desktop/Sauron/bin/lib/Modules/",
+        "Crates":"/home/sjturpc/Desktop/Sauron/bin/lib/Crates/",
+        "Monitors":"/home/sjturpc/Desktop/Sauron/bin/lib/Monitors/",
+        "Configs":"/home/sjturpc/Desktop/Sauron/conf/"
+    }
+}

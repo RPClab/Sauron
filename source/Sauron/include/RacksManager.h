@@ -29,18 +29,12 @@
 #include <mutex>
 #include <map>
 #include "json/json.h"
-#include "SerialConnector.h"
-#include "SNMPConnector.h"
-#include "CAENConnector.h"
 #include "Crate.h"
-#include "isegModule.h"
-#include "WIENERModule.h"
-#include "CAENModule.h"
 #include <set>
 #include <chrono>
 #include <thread>
 #include <functional>
-
+#include "Kernel.h"
 class Monitoring;
 
 class RacksManager 
@@ -269,12 +263,56 @@ private :
     bool keyExistsAndValueIsUnique(const Json::Value& id,const std::string & key);
     void constructCrate(Parameters&,Parameters&,std::map<std::string,Parameters>&,std::map<std::string,Parameters>&);
     void extractInfos(const Json::Value& root);
+    void loadConnectors();  
+    void loadMonitors();
+    void loadModules();
+    void m_loadGeneralConfigs()
+    {
+        const Json::Value& paths=openJSONFile(getEnvVar("SAURON_CONF"));
+        if(keyExists(paths["Paths"],"Connectors")!=true)
+            {
+                std::cout<<"Connectors path variable is mandatory!"<<std::endl;
+                throw -2;
+            }
+            else m_connectorsPath=paths["Paths"]["Connectors"].asString();
+            if(keyExists(paths["Paths"],"Modules")!=true)
+            {
+                std::cout<<"Modules path variable is mandatory!"<<std::endl;
+                throw -2;
+            }
+            else m_modulesPath=paths["Paths"]["Modules"].asString();
+            if(keyExists(paths["Paths"],"Crates")!=true)
+            {
+                std::cout<<"Crates path variable is mandatory!"<<std::endl;
+                throw -2;
+            }
+            else m_cratesPath=paths["Paths"]["Crates"].asString();
+            if(keyExists(paths["Paths"],"Monitors")!=true)
+            {
+                std::cout<<"Monitors path variable is mandatory!"<<std::endl;
+                throw -2;
+            }
+            else m_monitorPath=paths["Paths"]["Monitors"].asString();
+            if(keyExists(paths["Paths"],"Configs")!=true)
+            {
+                std::cout<<"Configs path variable is mandatory!"<<std::endl;
+                throw -2;
+            }
+            else m_configsPath=paths["Paths"]["Configs"].asString();
+    }
+    void loadPlugins(const std::string path);
+    std::string m_connectorsPath{""};
+    std::string m_modulesPath{""};
+    std::string m_cratesPath{""};
+    std::string m_monitorPath{""};
+    std::string m_configsPath{""};
     std::map<std::string,Crate*> m_racks;
     std::string getEnvVar(const std::string & key );
     Json::Value openJSONFile(const std::string& envVar);
-    std::map<std::string,Connector*> m_connectors{{"VCP",new SerialConnector},{"SNMP",new SNMPConnector},{"CAEN",new CAENConnector}};
-    std::map<std::string,Module*> m_modules{{"WIENER",new WIENERModule},{"iseg",new isegModule},{"CAEN",new CAENModule}};
+    std::map<std::string,Connector*> m_connectors;
+    std::map<std::string,Module*> m_modules;/*{{"WIENER",new WIENERModule},{"iseg",new isegModule},{"CAEN",new CAENModule}};*/
     std::string m_who={""};
     Value m_channel={""};
+    pugg::Kernel m_kernel;
 };
 #endif

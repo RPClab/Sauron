@@ -23,31 +23,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "Monitoring.h"
+#include "RecordVoltages.h"
+#include "Kernel.h"
 
+#ifdef _WIN32
+#  define EXPORTIT __declspec( dllexport )
+#else
+#  define EXPORTIT
+#endif
 
-const int Monitoring::m_pluginVersion=1;
-
-std::atomic_bool Monitoring::m_imProcessing{false};
-
-void Monitoring::loop()
+extern "C" EXPORTIT void register_pugg_plugin(pugg::Kernel* kernel)
 {
-    while (m_stopMonitoring!=true)
-    {
-        while (m_imProcessing==true){std::this_thread::sleep_for(std::chrono::nanoseconds(100));}
-        m_imProcessing=true;
-        std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-        function();
-        std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-        double duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-        long rest=m_time*1000000-duration;
-        m_imProcessing=false;
-        if(rest>0) std::this_thread::sleep_for(std::chrono::microseconds(rest));
-        else std::this_thread::sleep_for(std::chrono::microseconds(m_time));
-    }
-    if(m_stopMonitoring==true)
-    {
-        m_started=false;
-        release();
-    }
+	kernel->add_driver(new RecordVoltagesDriver());
 }

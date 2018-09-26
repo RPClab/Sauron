@@ -53,8 +53,8 @@ public:
     virtual bool isConnected()=0;
     virtual Connector* clone()=0;
     virtual Value buildCommand(const std::vector<Value>& params)=0;
-    Parameters getParameters(){return m_params;};
-    int getPluginVersion(){ return m_pluginVersion;}
+    Parameters& getParameters(){return m_params;};
+    static int getPluginVersion(){ return m_pluginVersion;}
     static const std::string server_name() {return "Connector";}
 protected:
     bool m_isCrateConnector{false};
