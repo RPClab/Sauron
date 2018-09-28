@@ -310,7 +310,7 @@ private :
     std::string getEnvVar(const std::string & key );
     Json::Value openJSONFile(const std::string& envVar);
     std::map<std::string,Connector*> m_connectors;
-    std::map<std::string,Module*> m_modules;/*{{"WIENER",new WIENERModule},{"iseg",new isegModule},{"CAEN",new CAENModule}};*/
+    std::map<std::string,Module*> m_modules;
     std::string m_who={""};
     Value m_channel={""};
     pugg::Kernel m_kernel;

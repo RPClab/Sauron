@@ -2,68 +2,48 @@ cmake_minimum_required(VERSION 3.1)
 
 PROJECT(CAENConnector)
 
- add_definitions(-DUNIX -DLINUX)
+macro( set_if_not )
+    if( NOT ${ARGV0} )
+        set( ${ARGN} )
+    endif()
+endmacro()
 
-math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
-if( ${BITS}  STREQUAL "64" )
-set(FOLDER "x64")
-message("-- 64 bits system")
-else()
-set(FOLDER "x86")
-message("-- 32 bits system")
-endif()
+set_if_not( CAENlibs_repository "https://github.com/RPClab/CAENlibs.git" )
+set_if_not( CAENlibs_version "master" )
+
+include(ExternalProject)
+
+    # ----- CAENlibs package -----
+    ExternalProject_Add( 
+                        CAENlibs
+                        GIT_REPOSITORY ${CAENlibs_repository}
+                        GIT_TAG ${CAENlibs_version}
+                        GIT_PROGRESS TRUE
+                        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs-prefix
+                        SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs
+                        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                        LIST_SEPARATOR %
+                        UPDATE_COMMAND ""
+                        )                       
 
 include_directories("../../include")
-include_directories("lib/CAENComm-1.2/include")
-include_directories("lib/CAENHVWrapper-5.82/include")
-include_directories("lib/CAENVMELib-2.50/include")
 
-find_library(CAENVMELIB NAMES libCAENVME.so.2.50 PATHS "lib/CAENVMELib-2.50/lib/${FOLDER}" NO_DEFAULT_PATH)
-find_library(CAENCommLIB NAMES libCAENComm.so.1.2.0 PATHS "lib/CAENComm-1.2/lib/${FOLDER}" NO_DEFAULT_PATH)
+if (UNIX)
+   SET(CAEN_FLAGS "-DUNIX" "-DLINUX" CACHE INTERNAL " " FORCE )
+endif (UNIX)
 
-if( ${BITS}  STREQUAL "64" ) 
+if (WIN32)
+   SET(CAEN_FLAGS "-D_WIN32" "-DWIN32" CACHE INTERNAL " " FORCE )
+endif (WIN32)
 
-link_directories("lib/CAENVMELib-2.50/lib/${FOLDER}" "lib/CAENComm-1.2/lib/${FOLDER}" "lib/CAENHVWrapper-5.82/lib/${FOLDER}")
-
-
-find_library(caenhvwrapperLIB NAMES libcaenhvwrapper.so.5.82 PATHS "lib/CAENHVWrapper-5.82/lib/${FOLDER}" NO_DEFAULT_PATH)
-else()
-link_directories("lib/CAENVMELib-2.50/lib/${FOLDER}" "lib/CAENComm-1.2/lib/${FOLDER}" "lib/CAENHVWrapper-5.82/lib")
-find_library(caenhvwrapperLIB NAMES libcaenhvwrapper.so.5.82 PATHS "lib/CAENHVWrapper-5.82/lib" NO_DEFAULT_PATH)
-endif()
-
-if(${CAENVMELIB} STREQUAL "CAENVMELIB-NOTFOUND")
-    message(FATAL_ERROR "Couldn't find the 'CAENVME' library")
-endif()
-
-message(STATUS "Found 'CAENVME' at: ${CAENVMELIB}")
-
-if(${CAENCommLIB} STREQUAL "CAENCommLIB-NOTFOUND")
-    message(FATAL_ERROR "Couldn't find the 'CAENComm' library")
-endif()
-
-message(STATUS "Found 'CAENComm' at: ${CAENCommLIB}")
-
-
-if(${caenhvwrapperLIB} STREQUAL "caenhvwrapperLIB-NOTFOUND")
-    message(FATAL_ERROR "Couldn't find the 'caenhvwrapper' library")
-endif()
-
-message(STATUS "Found 'caenhvwrapper' at: ${caenhvwrapperLIB}")
-
-
-
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENComm-1.2/include")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENHVWrapper-5.82/include")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENVMELib-2.50/include")
+add_definitions(${CAEN_FLAGS})
 set(SOURCES CAENConnector.cpp CAENConnector.h)
 add_library(CAENConnector SHARED ${SOURCES})
-#target_link_libraries(CAENConnector ${CAENVMELIB} ${CAENCommLIB} ${caenhvwrapperLIB})
+add_dependencies(CAENConnector CAENlibs)
+target_link_libraries(CAENConnector ${CAENVMELIB} ${CAENCommLIB} ${caenhvwrapperLIB})
+message("${CAENVMELIB} ${CAENCommLIB} ${caenhvwrapperLIB}")
 install (TARGETS CAENConnector ARCHIVE DESTINATION ${CMAKE_LIBRARY_PATH}/Connectors LIBRARY DESTINATION ${CMAKE_LIBRARY_PATH}/Connectors RUNTIME DESTINATION ${CMAKE_LIBRARY_PATH}/Connectors)
-
-if(CAENHVWrapper_demo)
-add_executable(MainWrapp CAENHVWrapper-5.82/HVWrapperDemo/MainWrapp.c CAENHVWrapper-5.82/HVWrapperDemo/console.c CAENHVWrapper-5.82/HVWrapperDemo/CmdWrapp.c )
-target_link_libraries (MainWrapp ${caenhvwrapper} pthread dl ncurses m )
-install (TARGETS MainWrapp DESTINATION ${CMAKE_SOURCE_DIR}/bin)
-endif()
-
-if(CAEN_DRIVER)
-add_subdirectory(drivers)
-endif()

@@ -29,7 +29,7 @@
 #include <cstring>
 #include <thread>
 // CAEN
-extern "C" 
+extern "C"
 {
     #include "CAENComm.h"
     #include "CAENHVWrapper.h"
