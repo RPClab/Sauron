@@ -8,6 +8,25 @@
             "Modules" :
             [
                 { 
+                    "Name":"N1741A", 
+                    "Description":"CAEN Module",
+                    "Type":"CAEN",
+                    "Slot":"0",
+                    "SN":"1093",
+                    "Connector": 
+                    {
+                        "Type":"CAEN",
+                        "CAENHVSystemType":"N14XX",
+                        "LinkType":"VCP",
+                        "Baudrate":"9600",
+                        "Bytesize":"8",
+                        "Stopbits":"1",
+                        "Parity":"none",
+                        "IBusAddress":"0"
+                    }
+                }
+                ,
+                { 
                     "Name":"iseg2", 
                     "Type":"iseg",
                     "Slot":"2",

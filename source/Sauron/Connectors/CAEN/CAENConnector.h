@@ -716,6 +716,49 @@ Value testBdPresence(std::vector<Value>& params)
     int m_handle{-1};
     int m_connected{-1};
     std::thread m_keepAlive;
+    /*!
+    * Structure that describes a serial device.
+    */
+    struct PortInfo 
+    {
+        /*! Address of the serial port (this can be passed to the constructor of Serial). */
+        std::string port;
+        /*! Human readable description of serial device if available. */
+        std::string description;
+        /*! Hardware ID (e.g. VID:PID of USB serial devices) or "n/a" if not available. */
+        std::string hardware_id;
+    };
+    /* Lists the serial ports available on the system
+    *
+    * Returns a vector of available serial ports, each represented
+    * by a serial::PortInfo data structure:
+    *
+    * \return vector of serial::PortInfo.
+    */
+    std::vector<PortInfo> list_ports();
+    std::vector<PortInfo> m_ports;
+    #if defined(__linux__)
+    static std::vector<std::string> glob(const std::vector<std::string>& patterns);
+    static std::string basename(const std::string& path);
+    static std::string dirname(const std::string& path);
+    static bool path_exists(const std::string& path);
+    static std::string realpath(const std::string& path);
+    static std::string usb_sysfs_friendly_name(const std::string& sys_usb_path);
+    static std::vector<std::string> get_sysfs_info(const std::string& device_path);
+    static std::string read_line(const std::string& file);
+    static std::string usb_sysfs_hw_string(const std::string& sysfs_path);
+    static std::string format(const char* format, ...);
+    #endif
+    #if defined(__APPLE__)
+    #define HARDWARE_ID_STRING_LENGTH 128
+    std::string cfstring_to_string( CFStringRef cfstring );
+    std::string get_device_path( io_object_t& serial_port );
+    std::string get_class_name( io_object_t& obj );
+    io_registry_entry_t get_parent_iousb_device( io_object_t& serial_port );
+    std::string get_string_property( io_object_t& device, const char* property );
+    uint16_t get_int_property( io_object_t& device, const char* property );
+    std::string rtrim(const std::string& str);
+    #endif
 };
 
 class CAENConnectorDriver : public ConnectorDriver
