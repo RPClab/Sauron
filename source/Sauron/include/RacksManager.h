@@ -230,6 +230,10 @@ private :
     bool isConnected{false};
     RacksManager();
     ~RacksManager();
+    RacksManager(const RacksManager& other)=delete; // copy constructor
+    RacksManager(RacksManager&& other)=delete; // move constructor
+    RacksManager& operator=(const RacksManager& other)=delete; // copy assignment
+    RacksManager& operator=(RacksManager&& other)=delete; // move assignment
     void fillSerialNumbers()
     {
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
