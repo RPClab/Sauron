@@ -31,17 +31,6 @@
 #include "json/json.h"
 #include <fstream>
 
-std::map<std::string,int> ID::m_rackIDs=std::map<std::string,int>();
-std::map<std::string,std::array<int,2>> ID::m_crateIDs=std::map<std::string,std::array<int,2>>();
-std::map<std::string,std::array<int,3>> ID::m_moduleIDs=std::map<std::string,std::array<int,3>>();
-std::vector<std::array<std::string,3>> ID::m_moduleInfos=std::vector<std::array<std::string,3>>();
-std::vector<std::array<std::string,3>> ID::m_crateInfos=std::vector<std::array<std::string,3>>();
-std::vector<std::array<std::string,3>> ID::m_rackInfos=std::vector<std::array<std::string,3>>();
-unsigned int ID::m_moduleNbr{0};
-unsigned int ID::m_crateNbr{0};
-unsigned int ID::m_rackNbr{0};
-unsigned int ID::m_configID{0};
-
 unsigned int ID::getConfigID()
 {
     return m_configID;

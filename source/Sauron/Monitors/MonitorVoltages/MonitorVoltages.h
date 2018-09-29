@@ -175,7 +175,8 @@ private :
         id = params["Monitoring"].getMemberNames();
         for(unsigned int i=0;i!=id.size();++i)
         {
-            if(ID::isModule(id[i])==true)
+            ID& m_id=ID::instance();
+            if(m_id.isModule(id[i])==true)
             {
                 for(unsigned int j=0;j!=params["Monitoring"][id[i]].size();++j)
                 {   

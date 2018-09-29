@@ -234,11 +234,11 @@ private :
     {
         for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it)
         {
-            ID::addSerialNumber(it->first,it->second->getSerialNumber().String());
+            m_id.addSerialNumber(it->first,it->second->getSerialNumber().String());
             std::vector<Value> a= it->second->getModuleNames();
             for(unsigned int i=0;i!=a.size();++i)
             {
-                ID::addSerialNumber(a[i].String(),it->second->getSerialNumberModule(a[i].String()).String());
+                m_id.addSerialNumber(a[i].String(),it->second->getSerialNumberModule(a[i].String()).String());
             }
         }
     }
@@ -301,6 +301,7 @@ private :
             else m_configsPath=paths["Paths"]["Configs"].asString();
     }
     void loadPlugins(const std::string path);
+    ID& m_id{ID::instance()};
     std::string m_connectorsPath{""};
     std::string m_modulesPath{""};
     std::string m_cratesPath{""};

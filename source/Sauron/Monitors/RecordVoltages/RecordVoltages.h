@@ -63,7 +63,8 @@ public:
             }
             std::string values="\"";
             values+=std::to_string(m_measureNbr);
-            values+="\",\""+tim.str()+"\",\""+std::to_string(ID::getConfigID());
+            ID& m_id=ID::instance();
+            values+="\",\""+tim.str()+"\",\""+std::to_string(m_id.getConfigID());
             values+="\",\""+std::to_string(data[i].getPosition().getRack());
             values+="\",\""+std::to_string(data[i].getPosition().getCrate());
             values+="\",\""+std::to_string(data[i].getPosition().getModule());
@@ -99,7 +100,8 @@ private :
     {
         try
         {
-            std::string json=ID::createJSON();
+            ID& m_id=ID::instance();
+            std::string json=m_id.createJSON();
             std::string command=std::string("SELECT * FROM "+m_params["ConfigDatabase"].String()+"."+m_params["ConfigTable"].String()+" WHERE config LIKE '")+json+std::string("';");
             //std::cout<<command<<std::endl;
             mariadb::result_set_ref result = Myconnection->query(command);
@@ -110,7 +112,7 @@ private :
                 result=Myconnection->query(command);
             }
             result->set_row_index(0);
-            ID::setConfigID(result->get_signed32(0));
+            m_id.setConfigID(result->get_signed32(0));
         }
         catch(...)
         {

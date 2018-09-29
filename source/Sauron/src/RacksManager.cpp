@@ -72,7 +72,6 @@ void RacksManager::loadModules()
     std::vector<ModuleDriver*> drivers = m_kernel.get_all_drivers<ModuleDriver>(Module::server_name());
     for (std::vector<ModuleDriver*>::iterator iter = drivers.begin(); iter != drivers.end(); ++iter) 
     {
-        std::cout<<(*(*iter)).name()<<std::endl;
         m_modules[(*(*iter)).name()]=(*(*iter)).create();
     }
 }
@@ -99,9 +98,6 @@ RacksManager::RacksManager()
     std::cout<<"Loading Modules Plugins ! "<<std::endl;
     loadModules();
     std::cout<<"Loading Crates Plugins soooooooon ! HAVE TO BE DONE "<<std::endl;
-    std::cout<<"Loading Monitors Plugins ! "<<std::endl;
-    loadMonitors();
-    
 };
 
     void RacksManager::initialize()
@@ -114,6 +110,8 @@ RacksManager::RacksManager()
         extractInfos(root);
             for(std::map<std::string,Crate*>::iterator it=m_racks.begin();it!=m_racks.end();++it) it->second->Initialize();
             isInitialized=true;
+             std::cout<<"Loading Monitors Plugins ! "<<std::endl;
+        loadMonitors();
         }
     }
 
@@ -215,10 +213,10 @@ void RacksManager::FillModuleInfos(const Json::Value& json,std::map<std::string,
             else
             {
                 m_params[json["Modules"][module]["Name"].asString()].addParameter(*ot,json["Modules"][module][*ot].asString());
-                ID::addModule(json["Rack"].asString(),json["Name"].asString(),json["Modules"][module]["Name"].asString());
+                m_id.addModule(json["Rack"].asString(),json["Name"].asString(),json["Modules"][module]["Name"].asString());
                 if(keyExists(json["Modules"][module],"Description"))
                 {
-                    ID::addDescription(json["Modules"][module]["Name"].asString(),json["Modules"][module]["Description"].asString());
+                    m_id.addDescription(json["Modules"][module]["Name"].asString(),json["Modules"][module]["Description"].asString());
                 }
             }
         }
@@ -258,9 +256,9 @@ void RacksManager::identify(const Json::Value& root)
             }
         }
     }
-    for(std::set<std::string>::iterator it=racks.begin();it!=racks.end();++it) ID::createRackID(*it);
-    for(std::set<std::string>::iterator it=crates.begin();it!=crates.end();++it) ID::createCrateID(*it);
-    for(std::set<std::string>::iterator it=modules.begin();it!=modules.end();++it)ID::createModuleID(*it);
+    for(std::set<std::string>::iterator it=racks.begin();it!=racks.end();++it) m_id.createRackID(*it);
+    for(std::set<std::string>::iterator it=crates.begin();it!=crates.end();++it) m_id.createCrateID(*it);
+    for(std::set<std::string>::iterator it=modules.begin();it!=modules.end();++it) m_id.createModuleID(*it);
 }
 
 
@@ -289,9 +287,9 @@ void RacksManager::extractInfos(const Json::Value& root)
             std::cout<<"Crate's name is mandatory and must be unique !"<<std::endl;
             throw -1;
         }
-        ID::addCrate(crates[i]["Rack"].asString(),crates[i]["Name"].asString());
-        ID::addRack(crates[i]["Rack"].asString());
-        if(keyExists(crates[i],"Description")) ID::addDescription(crates[i]["Name"].asString(),crates[i]["Description"].asString());
+        m_id.addCrate(crates[i]["Rack"].asString(),crates[i]["Name"].asString());
+        m_id.addRack(crates[i]["Rack"].asString());
+        if(keyExists(crates[i],"Description")) m_id.addDescription(crates[i]["Name"].asString(),crates[i]["Description"].asString());
         for (std::vector<std::string>::iterator it=crate_params.begin();it!=crate_params.end();++it) 
         {
             if(*it=="Connector")

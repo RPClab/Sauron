@@ -55,17 +55,20 @@ void Position::setChannel(const Value& channel)
     
 void Position::setModule(const Value& moduleName)
 {
-    m_module=ID::getModuleID(moduleName.String());
+    ID& m_id=ID::instance();
+    m_module=m_id.getModuleID(moduleName.String());
 }
     
 void Position::setCrate(const Value& crateName)
 {
-    m_crate=ID::getCrateID(crateName.String());
+    ID& m_id=ID::instance();
+    m_crate=m_id.getCrateID(crateName.String());
 }
     
 void Position::setRack(const Value& rackName)
 {
-    m_rack=ID::getRackID(rackName.String());
+    ID& m_id=ID::instance();
+    m_rack=m_id.getRackID(rackName.String());
 }
     
 int Position::getChannel() const 
@@ -90,17 +93,20 @@ int Position::getRack() const
     
 std::string Position::getModuleName() const 
 {
-    return  ID::getModuleName(m_module);
+    ID& m_id=ID::instance();
+    return  m_id.getModuleName(m_module);
 }
     
 std::string Position::getCrateName() const
 {
-    return ID::getCrateName(m_crate);
+    ID& m_id=ID::instance();
+    return m_id.getCrateName(m_crate);
 }
     
 std::string Position::getRackName() const
 {
-    return ID::getRackName(m_rack);
+    ID& m_id=ID::instance();
+    return m_id.getRackName(m_rack);
 }
     
 void  Position::print(std::ostream& stream,const std::string mover)

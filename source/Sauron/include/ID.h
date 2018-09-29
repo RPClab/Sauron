@@ -33,42 +33,53 @@
 class ID 
 {
 public :
-    static void addDescription(const std::string& who,const std::string& description);
-    static void addSerialNumber(const std::string& who,const std::string& sn);
-    static void printJSON(std::ostream& stream=std::cout,const std::string& mover="");
-    static void writeJSON(const std::string& file); 
-    static std::string createJSON(const std::string& mover="");
-    static bool isRack(const std::string& who);
-    static bool isCrate(const std::string& who);
-    static bool isModule(const std::string& who);
-    static void addRack(const std::string& rack);
-    static void addCrate(const std::string& rack,const std::string& crate);
-    static void addModule(const std::string& rack,const std::string& crate,const std::string& module);
-    static void createRackID(const std::string& rack);
-    static void createCrateID(const std::string& crate);
-    static void createModuleID(const std::string& module);
-    static unsigned int getModuleID(const std::string& module);
-    static unsigned int getCrateID(const std::string& crate);
-    static unsigned int getRackID(const std::string& rack);
-    static std::string getModuleName(const unsigned int& module);
-    static std::string getCrateName(const unsigned int& crate);
-    static std::string getRackName(const unsigned int& rack);
-    unsigned int static getNbrOfModules();
-    unsigned int static getNbrOfCrates();
-    unsigned int static getNbrOfRacks();
-    unsigned int static getConfigID();
-    static void setConfigID(const unsigned int&);
-    static void print(std::ostream& stream=std::cout,const std::string& mover="");
+    static ID& instance() 
+    {
+        static ID S;
+        return S;
+    }
+    void addDescription(const std::string& who,const std::string& description);
+    void addSerialNumber(const std::string& who,const std::string& sn);
+    void printJSON(std::ostream& stream=std::cout,const std::string& mover="");
+    void writeJSON(const std::string& file); 
+    std::string createJSON(const std::string& mover="");
+    bool isRack(const std::string& who);
+    bool isCrate(const std::string& who);
+    bool isModule(const std::string& who);
+    void addRack(const std::string& rack);
+    void addCrate(const std::string& rack,const std::string& crate);
+    void addModule(const std::string& rack,const std::string& crate,const std::string& module);
+    void createRackID(const std::string& rack);
+    void createCrateID(const std::string& crate);
+    void createModuleID(const std::string& module);
+    unsigned int getModuleID(const std::string& module);
+    unsigned int getCrateID(const std::string& crate);
+    unsigned int getRackID(const std::string& rack);
+    std::string getModuleName(const unsigned int& module);
+    std::string getCrateName(const unsigned int& crate);
+    std::string getRackName(const unsigned int& rack);
+    unsigned int getNbrOfModules();
+    unsigned int getNbrOfCrates();
+    unsigned int getNbrOfRacks();
+    unsigned int getConfigID();
+    void setConfigID(const unsigned int&);
+    void print(std::ostream& stream=std::cout,const std::string& mover="");
 private :
-    static std::map<std::string,int> m_rackIDs;
-    static std::vector<std::array<std::string,3>> m_rackInfos;
-    static std::map<std::string,std::array<int,2>> m_crateIDs;
-    static std::vector<std::array<std::string,3>> m_crateInfos;
-    static std::map<std::string,std::array<int,3>> m_moduleIDs;
-    static std::vector<std::array<std::string,3>> m_moduleInfos;
-    static unsigned int m_moduleNbr;
-    static unsigned int m_crateNbr;
-    static unsigned int m_rackNbr;
-    static unsigned int m_configID;
+    ID(){};
+    ~ID(){};
+    ID(const ID& other)=delete; // copy constructor
+    ID(ID&& other)=delete; // move constructor
+    ID& operator=(const ID& other)=delete; // copy assignment
+    ID& operator=(ID&& other)=delete; // move assignment
+    std::map<std::string,int> m_rackIDs;
+    std::vector<std::array<std::string,3>> m_rackInfos;
+    std::map<std::string,std::array<int,2>> m_crateIDs;
+    std::vector<std::array<std::string,3>> m_crateInfos;
+    std::map<std::string,std::array<int,3>> m_moduleIDs;
+    std::vector<std::array<std::string,3>> m_moduleInfos;
+    unsigned int m_moduleNbr;
+    unsigned int m_crateNbr;
+    unsigned int m_rackNbr;
+    unsigned int m_configID;
 };
 #endif
