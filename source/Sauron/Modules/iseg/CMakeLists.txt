@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 
 PROJECT(isegModule)
 
-include_directories("../../include")
+include_directories("${CMAKE_INSTALL_PREFIX}/bin/include")
 set(SOURCES isegModule.cpp isegModule.h)
 add_library(isegModule SHARED ${SOURCES})
 target_link_libraries(isegModule  pthread )
