@@ -28,7 +28,7 @@ include(ExternalProject)
                         )
 
 
-include_directories("../../include")
+include_directories("${CMAKE_INSTALL_PREFIX}/bin/include")
 set(SOURCES SerialConnector.cpp SerialConnector.h)
 link_libraries(serial)
 add_library(SerialConnector SHARED ${SOURCES})

@@ -30,7 +30,7 @@ include(ExternalProject)
                         
 include(cmake/MIB.cmake)
 CHECK_MIB()
-include_directories("../../include")
+include_directories("${CMAKE_INSTALL_PREFIX}/bin/include")
 find_package(OpenSSL REQUIRED) 
 set(SOURCES SNMPConnector.cpp SNMPConnector.h)
 link_libraries(netsnmp ${OPENSSL_LIBRARIES})
