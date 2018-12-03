@@ -29,7 +29,7 @@ include(ExternalProject)
 
 
                         
-include_directories("../../include")
+include_directories("${CMAKE_INSTALL_PREFIX}/bin/include")
 link_directories(${CMAKE_LIBRARY_PATH})
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENComm-1.2/include")
