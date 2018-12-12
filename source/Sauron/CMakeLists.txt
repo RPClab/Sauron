@@ -3,9 +3,9 @@ find_package(MariaDBClient REQUIRED)
 
 ## Include headers
 include_directories(include)
-include_directories(${PROJECT_SOURCE_DIR}/bin/include)
+include_directories(${CMAKE_INSTALL_PREFIX}/include)
 
-link_directories(${PROJECT_SOURCE_DIR}/bin/lib)
+link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 
 ## Sources
 file(GLOB SAURON_SOURCES src/*.cpp)
@@ -14,7 +14,7 @@ add_library( Sauron STATIC ${SAURON_SOURCES})
 link_libraries(Sauron jsoncpp pthread dl)
 
 ## Install executable
-install(TARGETS Sauron ARCHIVE DESTINATION ${PROJECT_SOURCE_DIR}/bin/lib LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/bin/lib)
+install(TARGETS Sauron ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
@@ -34,7 +34,7 @@ if(Boost_FOUND)
    endif()
   include_directories(${MariaDBClient_INCLUDE_DIRS})
   target_link_libraries(Test ${MariaDBClient_LIBRARIES} pthread ${Boost_LIBRARIES} Sauron )
-  install(TARGETS Test RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+  install(TARGETS Test RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
   endif()
 #add_subdirectory(Wt)
 

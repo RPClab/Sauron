@@ -28,9 +28,9 @@ include(ExternalProject)
                         )
 
 
-include_directories("../../include")
+include_directories("${CMAKE_INSTALL_PREFIX}/include")
 set(SOURCES SerialConnector.cpp SerialConnector.h)
 link_libraries(serial)
 add_library(SerialConnector SHARED ${SOURCES})
 target_link_libraries(SerialConnector pthread)
-install (TARGETS SerialConnector ARCHIVE DESTINATION ${CMAKE_LIBRARY_PATH}/Connectors LIBRARY DESTINATION ${CMAKE_LIBRARY_PATH}/Connectors RUNTIME DESTINATION ${CMAKE_LIBRARY_PATH}/Connectors)
+install (TARGETS SerialConnector ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Connectors LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Connectors RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Connectors)

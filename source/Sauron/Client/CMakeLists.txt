@@ -8,6 +8,6 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   add_executable(Client Client.cpp)
   target_link_libraries(Client ${Boost_LIBRARIES} pthread )
-  install(TARGETS Client RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+  install(TARGETS Client RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
