@@ -30,7 +30,7 @@ include(ExternalProject)
 
                         
 include_directories("${CMAKE_INSTALL_PREFIX}/include")
-link_directories(${CMAKE_INSTALL_PREFIX}/lib)
+link_directories(${CMAKE_LIBRARY_PATH})
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENComm-1.2/include")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENHVWrapper-5.82/include")
