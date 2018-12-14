@@ -32,9 +32,9 @@ include(ExternalProject)
 include_directories("${CMAKE_INSTALL_PREFIX}/include")
 link_directories(${CMAKE_LIBRARY_PATH})
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENComm-1.2/include")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENHVWrapper-5.82/include")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/lib/CAENVMELib-2.50/include")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/CAENComm-1.2/include")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/CAENHVWrapper-5.82/include")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/CAENVMELib-2.50/include")
 
 if (UNIX)
    SET(CAEN_FLAGS "-DUNIX" "-DLINUX" CACHE INTERNAL " " FORCE )
@@ -50,5 +50,4 @@ add_library(CAENConnector SHARED ${SOURCES})
 target_link_libraries(CAENConnector CAENVME CAENComm caenhvwrapper)
 add_dependencies(CAENConnector CAENlibs)
 
-message(" LLLLLL ${CMAKE_INSTALL_PREFIX}/lib/Connectors")
 install (TARGETS CAENConnector ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Connectors LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Connectors RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/Connectors)
