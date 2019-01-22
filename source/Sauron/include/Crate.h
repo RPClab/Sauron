@@ -269,6 +269,45 @@ public:
         }
     }
     
+    
+    // GET CURRENT MEASURED
+    virtual std::vector<CurrentMeasured> getCurrentMeasured(const std::string& who,const Value& channel)
+    {
+        std::vector<CurrentMeasured> ret;
+        if(isInRack(who)||isCrate(who)||who=="")
+        {
+            for(std::map<std::string,Module*>::iterator it=m_modules.begin();it!=m_modules.end();++it)
+            {
+                std::vector<CurrentMeasured> rett;
+                if(channel.String()=="")rett=it->second->mesureCurrent();
+                else rett.push_back(it->second->mesureCurrent(channel));
+                for(unsigned int i=0;i!=rett.size();++i)
+                {
+                    rett[i].getPosition().setCrate(getName());
+                    if(getRack()!="")rett[i].getPosition().setRack(getRack());
+                }
+                ret.insert(ret.end(), rett.begin(), rett.end());
+            }
+        }
+        else if (hasModule(who))
+        {
+            std::vector<CurrentMeasured> rett;
+            if(channel.String()=="")rett=m_modules[who]->mesureCurrent();
+            else ret.push_back(m_modules[who]->mesureCurrent(channel));
+            for(unsigned int i=0;i!=rett.size();++i)
+            {
+                rett[i].getPosition().setCrate(getName());
+                if(getRack()!="")rett[i].getPosition().setRack(getRack());
+            }
+    
+            ret.insert(ret.end(), rett.begin(), rett.end());
+        }
+        return std::move(ret);
+    }
+    
+    
+    
+    
     void Connect()
     {
         if(m_connector!=nullptr)

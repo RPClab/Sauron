@@ -122,6 +122,20 @@ public:
         return std::move(ret);
     }
     
+    // GET CURRENT MEASURED
+    std::vector<CurrentMeasured> getCurrentMeasured()
+    {
+        std::vector<CurrentMeasured> ret;
+        std::lock_guard<std::mutex> lock(mutexx);
+        for(std::map<std::string,Crate*>::iterator itt=m_racks.begin();itt!=m_racks.end();++itt)
+        {
+                std::vector<CurrentMeasured> rett=itt->second->getCurrentMeasured(m_who,m_channel);
+                ret.insert(ret.end(),rett.begin(),rett.end());
+        }
+        return std::move(ret);
+    }
+    
+    
     void Release();
     
     void disconnect()
