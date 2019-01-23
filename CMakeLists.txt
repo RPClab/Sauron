@@ -15,6 +15,14 @@ SET(CMAKE_EXE_LINKER_FLAGS  "-fPIC ${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_
 #set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin)
 #set(CMAKE_LIBRARY_PATH ${CMAKE_SOURCE_DIR}/bin/lib)
 
+set(CMAKE_INSTALL_PREFIX "")
+
+if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
+    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin)
+else()
+endif()
+
+
 macro( set_if_not )
     if( NOT ${ARGV0} )
         set( ${ARGN} )
