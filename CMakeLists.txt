@@ -4,29 +4,21 @@
 cmake_minimum_required(VERSION 3.1)
 ########################################################
 
+project(sauron VERSION 0.9 LANGUAGES C CXX)
+
+
+set(CMAKE_INSTALL_PREFIX "")
+if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
+    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin)
+else()
+endif()
+
 # set the C++ standard to C++ 17
 set(CMAKE_CXX_STANDARD 17)
 
-project(sauron)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
-SET(CMAKE_CXX_FLAGS  "-fPIC ${CMAKE_CXX_FLAGS}" )
-SET(CMAKE_EXE_LINKER_FLAGS  "-fPIC ${CMAKE_EXE_LINKER_FLAGS}" )
-
-set(CMAKE_INSTALL_PREFIX "")
-
-if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
-    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin)
-else()
-endif()
-
-set(CMAKE_INSTALL_PREFIX "")
-
-if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
-    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin)
-else()
-endif()
-
+set(CMAKE_CXX_FLAGS  "-fPIC ${CMAKE_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS  "-fPIC ${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_INSTALL_PREFIX}/lib/" )
 
 macro( set_if_not )
     if( NOT ${ARGV0} )
@@ -41,7 +33,6 @@ set_if_not( mariadbpp_version "master" )
 
 include(ExternalProject)
 
-option(CAEN_DRIVER "Compile and install CAEN drivers" OFF)
 option(CLIENT "Build the client" OFF)
 option(SERVER "Build the server" OFF)
 option(SAURON "Build the library" ON)
