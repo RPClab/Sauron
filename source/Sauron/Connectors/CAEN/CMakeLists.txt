@@ -22,13 +22,8 @@ ExternalProject_Add(
 
 
                         
-<<<<<<< HEAD
 include_directories("${CMAKE_INSTALL_PREFIX}/include/CAEN")
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-=======
-include_directories("${CMAKE_INSTALL_PREFIX}/include")
-link_directories(${CMAKE_LIBRARY_PATH})
->>>>>>> 8333c9e21f5c3fab53e1bb5d2d83f452f5b7efe4
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/CAENComm-1.2/include")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/CAENlibs/CAENHVWrapper-5.82/include")
