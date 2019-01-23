@@ -38,6 +38,23 @@ if(Boost_FOUND)
   endif()
 #add_subdirectory(Wt)
 
+
+find_package(ROOT)
+if(ROOT_FOUND)
+include_directories(${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+ add_executable(IvsU IvsU.cpp)
+ if(CAEN_DRIVER)
+   add_dependencies(IvsU drivers)
+   endif()
+ include_directories(${MariaDBClient_INCLUDE_DIRS})
+  target_link_libraries(IvsU ${MariaDBClient_LIBRARIES} pthread ${ROOT_LIBRARIES} ${Boost_LIBRARIES} Sauron )
+  install(TARGETS IvsU RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+
+endif()
+
 add_subdirectory(Connectors)
 add_subdirectory(Monitors)
 add_subdirectory(Modules)
+
+
